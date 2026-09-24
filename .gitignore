@@ -1,0 +1,25 @@
+# Datos: nunca se versionan (licencias sin redistribución). Sí se versionan las particiones.
+data/raw/**
+data/interim/**
+data/processed/**
+!data/**/
+!data/**/.gitkeep
+# Pesos de modelos
+artifacts/**
+!artifacts/**/
+!artifacts/**/.gitkeep
+*.pt
+*.pth
+*.onnx
+# Python / entornos
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+.env
+# Sistema / editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/settings.json
