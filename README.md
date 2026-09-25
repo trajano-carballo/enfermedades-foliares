@@ -8,7 +8,9 @@ César Carballo · Juan Lucas Pimentel · Victor Uría — Prof. Juan Pedro de L
 Entrenamos un clasificador de enfermedades foliares sobre **PlantVillage** (laboratorio) y lo
 evaluamos sobre **PlantDoc** (campo), que nunca se usa en entrenamiento. El resultado principal
 no es la accuracy de laboratorio sino la **brecha ID→OOD en macro-F1**, por qué ocurre y cuánto
-se recupera con dos intervenciones: aumentación dirigida y supresión de fondo.
+se recupera con dos intervenciones: aumentación dirigida y supresión de fondo. La
+explicabilidad se resuelve con **CAM** (no se usa Grad-CAM en ninguna etapa). El subconjunto
+común de clases parte de tomate y papa (maíz queda excluido), evaluando si sumar pimiento.
 
 El producto final es un asistente de orientación (nunca diagnóstico) que se **abstiene** cuando
 no está en condiciones de opinar. Propuesta completa: [`docs/propuesta_entregable1.md`](docs/propuesta_entregable1.md).
@@ -32,7 +34,7 @@ src/foliares/
   models/      backbone MobileNetV3-Small + cabezal GAP→Linear
   training/    loop de entrenamiento, aumentaciones
   evaluation/  macro-F1, matrices de confusión, bootstrap, calibración, cobertura/abstención
-  explain/     CAM (deploy) y Grad-CAM (análisis sobre muestra)
+  explain/     CAM (deploy y análisis; no se usa Grad-CAM)
 scripts/                           puntos de entrada por línea de comandos
 app/                               demo en Gradio
 artifacts/checkpoints/             pesos entrenados (no versionados)

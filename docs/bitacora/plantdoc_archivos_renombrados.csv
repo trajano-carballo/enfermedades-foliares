@@ -1,0 +1,102 @@
+split,clase,nombre_original,nombre_local,motivo
+test,Bell_pepper leaf,IMG_1629.JPG?1507122477.jpg,IMG_1629.JPG_1507122477.jpg,caracter_invalido_ntfs
+test,Corn Gray leaf spot,"show_picture.asp?id=aaaaaaaaaaogcqq&w2=420&h2=378&clip=center,420,378&meta=0.jpg","show_picture.asp_id=aaaaaaaaaaogcqq&w2=420&h2=378&clip=center,420,378&meta=0.jpg",caracter_invalido_ntfs
+test,Potato leaf late blight,1421_0.jpeg?itok=FMtmgePj.jpg,1421_0.jpeg_itok=FMtmgePj.jpg,caracter_invalido_ntfs
+test,grape leaf,grape-leaf-picture-id119212425?k=6&m=119212425&s=612x612&w=0&h=8RZBWGcvXe4tAwhhvYZVFzWyRyiN5iTxKfWBpPT1FcU=.jpg,grape-leaf-picture-id119212425_k=6&m=119212425&s=612x612&w=0&h=8RZBWGcvXe4tAwhhvYZVFzWyRyiN5iTxKfWBpPT1FcU=.jpg,caracter_invalido_ntfs
+test,grape leaf,latest?cb=20100621160325.jpg,latest_cb=20100621160325.jpg,caracter_invalido_ntfs
+train,Apple Scab Leaf,01Apple-scab-2-Venturia-inaequalis.ashx?w=600&h=408&bc=ffffff.jpg,01Apple-scab-2-Venturia-inaequalis.ashx_w=600&h=408&bc=ffffff.jpg,caracter_invalido_ntfs
+train,Apple Scab Leaf,6A642AA3-1DB1-4413-B0B6-7FBB68A5904A_original.jpeg?1528657579.jpg,6A642AA3-1DB1-4413-B0B6-7FBB68A5904A_original.jpeg_1528657579.jpg,caracter_invalido_ntfs
+train,Apple Scab Leaf,Apple_scab.jpg?t=1473441220256&width=300&height=200&name=Apple_scab.jpg,Apple_scab.jpg_t=1473441220256&width=300&height=200&name=Apple_scab.jpg,caracter_invalido_ntfs
+train,Apple Scab Leaf,IMG_3166_1500x1500%253E.JPG?1473520197.jpg,IMG_3166_1500x1500%253E.JPG_1473520197.jpg,caracter_invalido_ntfs
+train,Apple Scab Leaf,branch-with-ill-leaf-of-apple-scab-disease-picture-id928917010?k=6&m=928917010&s=612x612&w=0&h=UY6EBbnGkTzVcp4Tm8myYO7KoIOtrZo3VRDrd91qslo=.jpg,branch-with-ill-leaf-of-apple-scab-disease-picture-id928917010_k=6&m=928917010&s=612x612&w=0&h=UY6EBbnGkTzVcp4Tm8myYO7KoIOtrZo3_61a14260.jpg,ruta_demasiado_larga
+train,Apple leaf,green-leaf-picture-id177130309?b=1&k=6&m=177130309&s=612x612&w=0&h=VP3U0AM5j0fvQqOwuI5f7cmb2Ji88mVep0eoXQaJRfs=.jpg,green-leaf-picture-id177130309_b=1&k=6&m=177130309&s=612x612&w=0&h=VP3U0AM5j0fvQqOwuI5f7cmb2Ji88mVep0eoXQaJRfs=.jpg,caracter_invalido_ntfs
+train,Apple leaf,leaves-isolated-on-white-background-picture-id537925565?k=6&m=537925565&s=612x612&w=0&h=Ogzc4YHTI4i4q9aiTIG6Zq2sAMv6xTKiDlCmYANlzK8=.jpg,leaves-isolated-on-white-background-picture-id537925565_k=6&m=537925565&s=612x612&w=0&h=Ogzc4YHTI4i4q9aiTIG6Zq2sAMv6xTKiDlCmYANlzK8=.jpg,caracter_invalido_ntfs
+train,Apple leaf,ripe-red-apple-with-green-leaf-isolated-on-white-picture-id184640296?s=612x612.jpg,ripe-red-apple-with-green-leaf-isolated-on-white-picture-id184640296_s=612x612.jpg,caracter_invalido_ntfs
+train,Apple leaf,ripe-red-apple-with-leaf-picture-id117485645?b=1&k=6&m=117485645&s=612x612&w=0&h=Ii96HYzF-2E5ky-IcXbVhvEFvU28o0rlkwagb7T6LhY=.jpg,ripe-red-apple-with-leaf-picture-id117485645_b=1&k=6&m=117485645&s=612x612&w=0&h=Ii96HYzF-2E5ky-IcXbVhvEFvU28o0rlkwagb7T6LhY=.jpg,caracter_invalido_ntfs
+train,Apple rust leaf,apple-leaf-rust-and-cedar-apple-roestella-pirata-report-of-the-of-picture-id629456105?s=612x612.jpg,apple-leaf-rust-and-cedar-apple-roestella-pirata-report-of-the-of-picture-id629456105_s=612x612.jpg,caracter_invalido_ntfs
+train,Apple rust leaf,cedar_apple_rust_3.JPG?1362772840.jpg,cedar_apple_rust_3.JPG_1362772840.jpg,caracter_invalido_ntfs
+train,Bell_pepper leaf spot,IMG_6029-001_1500x1500%253E.JPG?1403119544.jpg,IMG_6029-001_1500x1500%253E.JPG_1403119544.jpg,caracter_invalido_ntfs
+train,Bell_pepper leaf spot,file.php?id=5336&t=1.jpg,file.php_id=5336&t=1.jpg,caracter_invalido_ntfs
+train,Bell_pepper leaf spot,image_1500x1500%253E.jpeg?1467983528.jpg,image_1500x1500%253E.jpeg_1467983528.jpg,caracter_invalido_ntfs
+train,Bell_pepper leaf spot,image_1500x1500%253E.jpeg?1472603885.jpg,image_1500x1500%253E.jpeg_1472603885.jpg,caracter_invalido_ntfs
+train,Bell_pepper leaf spot,image_300x300%2523.jpeg?1472603885.jpg,image_300x300%2523.jpeg_1472603885.jpg,caracter_invalido_ntfs
+train,Bell_pepper leaf spot,image_300x300%2523.jpeg?1472603886.jpg,image_300x300%2523.jpeg_1472603886.jpg,caracter_invalido_ntfs
+train,Bell_pepper leaf spot,image_original.jpeg?1472603885.jpg,image_original.jpeg_1472603885.jpg,caracter_invalido_ntfs
+train,Bell_pepper leaf spot,image_original.jpeg?1472603886.jpg,image_original.jpeg_1472603886.jpg,caracter_invalido_ntfs
+train,Bell_pepper leaf,DSCN5835_original.JPG?1472909566.jpg,DSCN5835_original.JPG_1472909566.jpg,caracter_invalido_ntfs
+train,Bell_pepper leaf,IMG_3891.JPG?1492073147.jpg,IMG_3891.JPG_1492073147.jpg,caracter_invalido_ntfs
+train,Bell_pepper leaf,file.php?id=18598&t=1.jpg,file.php_id=18598&t=1.jpg,caracter_invalido_ntfs
+train,Bell_pepper leaf,image_1500x1500%253E.jpeg?1472959493.jpg,image_1500x1500%253E.jpeg_1472959493.jpg,caracter_invalido_ntfs
+train,Blueberry leaf,Blueberry_Damage_1_original.JPG?1472642168.jpg,Blueberry_Damage_1_original.JPG_1472642168.jpg,caracter_invalido_ntfs
+train,Blueberry leaf,Blueberry_Damage_2_original.JPG?1431126657.jpg,Blueberry_Damage_2_original.JPG_1431126657.jpg,caracter_invalido_ntfs
+train,Blueberry leaf,IMG_0002_original.JPG?1500100269.jpg,IMG_0002_original.JPG_1500100269.jpg,caracter_invalido_ntfs
+train,Blueberry leaf,IMG_0017_original.JPG?1500100270.jpg,IMG_0017_original.JPG_1500100270.jpg,caracter_invalido_ntfs
+train,Blueberry leaf,image_1500x1500%253E.jpeg?1472756546.jpg,image_1500x1500%253E.jpeg_1472756546.jpg,caracter_invalido_ntfs
+train,Blueberry leaf,image_1500x1500%253E.jpeg?1472756548.jpg,image_1500x1500%253E.jpeg_1472756548.jpg,caracter_invalido_ntfs
+train,Cherry leaf,IMG_5892_original.JPG?1500348823.jpg,IMG_5892_original.JPG_1500348823.jpg,caracter_invalido_ntfs
+train,Corn Gray leaf spot,7176752.jpeg?351.jpg,7176752.jpeg_351.jpg,caracter_invalido_ntfs
+train,Corn Gray leaf spot,GetFile.aspx?guid=fb78e057-33b3-4901-b836-e08e45889f6f.jpg,GetFile.aspx_guid=fb78e057-33b3-4901-b836-e08e45889f6f.jpg,caracter_invalido_ntfs
+train,Corn Gray leaf spot,IMG_0004.JPG?itok=tv_vWPMi.jpg,IMG_0004.JPG_itok=tv_vWPMi.jpg,caracter_invalido_ntfs
+train,Corn leaf blight,2159_0.jpeg?itok=eBFRbolm.jpg,2159_0.jpeg_itok=eBFRbolm.jpg,caracter_invalido_ntfs
+train,Corn leaf blight,Southern-Corn-Leaf-Blight-USDA.ashx?w=770.jpg,Southern-Corn-Leaf-Blight-USDA.ashx_w=770.jpg,caracter_invalido_ntfs
+train,Corn leaf blight,image_1500x1500%253E.jpeg?1473988930.jpg,image_1500x1500%253E.jpeg_1473988930.jpg,caracter_invalido_ntfs
+train,Corn leaf blight,image_1500x1500%253E.jpeg?1473988931.jpg,image_1500x1500%253E.jpeg_1473988931.jpg,caracter_invalido_ntfs
+train,Corn leaf blight,show_picture.asp?id=aaaaaaaaaanoroz&w=524.jpg,show_picture.asp_id=aaaaaaaaaanoroz&w=524.jpg,caracter_invalido_ntfs
+train,Corn rust leaf,GetStoredImage?symbolicName=originalX19261YsiteXDTNYcatalogXcatalog%20&category=CMS.jpg,GetStoredImage_symbolicName=originalX19261YsiteXDTNYcatalogXcatalog%20&category=CMS.jpg,caracter_invalido_ntfs
+train,Corn rust leaf,Southern%20corn%20rust.ashx?w=600.jpg,Southern%20corn%20rust.ashx_w=600.jpg,caracter_invalido_ntfs
+train,Corn rust leaf,Southern-Corn-Rust.ashx?w=770.jpg,Southern-Corn-Rust.ashx_w=770.jpg,caracter_invalido_ntfs
+train,Corn rust leaf,corn-southern-rust-pustules.JPG?itok=VXIzyv8m.jpg,corn-southern-rust-pustules.JPG_itok=VXIzyv8m.jpg,caracter_invalido_ntfs
+train,Peach leaf,image_original.jpeg?1473123508.jpg,image_original.jpeg_1473123508.jpg,caracter_invalido_ntfs
+train,Potato leaf early blight,1421_0.jpeg?itok=FMtmgePj.jpg,1421_0.jpeg_itok=FMtmgePj.jpg,caracter_invalido_ntfs
+train,Potato leaf early blight,Early%20Blight%20-%20Potatoes.ashx?w=350.jpg,Early%20Blight%20-%20Potatoes.ashx_w=350.jpg,caracter_invalido_ntfs
+train,Raspberry leaf,IMG_7182_original.JPG?1493665266.jpg,IMG_7182_original.JPG_1493665266.jpg,caracter_invalido_ntfs
+train,Soyabean leaf,SOYBEANS_2_1500x1500%253E.JPG?1474027789.jpg,SOYBEANS_2_1500x1500%253E.JPG_1474027789.jpg,caracter_invalido_ntfs
+train,Soyabean leaf,close-up-shot-of-soy-leaves-glistening-in-the-sunshine-picture-id157639700?s=612x612.jpg,close-up-shot-of-soy-leaves-glistening-in-the-sunshine-picture-id157639700_s=612x612.jpg,caracter_invalido_ntfs
+train,Soyabean leaf,soybean-leaf-picture-id136581201?s=612x612.jpg,soybean-leaf-picture-id136581201_s=612x612.jpg,caracter_invalido_ntfs
+train,Squash Powdery mildew leaf,1846.400x400_4.jpeg?itok=845CLslG.jpg,1846.400x400_4.jpeg_itok=845CLslG.jpg,caracter_invalido_ntfs
+train,Squash Powdery mildew leaf,file.php?id=16321&t=1.jpg,file.php_id=16321&t=1.jpg,caracter_invalido_ntfs
+train,Strawberry leaf,green-strawberry-leaf-isolated-on-white-picture-id623362994?k=6&m=623362994&s=612x612&w=0&h=l350NQvVUUsLkRD1jOeEDnUledIWPjFXi86jd_Uv0OE=.jpg,green-strawberry-leaf-isolated-on-white-picture-id623362994_k=6&m=623362994&s=612x612&w=0&h=l350NQvVUUsLkRD1jOeEDnUledIWPjFXi86jd_Uv0OE=.jpg,caracter_invalido_ntfs
+train,Strawberry leaf,green-strawberry-leaf-isolated-on-white-picture-id654400974?k=6&m=654400974&s=612x612&w=0&h=x97U-8miyZxfXvAUVMbPGGj6_Lt-p35dVXiu1zuBt-Q=.jpg,green-strawberry-leaf-isolated-on-white-picture-id654400974_k=6&m=654400974&s=612x612&w=0&h=x97U-8miyZxfXvAUVMbPGGj6_Lt-p35dVXiu1zuBt-Q=.jpg,caracter_invalido_ntfs
+train,Strawberry leaf,green-strawberry-leaf-isolated-on-white-picture-id692328988?k=6&m=692328988&s=612x612&w=0&h=604VCrDe3mbN0c6LZZSBBvm4iMdWh1wcb3KHDX6CVRE=.jpg,green-strawberry-leaf-isolated-on-white-picture-id692328988_k=6&m=692328988&s=612x612&w=0&h=604VCrDe3mbN0c6LZZSBBvm4iMdWh1wcb3KHDX6CVRE=.jpg,caracter_invalido_ntfs
+train,Strawberry leaf,strawberry-leaf-isolated-on-white-background-picture-id487562700?k=6&m=487562700&s=612x612&w=0&h=uJYH7WuQOtfgoSp4EKzGuRPXoejL470Pkh_zMoIJYEs=.jpg,strawberry-leaf-isolated-on-white-background-picture-id487562700_k=6&m=487562700&s=612x612&w=0&h=uJYH7WuQOtfgoSp4EKzGuRPXoejL47_f6120d40.jpg,ruta_demasiado_larga
+train,Tomato Early blight leaf,1058_0.jpeg?itok=OQkdtxgv.jpg,1058_0.jpeg_itok=OQkdtxgv.jpg,caracter_invalido_ntfs
+train,Tomato Early blight leaf,Early_blight_1.jpg?1376579808.jpg,Early_blight_1.jpg_1376579808.jpg,caracter_invalido_ntfs
+train,Tomato Early blight leaf,early%20blight%20%283%29.jpg?itok=UMYWI0xr.jpg,early%20blight%20%283%29.jpg_itok=UMYWI0xr.jpg,caracter_invalido_ntfs
+train,Tomato Early blight leaf,early%20blight%20%284%29.jpg?itok=gfK5C193.jpg,early%20blight%20%284%29.jpg_itok=gfK5C193.jpg,caracter_invalido_ntfs
+train,Tomato Septoria leaf spot,IMG_4452_1500x1500%253E.JPG?1407883119.jpg,IMG_4452_1500x1500%253E.JPG_1407883119.jpg,caracter_invalido_ntfs
+train,Tomato Septoria leaf spot,TomatoDisease_IMG_2744_2016Jul01_original.JPG?1472858324.jpg,TomatoDisease_IMG_2744_2016Jul01_original.JPG_1472858324.jpg,caracter_invalido_ntfs
+train,Tomato leaf bacterial spot,250?cb=20100819110637.jpg,250_cb=20100819110637.jpg,caracter_invalido_ntfs
+train,Tomato leaf bacterial spot,Tomato2_original.JPG?1472597932.jpg,Tomato2_original.JPG_1472597932.jpg,caracter_invalido_ntfs
+train,Tomato leaf bacterial spot,image3_original.JPG?1472755422.jpg,image3_original.JPG_1472755422.jpg,caracter_invalido_ntfs
+train,Tomato leaf bacterial spot,image5_300x300%2523.JPG?1472755422.jpg,image5_300x300%2523.JPG_1472755422.jpg,caracter_invalido_ntfs
+train,Tomato leaf bacterial spot,latest?cb=20100808132744.jpg,latest_cb=20100808132744.jpg,caracter_invalido_ntfs
+train,Tomato leaf late blight,tomato-late-blight-sporulation-on-a-tomato-leaflet-picture-id81781370?s=612x612.jpg,tomato-late-blight-sporulation-on-a-tomato-leaflet-picture-id81781370_s=612x612.jpg,caracter_invalido_ntfs
+train,Tomato leaf yellow virus,latest?cb=20100719124603.jpg,latest_cb=20100719124603.jpg,caracter_invalido_ntfs
+train,Tomato leaf,single-a-green-leaf-of-tomato-picture-id496662675?k=6&m=496662675&s=612x612&w=0&h=6zKfv022H_9cLQSIR_kpcOAlTeg1eIVtLBbc80PQA7Y=.jpg,single-a-green-leaf-of-tomato-picture-id496662675_k=6&m=496662675&s=612x612&w=0&h=6zKfv022H_9cLQSIR_kpcOAlTeg1eIVtLBbc80PQA7Y=.jpg,caracter_invalido_ntfs
+train,Tomato mold leaf,ArticleImage.aspx?imgid=4987.jpg,ArticleImage.aspx_imgid=4987.jpg,caracter_invalido_ntfs
+train,Tomato mold leaf,black%20leaf%20mold%20%283%29.JPG?itok=u5TDHCSM.jpg,black%20leaf%20mold%20%283%29.JPG_itok=u5TDHCSM.jpg,caracter_invalido_ntfs
+train,Tomato mold leaf,black%20leaf%20mold%20%284%29.JPG?itok=DIIUw9JU.jpg,black%20leaf%20mold%20%284%29.JPG_itok=DIIUw9JU.jpg,caracter_invalido_ntfs
+train,Tomato mold leaf,latest?cb=20100723105221.jpg,latest_cb=20100723105221.jpg,caracter_invalido_ntfs
+train,Tomato mold leaf,tomato-leaf-mold-infection-on-a-leaf-top-and-underside-picture-id81781575?s=612x612.jpg,tomato-leaf-mold-infection-on-a-leaf-top-and-underside-picture-id81781575_s=612x612.jpg,caracter_invalido_ntfs
+train,Tomato mold leaf,tomato_plants_1_original.JPG?1407178095.jpg,tomato_plants_1_original.JPG_1407178095.jpg,caracter_invalido_ntfs
+train,grape leaf black rot,IMG_0830_original.JPG?1472588083.jpg,IMG_0830_original.JPG_1472588083.jpg,caracter_invalido_ntfs
+train,grape leaf black rot,black%20spot%20%2819%29.JPG?itok=mf4II8zq.jpg,black%20spot%20%2819%29.JPG_itok=mf4II8zq.jpg,caracter_invalido_ntfs
+train,grape leaf black rot,image_original.jpeg?1495058317.jpg,image_original.jpeg_1495058317.jpg,caracter_invalido_ntfs
+train,grape leaf black rot,image_original.jpeg?1495058318.jpg,image_original.jpeg_1495058318.jpg,caracter_invalido_ntfs
+train,grape leaf,grape-leaf-isolated-cut-out-on-white-background-picture-id172320164?s=612x612.jpg,grape-leaf-isolated-cut-out-on-white-background-picture-id172320164_s=612x612.jpg,caracter_invalido_ntfs
+train,grape leaf,grape-leaves-picture-id108483523?k=6&m=108483523&s=612x612&w=0&h=hBDI-YPeBffgjjZzbHsAaCfARsflsveT1NbcncLft5Y=.jpg,grape-leaves-picture-id108483523_k=6&m=108483523&s=612x612&w=0&h=hBDI-YPeBffgjjZzbHsAaCfARsflsveT1NbcncLft5Y=.jpg,caracter_invalido_ntfs
+train,grape leaf,young-fresh-grape-leaf-picture-id183867740?k=6&m=183867740&s=612x612&w=0&h=Q8_s3Yw7p_VKQjda-mZPl9rN4lDmpVjjbMUk95HtVFk=.jpg,young-fresh-grape-leaf-picture-id183867740_k=6&m=183867740&s=612x612&w=0&h=Q8_s3Yw7p_VKQjda-mZPl9rN4lDmpVjjbMUk95HtVFk=.jpg,caracter_invalido_ntfs
+train,Apple leaf,apple-tree-branch-blossom-plant-fruit-berry-leaf-flower-food-green-produce-evergreen-flora-sad-shrub-apples-branch-with-apples-flowering-plant-rose-family-acerola-malpighia-woody-plant-land-plant-928225.jpg,apple-tree-branch-blossom-plant-fruit-berry-leaf-flower-food-green-produce-evergreen-flora-sad-shrub-apples-branch-with-apples-_10bb2a36.jpg,ruta_demasiado_larga
+train,Blueberry leaf,plant-fruit-berry-leaf-flower-food-herb-produce-blueberry-botany-flora-plants-wildflower-shrub-macro-photography-wipes-flowering-plant-bilberry-huckleberry-dayflower-land-plant-dayflower-family-1090218.jpg,plant-fruit-berry-leaf-flower-food-herb-produce-blueberry-botany-flora-plants-wildflower-shrub-macro-photography-wipes-flowerin_9ec818b0.jpg,ruta_demasiado_larga
+train,Cherry leaf,tree-branch-blossom-plant-fruit-berry-leaf-flower-ripe-food-red-produce-botany-flora-leaves-shrub-fruits-bing-cherry-cherries-flowering-plant-rose-family-fruity-cherry-harvest-sweet-cherry-land-plant-913933.jpg,tree-branch-blossom-plant-fruit-berry-leaf-flower-ripe-food-red-produce-botany-flora-leaves-shrub-fruits-bing-cherry-cherries-f_8bdf3011.jpg,ruta_demasiado_larga
+train,Squash Powdery mildew leaf,powdery-mildew-on-squash-plants-you-can-prevent-powdery-mildew-disease-by-avoiding-overhead-sprinkling-and-watering-in-the-morning-rather-than-evening-forum-news-service-file-photo-what-causes-powdery.jpg,powdery-mildew-on-squash-plants-you-can-prevent-powdery-mildew-disease-by-avoiding-overhead-sprinkling-and-watering-in-the-morn_dc14faad.jpg,ruta_demasiado_larga
+train,Squash Powdery mildew leaf,what-is-powdery-mildew-on-plants-mild-powdery-mildew-that-will-appear-on-most-squash-leaves-during-the-mid-summer-powdery-mildew-plant-spray-powdery-mildew-on-tomato-plant-leaves.jpg,what-is-powdery-mildew-on-plants-mild-powdery-mildew-that-will-appear-on-most-squash-leaves-during-the-mid-summer-powdery-milde_e8f07657.jpg,ruta_demasiado_larga
+train,Strawberry leaf,strawberry-plant-leaves-the-distorted-wrinkled-leaves-are-showing-signs-of-cold-damage-the-older-and-younger-leaves-around-them-are-normal-looking-strawberry-plant-leaves-turn-red.jpg,strawberry-plant-leaves-the-distorted-wrinkled-leaves-are-showing-signs-of-cold-damage-the-older-and-younger-leaves-around-them_8f529043.jpg,ruta_demasiado_larga
+train,Tomato leaf yellow virus,leaves-on-tomato-plant-turning-yellow-what-does-it-mean-when-your-plant-leaves-turn-yellow-tomato-leaf-problems-a-guide-to-leaves-tomato-plant-turning-yellow.jpg,leaves-on-tomato-plant-turning-yellow-what-does-it-mean-when-your-plant-leaves-turn-yellow-tomato-leaf-problems-a-guide-to-leav_f6908667.jpg,ruta_demasiado_larga
+train,grape leaf,nature-plant-grape-vine-wine-fruit-food-green-produce-agriculture-grapevine-vines-shrub-grapes-winegrowing-rebstock-flowering-plant-vitis-grape-leaves-green-grapes-swiss-francs-land-plant-grapevine-family-556232.jpg,nature-plant-grape-vine-wine-fruit-food-green-produce-agriculture-grapevine-vines-shrub-grapes-winegrowing-rebstock-flowering-p_0e411760.jpg,ruta_demasiado_larga
+train,Apple rust leaf,CAR1.jpg,CAR1__colision_mayusc.jpg,colision_mayusculas_ntfs
+train,Blueberry leaf,Blueberry-Leaf.jpg,Blueberry-Leaf__colision_mayusc.jpg,colision_mayusculas_ntfs
+train,Blueberry leaf,Blueberry-leaves.jpg,Blueberry-leaves__colision_mayusc.jpg,colision_mayusculas_ntfs
+train,Corn leaf blight,Northern-Corn-Leaf-Blight.jpg,Northern-Corn-Leaf-Blight__colision_mayusc.jpg,colision_mayusculas_ntfs
+train,Peach leaf,Peach-Leaf.jpg,Peach-Leaf__colision_mayusc.jpg,colision_mayusculas_ntfs
+train,Potato leaf early blight,potato-blight-phytophora-infestans-close-up-of-infected-leaf-showing-A60HXN.jpg,potato-blight-phytophora-infestans-close-up-of-infected-leaf-showing-A60HXN__colision_mayusc.jpg,colision_mayusculas_ntfs

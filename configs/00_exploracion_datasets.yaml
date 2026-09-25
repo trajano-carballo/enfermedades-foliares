@@ -1,0 +1,26 @@
+# Config de notebooks/00_exploracion_datasets.ipynb (sesión 2, etapa 0 — exploratorio,
+# nada congelado). Fija los parámetros para que el inventario sea reproducible.
+
+semilla: 20260925  # para el muestreo aleatorio de imágenes de QA visual
+
+rutas:
+  plantvillage_color: data/raw/plantvillage/raw/color
+  plantvillage_segmented: data/raw/plantvillage/raw/segmented
+  plantvillage_leaf_map: data/raw/plantvillage/leaf-map.json
+  plantdoc_train: data/raw/plantdoc/train
+  plantdoc_test: data/raw/plantdoc/test
+
+commits_fijados:
+  plantvillage: 7f7ecc7e1eaca78107e3affe7cb5abd9427e139a
+  plantdoc: 5467f6012d78d1c446145d5f582da6096f852ae8
+
+integridad:
+  tolerancia_escala_de_grises: 4  # diferencia máxima entre canales RGB para marcar sospecha
+
+duplicados:
+  algoritmo_hash: phash
+  umbral_distancia_reporte: 6   # par "sospechoso" (~91% de similitud en el hash perceptual)
+  umbral_distancia_exploratorio: 10  # solo para ver cómo crece el conteo, no como hallazgo
+
+particion_ilustrativa_no_congelada:
+  proporcion_train: 0.75
