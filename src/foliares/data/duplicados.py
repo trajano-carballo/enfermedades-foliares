@@ -45,3 +45,48 @@ def pares_sospechosos(
                 pares.append((ra, rb, dist))
     pares.sort(key=lambda t: t[2])
     return pares
+
+
+# --- Sesión 3: comparación vectorizada y con las 8 variantes (4 rotaciones x espejado) ---
+import numpy as np  # noqa: E402
+
+_POPCOUNT = np.array([bin(i).count("1") for i in range(256)], dtype=np.uint8)
+
+
+def hash_a_uint64(h: imagehash.ImageHash) -> np.uint64:
+    bits = h.hash.flatten()
+    return np.uint64(int("".join("1" if b else "0" for b in bits), 2))
+
+
+def variantes_d4(img: Image.Image) -> list[Image.Image]:
+    """Las 8 variantes del grupo diedral: 4 rotaciones x {identidad, espejado horizontal}."""
+    out = []
+    for base in (img, img.transpose(Image.FLIP_LEFT_RIGHT)):
+        for k in range(4):
+            out.append(base.rotate(90 * k, expand=True) if k else base)
+    return out
+
+
+def hashes_uint64(rutas: list[Path], con_variantes: bool = False):
+    """Devuelve (rutas_ok, array uint64 de shape (n,) o (n, 8))."""
+    ok, filas = [], []
+    for r in rutas:
+        try:
+            with Image.open(r) as img:
+                img = img.convert("RGB")
+                vs = variantes_d4(img) if con_variantes else [img]
+                filas.append([hash_a_uint64(imagehash.phash(v)) for v in vs])
+                ok.append(r)
+        except Exception:  # noqa: BLE001
+            continue
+    a = np.array(filas, dtype=np.uint64)
+    return ok, (a if con_variantes else a[:, 0])
+
+
+def hamming_matriz(a: np.ndarray, b: np.ndarray) -> np.ndarray:
+    """Distancia de Hamming entre cada elemento de `a` (n,) y de `b` (m,) -> (n, m) uint8."""
+    out = np.empty((len(a), len(b)), dtype=np.uint8)
+    for i, x in enumerate(a):
+        xor = np.bitwise_xor(b, x)
+        out[i] = _POPCOUNT[xor.view(np.uint8).reshape(-1, 8)].sum(axis=1)
+    return out

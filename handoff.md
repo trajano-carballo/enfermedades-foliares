@@ -2,6 +2,42 @@
 
 > Se actualiza al cierre de cada sesión de trabajo. Lo más reciente arriba.
 
+## 2026-10-01 — Sesión 3: chequeos previos a las decisiones (sin entrenar nada)
+
+**Hecho** (detalle y tablas en `docs/exploracion_sesion3.md`; notebook `notebooks/00b_chequeos_previos.ipynb`)
+- Verificado que CLAUDE.md y README.md ya decían "solo CAM, sin Grad-CAM"; en este archivo se
+  marcaron como obsoletas dos menciones viejas de Grad-CAM (sesión 1). Hashes de ambos datasets OK.
+- Grupos de hoja (PlantVillage): tomate 11.411/18.160 con grupo (coincide con el loader). Sin grupo =
+  sesiones enteras (YLCV Lab, Target_Spot por prefijo de CSV distinto, mosaic sin CSV, parte de Late
+  blight/Septoria/healthy). Numeración contigua: no viable (bloque de 1.046 con t=10).
+- Casi-duplicados: **PlantDoc oficial tiene 6 pares train↔test y 25 train↔train**; uno train↔test con
+  etiquetas contradictorias (papa early vs late blight). PlantVillage↔PlantDoc con 8 variantes: sin
+  duplicados reales; `TomatoLateBlightTop.jpg` no es la misma foto.
+- Muestras visuales (semilla 42) y estadísticas de resolución: las clases "X leaf" de PlantDoc son
+  heterogéneas y con ruido de etiqueta; PlantVillage es 256×256 fijo contra miles de resoluciones.
+- Nuevo código: `src/foliares/data/grupos_hoja.py`, `visual.py`, y funciones de hashing con 8
+  variantes en `duplicados.py`. Config `configs/00b_chequeos_previos.yaml`. Figuras en `docs/figuras_sesion3/`.
+- `docs/mapeo_clases.md`: agregada la evidencia del paper para las clases "X leaf" como propuesta
+  pendiente de verificación (NO cerrada). Aviso: solo pude confirmar en el abstract "13 especies / 17
+  clases de enfermedad / 2.598 imágenes"; el "27 = 17 + 10" viene del equipo, y el árbol local tiene
+  28 carpetas (18 + 10) y 2.578 imágenes.
+- Registrado en `accesos_test.md` (n=45 imágenes de test vistas + estadísticas de cabecera).
+- No se escribió nada en `data/splits/`; no hay modelos ni métricas.
+
+**Próximos pasos**
+1. Reunión con el docente con `docs/exploracion_sesion3.md` + `docs/mapeo_clases.md`.
+2. Con las decisiones: mapeo definitivo, deduplicado/partición de PlantDoc, regla de agrupamiento por hoja, y recién ahí congelar `data/splits/`.
+3. Pendientes viejos: entorno y `requirements.txt`, dónde viven los datasets (disco local casi lleno: 1,6 GB libres al cierre).
+
+**Decisiones pendientes del equipo** (opciones con costo en `docs/exploracion_sesion3.md`, "Decisiones que quedan")
+- Cómo agrupar PlantVillage (solo con grupo / sesión como bloque / reglas nuevas para recuperar grupos).
+- Duplicados de PlantDoc (quitar y deduplicar / partición propia agrupada por hash / split oficial reportando la fuga).
+- Las clases "X leaf" (sana vs. sin diagnóstico), las 5 ambigüedades previas, pimiento sí/no, split de PlantDoc, priorización por plazos.
+
+**Riesgos abiertos**
+- Disco local: 1,6 GB libres. Las figuras (7,5 MB) y el notebook (~200 KB) son chicos, pero no hay margen para más datos.
+- El hash perceptual (64 bits) da muchos falsos positivos con hojas aisladas; no detecta recortes fuertes.
+
 ## 2026-09-25 — Sesión 2: exploración de datasets (inventario, sin entrenar nada)
 
 **Hecho**
@@ -81,9 +117,9 @@
 - Priorización por plazos (pedido docente). Propuesta de corte a discutir:
   - *Imprescindible*: modelo base, brecha con bootstrap, matrices de confusión, CAM,
     una intervención, calibración + abstención, app Gradio.
-  - *Si hay tiempo*: segunda intervención, combinación de ambas, Grad-CAM comparado.
+  - *Si hay tiempo*: segunda intervención, combinación de ambas. (Grad-CAM comparado: descartado en la sesión 2, solo CAM.)
   - *Solo si todo lo anterior está*: backbone de contingencia (ResNet-18/EfficientNet-B0).
-- Tamaño de la muestra fija para Grad-CAM.
+- ~~Tamaño de la muestra fija para Grad-CAM~~ (obsoleto: Grad-CAM descartado; solo CAM).
 
 **Riesgos abiertos**
 - Ninguno nuevo.

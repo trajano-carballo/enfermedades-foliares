@@ -1,0 +1,25 @@
+# Config de notebooks/00b_chequeos_previos.ipynb (sesión 3, etapa 0 — exploratorio, nada congelado).
+semilla_muestras: 42   # random.Random(42), sorted() de rutas antes de muestrear, orden de llamadas fijo
+rutas:
+  pv_color: data/raw/plantvillage/raw/color
+  pv_filtered_leafmaps: data/raw/plantvillage/leaf_grouping/filtered_leafmaps
+  pv_leaf_map: data/raw/plantvillage/leaf_grouping/leaf-map.json
+  pd_train: data/raw/plantdoc/train
+  pd_test: data/raw/plantdoc/test
+  pd_renombrados: docs/bitacora/plantdoc_archivos_renombrados.csv
+commits_fijados:
+  plantvillage: 7f7ecc7e1eaca78107e3affe7cb5abd9427e139a
+  plantdoc: 5467f6012d78d1c446145d5f582da6096f852ae8
+contiguidad_tolerancias: [1, 2, 3, 5, 10]
+duplicados:
+  algoritmo: phash
+  umbral_estricto: 6
+  umbral_exploratorio: 10
+  pares_en_grilla: 12
+muestras:
+  pd_sanas_train: 24
+  pd_enfermedad_train: 12
+  pv_por_clase: 8
+  pv_por_sesion: 4
+  pd_test_por_clase: 3
+salida_figuras: docs/figuras_sesion3
