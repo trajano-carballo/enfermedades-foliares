@@ -45,6 +45,25 @@ Fuente de los conteos:
    PlantVillage, que sí tiene curación experta). El equipo tiene que decidir si la trata como
    equivalente de `Tomato___healthy` o si la excluye por incertidumbre de etiqueta.
 
+**Propuesta, pendiente de verificación visual (3a) — NO cerrada. Evidencia para `Tomato leaf`,
+`Bell_pepper leaf` y `Apple leaf`:**
+
+- *Evidencia textual (según lo aportado por el equipo; no verificada por nosotros contra el paper
+  completo):* el paper de PlantDoc (Singh et al.) declara 27 clases = 17 de enfermedad + 10 sanas, y
+  las 10 clases "X leaf" sin calificador son exactamente esas 10 (`Apple leaf`, `Bell_pepper leaf`,
+  `Blueberry leaf`, `Cherry leaf`, `Peach leaf`, `Raspberry leaf`, `Soyabean leaf`, `Strawberry leaf`,
+  `Tomato leaf`, `grape leaf`). Lo que sí se pudo confirmar en el abstract (arXiv 1911.10317): 13
+  especies, "up to 17 classes of diseases", 2.598 imágenes. **Discrepancias con el árbol del commit
+  fijado:** tiene 28 carpetas (no 27), o sea 18 de enfermedad + 10 "X leaf" (no 17 + 10), y 2.578
+  imágenes (no 2.598).
+- *Evidencia visual (3a, sesión 3, 24 imágenes al azar de train, semilla 42):* son imágenes "sin
+  diagnóstico de enfermedad", pero heterogéneas y distintas de `*___healthy` de PlantVillage (plantas
+  enteras, frutos, stock photos; en `Tomato leaf`, rótulos de archivo como `Bacterial-leafspot…` y
+  `late_blight_tomato_lea…` y una hoja de albahaca; en `Bell_pepper leaf`, pimienta negra/blanca). La
+  lectura "sana" es plausible por el paper pero hay **ruido de etiqueta visible**. Detalle en
+  `docs/exploracion_sesion3.md` §3a.
+- Estado: sigue siendo una propuesta; los puntos 3 y 5 de más abajo permanecen abiertos.
+
 ## Papa
 
 | PlantVillage (color) | n | PlantDoc | train | test |
@@ -108,6 +127,13 @@ y 2, 6 del punto 3) está en `docs/bitacora/plantdoc_archivos_renombrados.csv`. 
 de esta tabla (arriba) son los oficiales del árbol de git, no los del disco local, así que
 no están afectados por ninguno de estos tres problemas. El detalle completo está en
 `docs/exploracion_datasets.md` §2.
+
+## Evidencia adicional de la sesión 3 (no cierra nada)
+
+- `Tomato___Target_Spot` y `Tomato___Tomato_mosaic_virus` no tienen grupo de hoja (ver
+  `docs/exploracion_sesion3.md` §1); Target_Spot además no tiene par en PlantDoc.
+- El split oficial de PlantDoc tiene 6 pares train↔test duplicados en las clases candidatas, uno de
+  ellos con etiquetas contradictorias (papa early vs. late blight): ver §2a del mismo documento.
 
 ## Próximo paso
 

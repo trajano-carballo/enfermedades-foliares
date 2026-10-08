@@ -1,0 +1,17 @@
+# Rutas del proyecto. Nada absoluto: el equipo trabaja en dos máquinas (y en Colab).
+# DATA_ROOT se puede sobreescribir con la variable de entorno DATA_ROOT
+# (p. ej. en Colab: DATA_ROOT=/content/drive/MyDrive/foliares_datos).
+# Una ruta relativa se resuelve contra la raíz del repo.
+DATA_ROOT: data
+
+# Subcarpetas de DATA_ROOT (datos NO versionados).
+raw: raw
+interim: interim
+processed: processed
+
+# Datasets dentro de DATA_ROOT/raw (clones fijados en los commits de configs/*.yaml).
+plantvillage: raw/plantvillage
+plantdoc: raw/plantdoc
+
+# Las particiones congeladas SÍ se versionan: viven en el repo, no bajo DATA_ROOT.
+SPLITS_DIR: data/splits

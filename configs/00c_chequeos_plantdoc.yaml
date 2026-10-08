@@ -1,0 +1,27 @@
+# Config de notebooks/00c_chequeos_plantdoc.ipynb (sesión 4). Sin modelos, sin métricas.
+# Rutas: configs/paths.yaml. Nada se escribe en data/splits/.
+commit_plantdoc: 5467f6012d78d1c446145d5f582da6096f852ae8
+renombrados_csv: docs/bitacora/plantdoc_archivos_renombrados.csv
+duplicados:
+  algoritmo: phash                   # 64 bits, 8 variantes (4 rotaciones x espejado)
+  umbral_estricto: 6
+  umbral_exploratorio: 10
+  cache_hashes: hashes_plantdoc_candidatas.npz   # en DATA_ROOT/interim
+regla_split_oficial:                 # fijada de antemano por el equipo (sesión 4)
+  min_test_por_clase: 5
+  min_dev_por_clase: 40
+clases_sin_test_para_la_regla: ["Tomato two spotted spider mites leaf"]   # 0 imágenes de test
+# Pares que a ojo NO parecen la misma foto (prefijos de nombre original, par a par).
+lectura_visual_no_duplicado:
+  - ["2643371-version", "LateBlight03.jpg"]
+lectura_visual_dudosos:
+  - ["LateBlight-Leaflet-Large-Spo", "Tomato-late-blight-leaf-Marg"]
+revision_etiquetas:
+  semilla: 42
+  clases: {TL: "Tomato leaf", BP: "Bell_pepper leaf"}
+  imagenes_por_hoja: 20
+  carpeta_hojas: revision_etiquetas              # en DATA_ROOT/interim
+  planilla: docs/bitacora/revision_etiquetas_planilla.csv
+salida_figuras: docs/figuras_sesion4
+salida_csv: docs/bitacora/plantdoc_duplicados.csv
+manifiesto_plantdoc: manifiesto_plantdoc.csv     # en DATA_ROOT/interim

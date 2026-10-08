@@ -101,3 +101,24 @@ CLASES_PLANTDOC_MAIZ = [
     "Corn leaf blight",
     "Corn rust leaf",
 ]
+
+
+# Par candidato PlantVillage -> carpeta de PlantDoc según docs/mapeo_clases.md (borrador, NO
+# cerrado). Sirve solo para la columna `clase_comun` del manifiesto ("tiene par en PlantDoc");
+# no implica decisión de inclusión: `Tomato leaf` y `Bell_pepper leaf` son ambiguas y
+# `Tomato two spotted spider mites leaf` tiene 2 imágenes en train y 0 en test.
+PAR_CANDIDATO_PLANTDOC = {
+    "Tomato___Bacterial_spot": "Tomato leaf bacterial spot",
+    "Tomato___Early_blight": "Tomato Early blight leaf",
+    "Tomato___Late_blight": "Tomato leaf late blight",
+    "Tomato___Leaf_Mold": "Tomato mold leaf",
+    "Tomato___Septoria_leaf_spot": "Tomato Septoria leaf spot",
+    "Tomato___Spider_mites Two-spotted_spider_mite": "Tomato two spotted spider mites leaf",
+    "Tomato___Tomato_Yellow_Leaf_Curl_Virus": "Tomato leaf yellow virus",
+    "Tomato___Tomato_mosaic_virus": "Tomato leaf mosaic virus",
+    "Tomato___healthy": "Tomato leaf",
+    "Potato___Early_blight": "Potato leaf early blight",
+    "Potato___Late_blight": "Potato leaf late blight",
+    "Pepper,_bell___Bacterial_spot": "Bell_pepper leaf spot",
+    "Pepper,_bell___healthy": "Bell_pepper leaf",
+}
