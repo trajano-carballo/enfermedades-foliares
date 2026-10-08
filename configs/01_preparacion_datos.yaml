@@ -1,0 +1,16 @@
+# Config de notebooks/01_preparacion_datos.ipynb (sesión 4). Candidato de particiones de
+# PlantVillage: NO congelado, NO se escribe en data/splits/. Rutas: configs/paths.yaml.
+semilla: 42
+commit_plantvillage: 7f7ecc7e1eaca78107e3affe7cb5abd9427e139a
+fracciones: [0.70, 0.15, 0.15]       # train / val / test, por hoja y por clase
+tope_train_por_clase: 1500           # muestreo estratificado por sesión
+clases_por_rango: ["Tomato___Tomato_mosaic_virus"]   # sin grupo: rangos contiguos con zona de descarte
+validacion_zona:
+  zonas: [10, 15, 20]                # se prueban en este orden; criterio fijado de antemano
+  criterio_max_prop_con_fuga: 0.01   # proporción AGREGADA de cortes con alguna hoja en dos tramos
+  n_cortes_por_unidad: 10000
+  frac_min_tramo: 0.05
+salida:
+  manifiesto: manifiesto_plantvillage.csv        # en DATA_ROOT/interim
+  candidato: particion_candidato_plantvillage.csv
+  validacion_por_unidad: validacion_zona_por_unidad.csv

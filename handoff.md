@@ -2,6 +2,39 @@
 
 > Se actualiza al cierre de cada sesión de trabajo. Lo más reciente arriba.
 
+## 2026-10-08 — Sesión 4: entorno, manifiesto de PlantVillage y chequeos de PlantDoc (sin modelos)
+
+**Hecho** (detalle y tablas en `docs/exploracion_sesion4.md`; notebooks `01_preparacion_datos.ipynb` y `00c_chequeos_plantdoc.ipynb`)
+- Entorno: `requirements.txt`, `pyproject.toml` (`pip install -e . --no-deps` hecho), `configs/paths.yaml` (`DATA_ROOT`, override por variable de entorno `DATA_ROOT`),
+  `src/foliares/utils/{paths,seeds}.py`. Los manifiestos guardan rutas relativas a `DATA_ROOT`. 23 tests pasan (`python -m pytest`).
+- Manifiesto PlantVillage (22.787 imágenes, 15 clases, `data/interim/manifiesto_plantvillage.csv`); par color/segmented completo salvo 1 par con nombre irregular.
+- Mosaic: zona de descarte validada con simulación (10 → 4,39 %, 15 → 1,77 %, 20 → 0,84 %); por la regla fijada de antemano el candidato usa **zona 20**.
+- Candidato de particiones PlantVillage en `data/interim/particion_candidato_plantvillage.csv` (train 14.648 / val 2.483 / test 2.446). **`data/splits/` sigue vacío.**
+- PlantDoc: duplicados entre todas las clases (phash, 8 variantes), CSV `docs/bitacora/plantdoc_duplicados.csv` con acción propuesta (no ejecutada),
+  `data/interim/manifiesto_plantdoc.csv` con columnas para ambas opciones de split, planilla y hojas de contacto de revisión de `Tomato leaf`/`Bell_pepper leaf`.
+- Registrado en `accesos_test.md` (12 imágenes de test miradas en grillas + 1 hoja de contacto; 16 generadas para revisión humana).
+
+**Hallazgo principal:** 12 de 102 imágenes de test de PlantDoc tienen gemelo en train; **6 con etiqueta contradictoria** (p. ej. mismo archivo en `train/Potato leaf early blight` y
+`test/Potato leaf late blight`). 29 grupos de duplicados con etiquetas contradictorias (60 imágenes) en total.
+
+**Qué quedó a medias / no verificado**
+- La revisión humana de etiquetas (dos revisores, por separado) no se hizo: es de personas.
+- La rama de torch de `fijar_semillas` no se probó (torch no instalado; disco local ~2,8 GB libres).
+- El candidato de PlantVillage no se congeló ni se copió a `data/splits/` (lo hace el equipo).
+- Colab ↔ repo sin decidir; los manifiestos de PlantDoc guardan nombre *local* (NTFS) para 101 archivos: en Linux hay que usar `nombre_original`/el mapeo.
+
+**Próximos pasos**
+1. El equipo decide con `docs/exploracion_sesion4.md` ("Opciones con su costo"): cuáles son las 12 clases; si los gemelos con etiqueta contradictoria cuentan como "defecto nuevo en el test";
+   criterio de la zona de mosaic; qué hacer con val/test sin sesiones sin grupo; tope por sesión; Colab↔repo.
+2. Dos integrantes completan `docs/bitacora/revision_etiquetas_planilla.csv` (hojas de contacto en `data/interim/revision_etiquetas/`, regenerables con el notebook 00c).
+3. Con las decisiones: congelar `data/splits/` (PlantVillage desde el candidato; PlantDoc según la opción elegida) y recién ahí empezar el modelo base.
+
+**Decisiones pendientes del equipo:** las del punto 1, más las que siguen de sesiones 2–3 (mapeo de ambigüedades, pimiento sí/no, split de PlantDoc, priorización por plazos).
+
+**Riesgos abiertos**
+- El criterio de la zona de mosaic es agregado; por tanda hay casos de 11 % (laboratorio). No se sabe a qué se parece mosaic (es un proxy).
+- Disco local ~2,8 GB libres; `data/interim/` pesa ~17 MB más las hojas de contacto (~12 MB).
+
 ## 2026-10-01 — Sesión 3: chequeos previos a las decisiones (sin entrenar nada)
 
 **Hecho** (detalle y tablas en `docs/exploracion_sesion3.md`; notebook `notebooks/00b_chequeos_previos.ipynb`)

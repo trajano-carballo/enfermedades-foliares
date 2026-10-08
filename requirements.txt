@@ -1,0 +1,19 @@
+# Dependencias del proyecto (cotas mínimas; no se fijan versiones exactas todavía).
+# Instalar:  pip install -r requirements.txt && pip install -e .
+# En Colab torch/torchvision ya vienen instalados: alcanza con instalar el resto.
+torch>=2.3
+torchvision>=0.18
+gradio>=4.0
+imagehash>=4.3
+scikit-learn>=1.4
+pyyaml>=6.0
+pandas>=2.0
+numpy>=1.26
+pillow>=10.0
+matplotlib>=3.8
+pytest>=8.0
+
+# Para ejecutar los notebooks desde la terminal (nbclient) y en el editor (ipykernel)
+ipykernel>=6.0
+nbformat>=5.9
+nbclient>=0.9
