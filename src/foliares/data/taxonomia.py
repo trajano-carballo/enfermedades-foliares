@@ -122,3 +122,17 @@ PAR_CANDIDATO_PLANTDOC = {
     "Pepper,_bell___Bacterial_spot": "Bell_pepper leaf spot",
     "Pepper,_bell___healthy": "Bell_pepper leaf",
 }
+
+
+# Decisión del equipo (2026-10-08): 12 clases de entrenamiento y evaluación = las 13 con par en
+# PlantDoc menos arañas. Fuera: Target Spot y Potato healthy (sin par) y arañas (0 imágenes de test).
+CLASE_PV_FUERA_DE_EVAL_CON_PAR = "Tomato___Spider_mites Two-spotted_spider_mite"
+CLASE_PD_FUERA_DE_EVAL = "Tomato two spotted spider mites leaf"
+
+
+def es_clase_eval_pv(clase: str) -> bool:
+    return clase in PAR_CANDIDATO_PLANTDOC and clase != CLASE_PV_FUERA_DE_EVAL_CON_PAR
+
+
+CLASES_EVAL_PV = [c for c in PAR_CANDIDATO_PLANTDOC if es_clase_eval_pv(c)]
+CLASES_EVAL_PD = [PAR_CANDIDATO_PLANTDOC[c] for c in CLASES_EVAL_PV]

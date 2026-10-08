@@ -12,12 +12,12 @@ from pathlib import Path
 import pandas as pd
 
 from foliares.data import grupos_hoja as gh
-from foliares.data.taxonomia import PAR_CANDIDATO_PLANTDOC, clases_plantvillage_de_cultivo
+from foliares.data.taxonomia import PAR_CANDIDATO_PLANTDOC, clases_plantvillage_de_cultivo, es_clase_eval_pv
 from foliares.utils.paths import Rutas
 
 SUFIJO_SEGMENTED = "_final_masked.jpg"
 SIN_SESION = "(sin_sesion)"
-COLUMNAS = ["ruta_color", "ruta_segmented", "segmented_existe", "segmented_irregular", "clase", "cultivo", "clase_comun",
+COLUMNAS = ["ruta_color", "ruta_segmented", "segmented_existe", "segmented_irregular", "clase", "cultivo", "clase_comun", "clase_eval",
             "clase_plantdoc_candidata", "sesion", "num", "leaf_id", "tiene_grupo", "uuid", "archivo"]
 
 
@@ -57,6 +57,7 @@ def construir_manifiesto(rutas: Rutas) -> tuple[pd.DataFrame, dict]:
     df["cultivo"] = df.clase.str.split("___").str[0]
     df["clase_plantdoc_candidata"] = df.clase.map(PAR_CANDIDATO_PLANTDOC).fillna("")
     df["clase_comun"] = df.clase_plantdoc_candidata != ""
+    df["clase_eval"] = df.clase.map(es_clase_eval_pv)
     df["sesion"] = df.sesion.fillna(SIN_SESION)
     df["leaf_id"] = df.hoja.fillna("")
     df["tiene_grupo"] = df.con_grupo

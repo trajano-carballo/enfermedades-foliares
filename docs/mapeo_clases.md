@@ -48,14 +48,15 @@ Fuente de los conteos:
 **Propuesta, pendiente de verificación visual (3a) — NO cerrada. Evidencia para `Tomato leaf`,
 `Bell_pepper leaf` y `Apple leaf`:**
 
-- *Evidencia textual (según lo aportado por el equipo; no verificada por nosotros contra el paper
-  completo):* el paper de PlantDoc (Singh et al.) declara 27 clases = 17 de enfermedad + 10 sanas, y
-  las 10 clases "X leaf" sin calificador son exactamente esas 10 (`Apple leaf`, `Bell_pepper leaf`,
-  `Blueberry leaf`, `Cherry leaf`, `Peach leaf`, `Raspberry leaf`, `Soyabean leaf`, `Strawberry leaf`,
-  `Tomato leaf`, `grape leaf`). Lo que sí se pudo confirmar en el abstract (arXiv 1911.10317): 13
-  especies, "up to 17 classes of diseases", 2.598 imágenes. **Discrepancias con el árbol del commit
-  fijado:** tiene 28 carpetas (no 27), o sea 18 de enfermedad + 10 "X leaf" (no 17 + 10), y 2.578
-  imágenes (no 2.598).
+- *Evidencia textual (verificada en la sesión 5):* la introducción del paper de PlantDoc (Singh et al., arXiv
+  1911.10317, versión ar5iv <https://ar5iv.labs.arxiv.org/html/1911.10317>) dice: "development of PlantDoc: a dataset of
+  2,598 images across 13 plant species and 27 classes (17-10, disease-healthy)"; la sección 3 repite "a total of 27 classes
+  spanning over 13 species with 2,598 images". Es la fuente del "27 = 17 + 10" (17 de enfermedad + 10 sanas); las 10 clases
+  "X leaf" sin calificador son exactamente esas 10 (`Apple leaf`, `Bell_pepper leaf`, `Blueberry leaf`, `Cherry leaf`,
+  `Peach leaf`, `Raspberry leaf`, `Soyabean leaf`, `Strawberry leaf`, `Tomato leaf`, `grape leaf`). *Aviso:* el texto se leyó
+  con una herramienta de lectura de la página, no a mano; conviene que alguien del equipo confirme las citas en el paper antes
+  de reproducirlas en el informe. **Discrepancias con el árbol del commit fijado** (siguen vigentes): tiene 28 carpetas (no
+  27), o sea 18 de enfermedad + 10 "X leaf" (carpetas de PlantDoc en el árbol: ver listado de `docs/exploracion_datasets.md` §2), y 2.578 imágenes (no 2.598).
 - *Evidencia visual (3a, sesión 3, 24 imágenes al azar de train, semilla 42):* son imágenes "sin
   diagnóstico de enfermedad", pero heterogéneas y distintas de `*___healthy` de PlantVillage (plantas
   enteras, frutos, stock photos; en `Tomato leaf`, rótulos de archivo como `Bacterial-leafspot…` y
@@ -134,6 +135,19 @@ no están afectados por ninguno de estos tres problemas. El detalle completo est
   `docs/exploracion_sesion3.md` §1); Target_Spot además no tiene par en PlantDoc.
 - El split oficial de PlantDoc tiene 6 pares train↔test duplicados en las clases candidatas, uno de
   ellos con etiquetas contradictorias (papa early vs. late blight): ver §2a del mismo documento.
+
+## Decisiones del equipo y evidencia nueva (sesión 5, 2026-10-08)
+
+- **Clases de entrenamiento y evaluación: 12** = las 13 con par en PlantDoc menos `Tomato two spotted spider mites leaf`
+  (2 imágenes en train, 0 en test). Fuera del entrenamiento: `Tomato___Target_Spot` (sin par), `Potato___healthy` (sin par) y
+  `Tomato___Spider_mites…`. Columna `clase_eval` en los manifiestos. Maíz sigue fuera.
+- **Duplicados entre clases en PlantDoc.** En la sección 3.1 del paper (según la misma lectura de ar5iv) los autores dicen haber
+  quitado "duplicate images across classes downloaded due to web search"; el paper **no** menciona duplicados dentro de una misma
+  clase. En la copia fijada (commit `5467f601…`) quedan, en el pool de las 12 clases, **29 grupos de la misma foto con etiquetas
+  contradictorias (60 imágenes)** a phash ≤ 6 (en la sesión 4 se confirmó a ojo que 31 de los 32 pares ≤ 6 entre clases distintas son la misma foto;
+  el restante no lo parecía y la regla mecánica igualmente lo cuenta). O sea: la limpieza declarada no se cumple del todo en esta copia, o se hizo con otro criterio. Es lo que
+  justifica la exclusión previa de grupos contradictorios. Detalle y matriz de combinaciones en `docs/exploracion_sesion5.md`.
+- Ninguno de los 29 grupos involucra `Tomato leaf` ni `Bell_pepper leaf` (ver el mismo documento).
 
 ## Próximo paso
 

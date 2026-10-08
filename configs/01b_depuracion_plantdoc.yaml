@@ -1,0 +1,16 @@
+# Config de notebooks/01b_depuracion_plantdoc.ipynb (sesión 5). Candidato: NO escribe en data/splits/.
+# Rutas: configs/paths.yaml.
+commit_plantdoc: 5467f6012d78d1c446145d5f582da6096f852ae8
+semilla: 42
+frac_test: 0.30                  # partición propia dev/test 70/30, estratificada por clase
+umbral_duplicado: 6              # phash; 7-10 solo se listan para revisión
+renombrados_csv: docs/bitacora/plantdoc_archivos_renombrados.csv
+cache_hashes: hashes_plantdoc_candidatas.npz       # en DATA_ROOT/interim
+planilla_revision: docs/bitacora/revision_etiquetas_planilla.csv
+alertas: {min_test_por_clase: 10, min_dev_por_clase: 30}   # solo se avisa, no se corrige
+frecuente_min_pares: 2           # combinaciones con >= N pares tienen ejemplo visual
+salida:
+  manifiesto: manifiesto_plantdoc_depurado.csv               # en DATA_ROOT/interim
+  meta: manifiesto_plantdoc_depurado.meta.json
+  pares_7_10: docs/bitacora/plantdoc_pares_7_10_revision.csv
+  figuras: docs/figuras_sesion5

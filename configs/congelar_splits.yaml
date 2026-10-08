@@ -1,0 +1,14 @@
+# Config de scripts/congelar_splits.py. Lo ejecuta el equipo (no Claude Code).
+version: v1
+commits_datasets:
+  plantvillage: 7f7ecc7e1eaca78107e3affe7cb5abd9427e139a
+  plantdoc: 5467f6012d78d1c446145d5f582da6096f852ae8
+fuentes:                 # archivos en DATA_ROOT/interim -> SPLITS_DIR
+  plantvillage:
+    archivo: particion_candidato_plantvillage.csv
+    meta: particion_candidato_plantvillage.meta.json
+    destino: plantvillage_particion.csv
+  plantdoc:
+    archivo: manifiesto_plantdoc_depurado.csv
+    meta: manifiesto_plantdoc_depurado.meta.json     # trae revision_estado (PROVISIONAL/COMPLETA)
+    destino: plantdoc_particion.csv

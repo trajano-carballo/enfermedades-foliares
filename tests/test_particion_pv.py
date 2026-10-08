@@ -177,3 +177,23 @@ def test_simulacion_detecta_fuga_cuando_la_hoja_abarca_mas_que_la_zona():
 def test_semilla_derivada_estable():
     assert semilla_derivada(42, "a", "b") == semilla_derivada(42, "a", "b")
     assert semilla_derivada(42, "a", "b") != semilla_derivada(42, "b", "a")
+
+
+# ------------------------------------------------------------------ 12 clases de evaluación (sesión 5)
+def test_clase_eval_son_12_y_las_excluidas_son_las_decididas(manifiesto):
+    por_clase = manifiesto.groupby("clase").clase_eval.first()
+    assert por_clase.sum() == 12
+    assert set(por_clase.index[~por_clase]) == {"Tomato___Target_Spot", "Potato___healthy",
+                                                "Tomato___Spider_mites Two-spotted_spider_mite"}
+
+
+def test_filtrar_a_12_clases_no_cambia_la_particion_de_las_demas(manifiesto, candidato):
+    solo = pp.construir_candidato(manifiesto[manifiesto.clase_eval], semilla=42, zona=ZONA)
+    completo = candidato[candidato.clase_eval]
+    a, b = (x.sort_values("ruta_color").reset_index(drop=True) for x in (solo, completo))
+    pd.testing.assert_frame_equal(a, b)
+
+
+def test_conteos_12_clases(candidato):
+    c = candidato[candidato.clase_eval].groupby("particion").size()
+    assert (c["train"], c["val"], c["test"]) == (11968, 2207, 2170)

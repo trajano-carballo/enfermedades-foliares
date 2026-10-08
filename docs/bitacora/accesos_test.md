@@ -25,3 +25,8 @@ entraron al cálculo de hashing perceptual (8 variantes) y a la comparación de 
 humana de etiquetas; de ellas yo vi **una** (`TL-062`, al verificar el formato de la hoja) y las otras 15 las verán los revisores. (4) La partición propuesta para
 PlantVillage no tocó ningún test de PlantDoc: el test de PlantVillage es un candidato en `data/interim/` (no congelado) y no se evaluó nada sobre él.
 Notebooks `notebooks/00c_chequeos_plantdoc.ipynb` y `notebooks/01_preparacion_datos.ipynb`.
+
+**Nota (2026-10-08, sesión 5):** sin ningún modelo ni métrica de desempeño. (1) Mirada a ojo: `docs/figuras_sesion5/ejemplos_contradictorios.png` incluye **1 imagen de la carpeta test oficial** de
+PlantDoc (`Potato leaf late blight/1421_0.jpeg…`, ya vista en la sesión 4); la grilla `pares_7_10.png` no tiene ninguna imagen de test oficial. (2) Las 102 imágenes de test oficial de las 12 clases entraron
+al cálculo de hashing perceptual (caché de la sesión 4) y a la depuración: 6 quedan excluidas por tener un gemelo con etiqueta contradictoria, 96 se reparten entre dev (72) y test propuesto (24). (3) No se
+generaron ni miraron imágenes del test propuesto (303 imágenes): la partición es un candidato y solo se usaron rutas y estados. Notebook `notebooks/01b_depuracion_plantdoc.ipynb`.

@@ -2,6 +2,33 @@
 
 > Se actualiza al cierre de cada sesión de trabajo. Lo más reciente arriba.
 
+## 2026-10-08 — Sesión 5: cierre de datos (candidatos finales; el equipo congela)
+
+**Hecho** (detalle y tablas en `docs/exploracion_sesion5.md`)
+- Decisiones del equipo registradas en `decisiones.md` (12 clases, partición propia de PlantDoc 70/30 con exclusión previa, mosaic zona 20, Colab opción A, invariante 1 nuevo). `CLAUDE.md` actualizado
+  (Contexto, invariante 1, Colab). `mapeo_clases.md`: fuente del "27 = 17 + 10" (ar5iv) y 29 grupos contradictorios.
+- PlantVillage: `clase_eval` (12 clases); train/val/test = 11.968 / 2.207 / 2.170 (coincide). Test de que filtrar no cambia la partición de las demás.
+- PlantDoc: `data/interim/manifiesto_plantdoc_depurado.csv` (+ `.meta.json`): 1.010 conservadas → dev 707 / test 303; 60 excl. contradictorias (29 grupos), 28 duplicadas, 0 por revisión, 2 fuera de alcance.
+  Sin alertas (dev mín 37, test mín 16). Matriz de contradictorios, ejemplos (`docs/figuras_sesion5/`), 3 pares de 7–10 para revisión (`docs/bitacora/plantdoc_pares_7_10_revision.csv`).
+- Scripts (NO ejecutados): `congelar_splits.py`, `empaquetar_subconjunto.py`, `verificar_paquete.py`; `notebooks/colab_arranque.ipynb` sin ejecutar. 43 tests pasan.
+- `accesos_test.md`: 1 imagen de test oficial en una figura (ya vista); el test propuesto no se miró.
+
+**Qué quedó a medias**
+- **Revisión humana** de `Tomato leaf`/`Bell_pepper leaf`: la planilla está vacía → el candidato de PlantDoc es **PROVISIONAL** y `congelar_splits.py` se niega a congelar. Al completarla, re-ejecutar `01b` (solo cambian esas 2 clases).
+- `data/splits/` vacío; `REPO_URL` y `DRIVE_DIR` del notebook de Colab sin completar; la rama de torch de `fijar_semillas` sin probar (torch no instalado, ~2,9 GB libres).
+- Las citas del paper se leyeron con una herramienta de lectura: confirmar a mano.
+
+**Próximos pasos**
+1. Dos integrantes completan `docs/bitacora/revision_etiquetas_planilla.csv` (`mantener`/`descartar`; criterio 1/2/3 en `motivo`). Re-ejecutar `01b_depuracion_plantdoc.ipynb`.
+2. Decidir: los 2–3 casos que a ojo no son duplicados y los 3 pares de 7–10 (ver "Decisiones que quedan" en `exploracion_sesion5.md`).
+3. En la PC con disco: ejecutar notebooks 01 y 01b, `empaquetar_subconjunto.py` y subir los `.tar` a Drive; `congelar_splits.py --dry-run` y luego real; commitear `data/splits/`.
+4. Actualizar la propuesta con la lista de cambios de `exploracion_sesion5.md` §5 (no se editó).
+5. Etapa 2: modelo base (solo con splits congelados).
+
+**Riesgos abiertos**
+- El test propuesto de PlantDoc (303) viene casi todo de la carpeta train oficial: no comparable con el test oficial (advertir en el informe).
+- Si la revisión humana descarta imágenes después de congelar, habría que re-congelar (contra el invariante): conviene cerrar la revisión antes.
+
 ## 2026-10-08 — Sesión 4: entorno, manifiesto de PlantVillage y chequeos de PlantDoc (sin modelos)
 
 **Hecho** (detalle y tablas en `docs/exploracion_sesion4.md`; notebooks `01_preparacion_datos.ipynb` y `00c_chequeos_plantdoc.ipynb`)

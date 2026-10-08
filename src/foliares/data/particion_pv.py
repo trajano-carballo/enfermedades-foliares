@@ -177,7 +177,7 @@ def construir_candidato(manifiesto: pd.DataFrame, semilla: int = 42, fracs=(0.70
     motivo = pd.Series("", index=df.index, dtype=object)
     final[base == "descarte"], motivo[base == "descarte"] = "excluida", "zona_descarte"
     final[excl_tope], motivo[excl_tope] = "excluida", "tope_train"
-    out = df[["ruta_color", "clase", "cultivo", "clase_comun", "sesion", "num", "leaf_id", "tiene_grupo"]].copy()
+    out = df[["ruta_color", "clase", "cultivo", "clase_comun", "clase_eval", "sesion", "num", "leaf_id", "tiene_grupo"]].copy()
     out["regla"], out["particion_base"], out["particion"], out["motivo_exclusion"] = regla, base, final, motivo
     out["semilla"] = semilla
     return out
@@ -187,7 +187,8 @@ def tabla_resumen(cand: pd.DataFrame) -> pd.DataFrame:
     """Imágenes y hojas por clase y partición final (más las excluidas y el total de la clase)."""
     filas = []
     for clase, g in cand.groupby("clase", sort=True):
-        fila = {"clase": clase, "total": len(g), "clase_comun": bool(g.clase_comun.iloc[0])}
+        fila = {"clase": clase, "total": len(g), "clase_comun": bool(g.clase_comun.iloc[0]),
+                "clase_eval": bool(g.clase_eval.iloc[0])}
         for p in PARTICIONES:
             s = g[g.particion == p]
             fila[f"img_{p}"], fila[f"hojas_{p}"] = len(s), int(s.leaf_id.replace("", np.nan).nunique())
