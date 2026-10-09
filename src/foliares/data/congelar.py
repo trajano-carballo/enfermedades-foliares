@@ -8,10 +8,15 @@ import datetime as dt
 import hashlib
 import json
 import shutil
-import subprocess
 from pathlib import Path
 
 import pandas as pd
+
+from foliares.utils.archivos import escribir_texto
+from foliares.utils.git import info_repo
+
+COMPLETO = "COMPLETO"
+PROVISIONAL = "PROVISIONAL"
 
 
 def sha256_archivo(p: Path) -> str:
@@ -20,13 +25,6 @@ def sha256_archivo(p: Path) -> str:
         for bloque in iter(lambda: f.read(1 << 20), b""):
             h.update(bloque)
     return h.hexdigest()
-
-
-def _git(repo: Path, *args: str) -> str:
-    try:
-        return subprocess.check_output(["git", "-C", str(repo), *args], text=True, stderr=subprocess.DEVNULL).strip()
-    except Exception:  # noqa: BLE001
-        return "(sin git)"
 
 
 def planificar(cfg: dict, interim: Path, splits: Path, force: bool, permitir_provisional: bool) -> dict:
@@ -46,8 +44,10 @@ def planificar(cfg: dict, interim: Path, splits: Path, force: bool, permitir_pro
                 problemas.append(f"falta el meta del candidato: {mp}")
             else:
                 meta = json.loads(mp.read_text(encoding="utf-8"))
-        estado = str(meta.get("revision_estado", "COMPLETA"))
-        if estado.startswith("PROVISIONAL") and not permitir_provisional:
+        # Un candidato que requiere revisión humana (por defecto, todos) solo se congela si su .meta.json dice
+        # COMPLETO. Si el .meta.json no trae el estado se trata como PROVISIONAL (no se asume que está cerrada).
+        estado = str(meta.get("revision_estado", f"{PROVISIONAL} (el .meta.json no trae `revision_estado`)"))
+        if f.get("requiere_revision", True) and estado != COMPLETO and not permitir_provisional:
             problemas.append(f"{nombre}: la revisión humana está {estado}; cerrarla o usar --permitir-provisional")
         metas[nombre] = meta
         plan.append({"nombre": nombre, "origen": origen, "destino": destino})
@@ -71,12 +71,13 @@ def congelar(cfg: dict, repo: Path, interim: Path, splits: Path, force: bool = F
     for a in plan["archivos"]:
         shutil.copyfile(a["origen"], a["destino"])
         assert sha256_archivo(a["destino"]) == sumas[a["destino"].name], "la copia no coincide con el origen"
-    (splits / "SHA256SUMS.txt").write_text("".join(f"{h}  {n}\n" for n, h in sorted(sumas.items())), encoding="utf-8")
+    escribir_texto(splits / "SHA256SUMS.txt", "".join(f"{h}  {n}\n" for n, h in sorted(sumas.items())))
     estados = {k: v.get("revision_estado", "n/a") for k, v in plan["metas"].items()}
-    sucio = _git(repo, "status", "--porcelain") not in ("", "(sin git)")
+    git = info_repo(repo)
+    sucio = bool(git["cambios_sin_commitear"])
     lineas = [f"# Particiones congeladas — versión {cfg['version']}", "",
               f"- Fecha: {hoy or dt.date.today().isoformat()}",
-              f"- Commit del repo al congelar: `{_git(repo, 'rev-parse', 'HEAD')}` (cambios sin commitear: {'sí' if sucio else 'no'})",
+              f"- Commit del repo al congelar: `{git['commit']}` (cambios sin commitear: {'sí' if sucio else 'no'})",
               "- Datasets (commits fijados): " + ", ".join(f"{k} `{v}`" for k, v in cfg["commits_datasets"].items()),
               f"- Estado de la revisión humana de etiquetas (PlantDoc): {estados.get('plantdoc', 'n/a')}", "",
               "## Archivos y sha256", ""]
@@ -87,5 +88,5 @@ def congelar(cfg: dict, repo: Path, interim: Path, splits: Path, force: bool = F
     lineas += ["", "Metadatos de generación (semilla, zona, tope, fracciones):", "", "```json",
                json.dumps(plan["metas"], indent=2, ensure_ascii=False), "```", "",
                "Estos archivos NO se regeneran tras la etapa 1. Un cambio requiere decisión del equipo y nueva versión.", ""]
-    (splits / "README_VERSION.md").write_text("\n".join(lineas), encoding="utf-8")
+    escribir_texto(splits / "README_VERSION.md", "\n".join(lineas))
     return {"dry_run": False, "sha256": sumas, "resumen": resumen}

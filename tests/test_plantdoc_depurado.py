@@ -69,23 +69,23 @@ def test_reproducible_y_depende_de_la_semilla():
     assert (dp.depurar(_meta(), PARES, set(), CLASES, 43).particion_propuesta != a.particion_propuesta).any()
 
 
-def test_revision_solo_si_ambos_descartan_y_vocabulario():
+def test_revision_un_solo_revisor_y_vocabulario():
     plan = pd.DataFrame({"id": ["1", "2", "3", "4"], "split": "train",
                          "ruta": [R("A", 10), R("A", 11), R("A", 12), R("A", 13)],
                          "revisor_1": ["descartar", "descartar", "Descartar", "mantener"],
                          "revisor_2": ["descartar", "mantener", "descartar", "mantener"],
                          "motivo": ["2", "1", "2", ""]})
-    excl, estado, inv = dp.leer_revision(plan)
-    assert excl == {R("A", 10)}                       # solo la fila 1; "Descartar" no se interpreta
-    assert list(inv.id) == ["3"] and estado.startswith("PROVISIONAL")
+    rev = dp.leer_revision(plan, cfg={"filas_esperadas": 4})
+    assert rev.excluir == {R("A", 10), R("A", 11)}    # D1: alcanza `revisor_1`; "Descartar" no se interpreta
+    assert list(rev.invalidas.id) == ["3"] and rev.estado.startswith("PROVISIONAL") and not rev.completa
 
 
 def test_planilla_vacia_es_provisional_y_no_excluye():
     plan = pd.DataFrame({"id": ["1"], "split": "train", "ruta": [R("A", 10)], "revisor_1": "", "revisor_2": "", "motivo": ""})
-    excl, estado, inv = dp.leer_revision(plan)
-    assert excl == set() and estado.startswith("PROVISIONAL") and len(inv) == 0
-    plan.loc[0, ["revisor_1", "revisor_2"]] = ["mantener", "descartar"]
-    assert dp.leer_revision(plan)[1] == "COMPLETA"
+    rev = dp.leer_revision(plan, cfg={"filas_esperadas": 1})
+    assert rev.excluir == set() and rev.estado.startswith("PROVISIONAL") and len(rev.invalidas) == 0
+    plan.loc[0, "revisor_1"] = "mantener"
+    assert dp.leer_revision(plan, cfg={"filas_esperadas": 1}).estado == "COMPLETA"
 
 
 def test_revision_excluye_antes_del_split():

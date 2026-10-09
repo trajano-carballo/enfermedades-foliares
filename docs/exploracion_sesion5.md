@@ -5,6 +5,9 @@
 > Código nuevo: `src/foliares/data/{plantdoc_depurado,congelar,paquete}.py`, `scripts/{congelar_splits,empaquetar_subconjunto,verificar_paquete}.py`.
 > Notebooks: `01_preparacion_datos.ipynb` (sección 2c-bis), `01b_depuracion_plantdoc.ipynb`, `colab_arranque.ipynb` (sin ejecutar).
 > Configs: `01b_depuracion_plantdoc.yaml`, `congelar_splits.yaml`, `paquete_subconjunto.yaml`. Tests: **43 pasan** (`python -m pytest`).
+> **Actualización 2026-10-09 (sesión 5d):** las decisiones D1–D3 de `decisiones.md` superan lo que este documento dice de la revisión humana y de los pares 7–10: la planilla la completa **un** revisor
+> (`revisor_1`; ya no "ambos"), los pares 7–10 los revisa un revisor (`misma_foto` se une a los grupos de duplicados) y el resultado es COMPLETO solo con ambas cosas completas. Donde abajo se lee "ambos revisores"
+> o "solo se listan", vale D1/D3. Las unidades "MB" y "GB" de este documento son **MiB y GiB** (2^20 y 2^30 bytes; ver §4).
 
 ## Resumen
 
@@ -21,7 +24,7 @@
 ## Decisiones del equipo registradas hoy (detalle en `docs/bitacora/decisiones.md`)
 
 12 clases; partición propia de PlantDoc 70/30 con exclusión previa (a)–(d); mosaic zona 20 (con sensibilidad ID con y sin mosaic); val/test de PlantVillage
-sin sesiones sin grupo y tope proporcional de 1.500; Colab opción A; invariante 1 de CLAUDE.md reescrito; el docente validó la partición propia y la exclusión previa.
+sin sesiones sin grupo y tope proporcional de 1.500 (**excepción: mosaic**, que no tiene grupos de hoja y se parte por rangos con zona 20, así que sí aporta a val y test: 36 y 35 imágenes); Colab opción A; invariante 1 de CLAUDE.md reescrito; el docente validó la partición propia y la exclusión previa.
 `CLAUDE.md` actualizado (Contexto, invariante 1, Colab).
 
 ## 1. PlantVillage — 12 clases (`clase_eval`)
@@ -131,7 +134,8 @@ Orden recomendado para el equipo: (1) completar la planilla, (2) re-ejecutar `01
 
 ## 4. Empaquetado y Colab (opción A) — instrucciones
 
-Tamaño calculado (solo `stat`, sin leer ni copiar): PlantVillage 12 clases color + segmented **39.110 archivos, 459 MB**; PlantDoc 12 clases (cualquier estado) **1.098 archivos, 326 MB**; ≈ 785 MB en total.
+Tamaño calculado (solo `stat`, sin leer ni copiar): PlantVillage 12 clases color + segmented **39.110 archivos, 459 MiB**; PlantDoc 12 clases (cualquier estado) **1.098 archivos, 326 MiB**; ≈ 785 MiB en total.
+(**MiB = 2^20 bytes**, no 10^6: verificado en la sesión 5d sumando los bytes de los manifiestos; en decimal son 481 MB, 341 MB y 822 MB. Lo mismo vale para el "~0,8 GB" siguiente, que son GiB.)
 Todos los archivos listados existen en esta máquina.
 
 **En la PC con disco** (con los datasets en `DATA_ROOT` y los notebooks 01 y 01b ya ejecutados, para que existan `manifiesto_plantvillage.csv` y `manifiesto_plantdoc_depurado.csv` en `interim/`):
@@ -139,7 +143,7 @@ Todos los archivos listados existen en esta máquina.
 pip install -e . --no-deps
 python scripts/empaquetar_subconjunto.py --config configs/paquete_subconjunto.yaml --salida <carpeta_de_salida>
 ```
-Genera `plantvillage_subconjunto.tar`, `plantdoc_subconjunto.tar` y sus `.tar.sha256`. Necesita ~0,8 GB libres en la salida; calcula el sha256 de cada archivo (lee todo una vez más). Cada `.tar` lleva como
+Genera `plantvillage_subconjunto.tar`, `plantdoc_subconjunto.tar` y sus `.tar.sha256`. Necesita ~0,8 GiB libres en la salida; calcula el sha256 de cada archivo (lee todo una vez más). Cada `.tar` lleva como
 primer miembro `MANIFIESTO_<dataset>.csv` (`ruta, sha256, bytes`). Los nombres dentro del `.tar` son la `ruta` de los manifiestos, con los nombres **saneados** de PlantDoc: al descomprimir en Linux/Colab las rutas
 valen tal cual (se evita el problema de los 101 nombres no representables en NTFS). Subir los 4 archivos a `<Drive>/foliares/paquetes/`.
 
@@ -171,7 +175,7 @@ Los `.tar` no incluyen los CSV de particiones: esos viajan en el repo (`data/spl
    re-congelar `Tomato leaf`/`Bell_pepper leaf` (contra el invariante de tests congelados).
 2. **Los 2–3 casos que a ojo no son duplicados (2d).** (a) Aplicar la regla mecánica sin excepción (lo implementado; costo: 2 imágenes de papa excluidas de más, regla pura); (b) excepción manual documentada (costo: rompe "regla
    escrita de antemano", habría que decir en el informe que se tocó a mano, y volver a correr 01b y re-validar la lista).
-3. **Los 3 pares de 7–10** (`plantdoc_pares_7_10_revision.csv`): decidir si se excluyen. Costo de excluir: ≤ 3 imágenes más; costo de no excluir: posible duplicado residual dentro de dev (no entre dev y test, porque ninguno toca el test).
+3. **Los 3 pares de 7–10** (`plantdoc_pares_7_10_revision.csv`): decidir si se excluyen. Costo de excluir: ≤ 3 imágenes más; costo de no excluir: posible duplicado residual. **Corrección (sesión 5d):** ninguno toca el test *oficial*, pero **2 de los 3 pares cruzan el dev y el test propuestos** (una copia en cada lado: el par tomate early ↔ papa early y el par de papa early `80109626.jpg` ↔ `potato-early-blight-alternaria-alternata…`), así que no excluirlos dejaría una fuga dev→test; el 3.º (papa late) cae entero en dev. D3 los pasa a revisión por un revisor.
 4. **El test propuesto no incluye casi nada del test oficial** (24 de 303). Esto ya cuenta con la validación del docente; queda como advertencia para el informe: los números no son comparables con trabajos que usen el test oficial.
 5. **Quién escribe `data/splits/` y cuándo**: lo hace el equipo, tras (1), con el `--dry-run` previo.
 6. **`REPO_URL` y `DRIVE_DIR`** del notebook de Colab: no están definidos en el proyecto.
