@@ -1,0 +1,4 @@
+# Config de scripts/empaquetar_subconjunto.py (se corre en la PC con disco, no en las sesiones con Claude Code).
+# Archivos de DATA_ROOT/interim generados por los notebooks 01 y 01b.
+manifiesto_plantvillage: manifiesto_plantvillage.csv          # solo clases con clase_eval=True (color + segmented)
+manifiesto_plantdoc_depurado: manifiesto_plantdoc_depurado.csv  # las 12 clases, cualquier estado

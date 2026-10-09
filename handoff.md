@@ -2,6 +2,71 @@
 
 > Se actualiza al cierre de cada sesión de trabajo. Lo más reciente arriba.
 
+## 2026-10-09 — Sesiones 5c y 5d: PlantDoc en la PC personal, reglas de revisión de un revisor y arreglos de la revisión de 92725bc (sin modelos)
+
+**Sesión 5c (PC personal; lo que consta en los artefactos de `data/interim/ejecuciones_pc_personal/`)**
+- PlantDoc materializado en la PC personal con el procedimiento de tres pasos (checkout por defecto falla entero → checkout por pathspec literal de las rutas representables → rescate por hash de blob de las 101 filas del mapeo → verificación sha1 contra el árbol);
+  documentado en `docs/exploracion_datasets.md` (§2). Notebooks 01, 01b y 00c re-ejecutados en copias; la planilla no se escribió.
+- **Reproducibilidad entre PC:** los sha256 de ambos candidatos son **idénticos en las dos PC** (antes del cambio a LF): PlantVillage `4caedf7a…a4498`, PlantDoc `04a122a3…f01a1554`.
+
+**Sesión 5d — hecho** (decisiones D1–D3 en `decisiones.md`; 94 tests pasan con `python -m pytest -rs`, 0 saltados)
+- **D1** un solo revisor para la planilla (`revisor_1`; `revisor_2` se ignora con aviso); **D2** regla mecánica sin excepciones para los pares ≤ 6 dudosos; **D3** los pares 7–10 los revisa un revisor y `misma_foto` se une a los grupos antes del split.
+  Reglas configurables en `configs/01b_depuracion_plantdoc.yaml` (`revision_etiquetas`, `pares_7_10`). El resultado es COMPLETO solo con planilla y pares completos; si no, PROVISIONAL.
+  Errores claros ante planilla/pares con `;`, columnas inesperadas, rutas que no están en el manifiesto o repetidas. `congelar.py` trata un `.meta.json` sin `revision_estado` como PROVISIONAL (y solo `COMPLETO` habilita; PlantVillage se declara `requiere_revision: false`).
+- `.meta.json` de 01b: modo de revisión, qué falta (`revision_pendiente`), exclusiones por estado/clase/motivo, pares aplicados, commit del repo y si había cambios sin commitear; el de 01, el commit.
+- Guards: el 00c no pisa la planilla; el 01b no pisa `plantdoc_pares_7_10_revision.csv` ni pierde `decision_equipo`. Corregido el print final del 00c.
+- `.gitattributes` (`eol=lf`; png/jpg/tar/npz binarios) y todo CSV/`.meta.json` que escribe el código sale con LF (`foliares.utils.archivos`; en los notebooks, `lineterminator="\n"`).
+- Script de rescate reescrito (colisiones, nunca sobrescribe, salidas en `data/interim/`, rutas faltantes por `git ls-tree`, aplica siempre las 101 filas, verificación sha1). `paquete.py` sin archivos parciales. `requires-python >= 3.11.4`; `*.tar` y `*.tar.sha256` en `.gitignore`.
+- Docs: 87/8 vs 85/10 aclarado, MiB/GiB, mosaic como excepción de "val/test sin sesiones sin grupo", línea 174 de `exploracion_sesion5.md` (2 de los 3 pares 7–10 cruzan dev y test propuestos), `mapeo_clases.md` ("pendiente de confirmar a mano"), notas en `accesos_test.md`.
+- Re-ejecutados 01 y 01b (copias `*.5d.ejecutado.ipynb`) con planilla y pares vacíos: **mismos números que la 5c** (PlantVillage 11.968 / 2.207 / 2.170; PlantDoc 1.010 conservadas → dev 707 / test 303; 60 / 28 / 0 / 2), estado PROVISIONAL, y el **mismo sha256 normalizado** (ordenado por ruta, LF, sin BOM):
+  PlantVillage `319739c0a043e1bf00af29f714486f4c02f8f21dcef439a20c3effbb4ed776a6`, PlantDoc `85e89d230e37d5dbb10145472ab7a975f12ac3ceb28458d0310c2dd5a6a8a46e`.
+- **sha256 nuevos "tal cual" (ya con LF)**, para comparar entre PC: PlantVillage `1ff04397bed8182b901609f2e0d3e0e8b3ceed3ac4b7739512b64f9b366713dd`, PlantDoc `17f0a7d49a65d83cf77f7820bbace8f99442aeafecf22fe406a30398217da723`.
+- Simulación sobre copias temporales de la planilla y de los pares (los archivos reales no se tocaron): con 3 `descartar` y pares `misma_foto` el modo pasa a COMPLETO y solo cambian 4 clases (`Tomato leaf`, `Bell_pepper leaf`, `Tomato Early blight leaf`, `Potato leaf early blight`).
+
+**Qué quedó a medias**
+- **Revisión humana pendiente:** el candidato de PlantDoc sigue **PROVISIONAL** (planilla 124 de 124 sin completar; pares 7–10: 3 de 3 sin decisión). `congelar_splits.py` no congela así.
+- `data/splits/` sigue vacío; `REPO_URL` y `DRIVE_DIR` del notebook de Colab sin completar; la rama de torch de `fijar_semillas` sin probar.
+- Los manifiestos de `data/interim/` generados en la 5d registran `repo_con_cambios_sin_commitear: true` (los cambios de la 5d aún no están commiteados): **re-ejecutar 01 y 01b con el árbol limpio antes de congelar**.
+- Sin ejecutar en datos reales: `congelar_splits.py`, `empaquetar_subconjunto.py`, `verificar_paquete.py`. La propuesta (`docs/propuesta_entregable1.md`) sigue sin editar (lista en `exploracion_sesion5.md` §5).
+
+**Próximos pasos**
+1. Un integrante completa `revisor_1` (`mantener`/`descartar`, motivo 1/2/3) en `docs/bitacora/revision_etiquetas_planilla.csv` (124 filas) y `decision_equipo` (`misma_foto`/`distinta`) en `docs/bitacora/plantdoc_pares_7_10_revision.csv` (3 pares). Guardar como CSV UTF-8 delimitado por comas (no `;`).
+2. Commitear la 5d (ver commits sugeridos en el reporte), re-ejecutar 01 y 01b → debe decir **COMPLETO**; `congelar_splits.py --dry-run`, luego real; commitear `data/splits/`.
+3. En la PC con disco: `empaquetar_subconjunto.py` y subir los `.tar` a Drive; completar `REPO_URL`/`DRIVE_DIR` de Colab.
+4. Etapa 2: modelo base (solo con splits congelados).
+
+**Riesgos abiertos**
+- El número de `grupo_hash` es cosmético y se corre si los pares `misma_foto` crean grupos nuevos (el estado y la partición no dependen de él).
+- En el CSV del manifiesto, `revision_estado` conserva la redacción de la 5c ("… sin completar por algún revisor …") para no cambiar el hash; el detalle por planilla y por pares está en el `.meta.json`.
+- El test propuesto (303) viene casi todo de la carpeta *train* oficial: no comparable con el test oficial.
+
+## 2026-10-08 — Sesión 5: cierre de datos (candidatos finales; el equipo congela)
+
+**Hecho** (detalle y tablas en `docs/exploracion_sesion5.md`)
+- Decisiones del equipo registradas en `decisiones.md` (12 clases, partición propia de PlantDoc 70/30 con exclusión previa, mosaic zona 20, Colab opción A, invariante 1 nuevo). `CLAUDE.md` actualizado
+  (Contexto, invariante 1, Colab). `mapeo_clases.md`: fuente del "27 = 17 + 10" (ar5iv) y 29 grupos contradictorios.
+- PlantVillage: `clase_eval` (12 clases); train/val/test = 11.968 / 2.207 / 2.170 (coincide). Test de que filtrar no cambia la partición de las demás.
+- PlantDoc: `data/interim/manifiesto_plantdoc_depurado.csv` (+ `.meta.json`): 1.010 conservadas → dev 707 / test 303; 60 excl. contradictorias (29 grupos), 28 duplicadas, 0 por revisión, 2 fuera de alcance.
+  Sin alertas (dev mín 37, test mín 16). Matriz de contradictorios, ejemplos (`docs/figuras_sesion5/`), 3 pares de 7–10 para revisión (`docs/bitacora/plantdoc_pares_7_10_revision.csv`).
+- Scripts (NO ejecutados): `congelar_splits.py`, `empaquetar_subconjunto.py`, `verificar_paquete.py`; `notebooks/colab_arranque.ipynb` sin ejecutar. 43 tests pasan.
+- `accesos_test.md`: 1 imagen de test oficial en una figura (ya vista); el test propuesto no se miró.
+
+**Qué quedó a medias**
+- **Revisión humana** de `Tomato leaf`/`Bell_pepper leaf`: la planilla está vacía → el candidato de PlantDoc es **PROVISIONAL** y `congelar_splits.py` se niega a congelar. Al completarla, re-ejecutar `01b` (solo cambian esas 2 clases).
+- `data/splits/` vacío; `REPO_URL` y `DRIVE_DIR` del notebook de Colab sin completar; la rama de torch de `fijar_semillas` sin probar (torch no instalado, ~2,9 GB libres).
+- Las citas del paper se leyeron con una herramienta de lectura: confirmar a mano.
+
+**Próximos pasos**
+1. Dos integrantes completan `docs/bitacora/revision_etiquetas_planilla.csv` (`mantener`/`descartar`; criterio 1/2/3 en `motivo`). Re-ejecutar `01b_depuracion_plantdoc.ipynb`.
+2. Decidir: los 2–3 casos que a ojo no son duplicados y los 3 pares de 7–10 (ver "Decisiones que quedan" en `exploracion_sesion5.md`).
+3. En la PC con disco: ejecutar notebooks 01 y 01b, `empaquetar_subconjunto.py` y subir los `.tar` a Drive; `congelar_splits.py --dry-run` y luego real; commitear `data/splits/`.
+4. Actualizar la propuesta con la lista de cambios de `exploracion_sesion5.md` §5 (no se editó).
+5. Etapa 2: modelo base (solo con splits congelados).
+
+**Riesgos abiertos**
+- El test propuesto de PlantDoc (303) viene casi todo de la carpeta train oficial: no comparable con el test oficial (advertir en el informe).
+- Si la revisión humana descarta imágenes después de congelar, habría que re-congelar (contra el invariante): conviene cerrar la revisión antes.
+
 ## 2026-10-08 — Sesión 4: entorno, manifiesto de PlantVillage y chequeos de PlantDoc (sin modelos)
 
 **Hecho** (detalle y tablas en `docs/exploracion_sesion4.md`; notebooks `01_preparacion_datos.ipynb` y `00c_chequeos_plantdoc.ipynb`)
@@ -91,7 +156,7 @@
   esta sesión).
 - Hallazgo técnico (no metodológico): 101 archivos de PlantDoc no son representables con
   su nombre original en NTFS (87 por `?`, 8 por ruta larga, 6 por colisión de
-  mayúsculas/minúsculas). Rescatados por hash de blob sin alterar el árbol oficial; mapeo
+  mayúsculas/minúsculas) [5d: conteo por orden de chequeo; 2 de los 87 con `?` también son de ruta larga, así que la clasificación exclusiva del CSV es 85 / 10 / 6]. Rescatados por hash de blob sin alterar el árbol oficial; mapeo
   en `docs/bitacora/plantdoc_archivos_renombrados.csv`. Script reutilizable:
   `scripts/rescatar_archivos_plantdoc.py`.
 - Hallazgo operativo: la máquina de esta sesión quedó con poco margen de disco (~5 GB

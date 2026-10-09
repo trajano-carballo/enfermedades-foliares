@@ -13,6 +13,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 from foliares.data import duplicados as dup
 from foliares.data.taxonomia import CLASES_PLANTDOC_CANDIDATAS
+from foliares.utils.archivos import escribir_csv
 from foliares.utils.paths import Rutas
 from foliares.utils.seeds import rng
 
@@ -217,6 +218,20 @@ def material_revision(rutas: Rutas, meta: pd.DataFrame, clases: dict[str, str], 
                              salida_dir / f"contacto_{pref}_{pag + 1}.png",
                              f"Carpeta de PlantDoc: {clase} - {parte.id.iloc[0]} a {parte.id.iloc[-1]}")
     return plan[["id", "split", "ruta", "revisor_1", "revisor_2", "motivo"]]
+
+
+def guardar_planilla(plan: pd.DataFrame, ruta: Path) -> str:
+    """Escribe la planilla de revisión SOLO si no existe: el archivo está versionado y los revisores escriben en él;
+    regenerarlo borraría sus decisiones. Devuelve 'creada', 'existente' (mismos `id` y `ruta`; no se toca) o
+    'existente_distinta' (el material regenerado ya no coincide con el archivo: no se pisa nada)."""
+    ruta = Path(ruta)
+    if not ruta.exists():
+        escribir_csv(plan, ruta, bom=True)
+        return "creada"
+    ex = pd.read_csv(ruta, dtype=str, keep_default_na=False, encoding="utf-8-sig")
+    if not {"id", "ruta"} <= set(ex.columns):
+        return "existente_distinta"
+    return "existente" if set(zip(ex.id, ex.ruta)) == set(zip(plan.id, plan.ruta)) else "existente_distinta"
 
 
 def grilla_pares(pares: pd.DataFrame, rutas: Rutas, salida: Path, titulo: str, pares_por_fila: int = 3):

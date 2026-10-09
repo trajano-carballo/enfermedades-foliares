@@ -48,14 +48,15 @@ Fuente de los conteos:
 **Propuesta, pendiente de verificación visual (3a) — NO cerrada. Evidencia para `Tomato leaf`,
 `Bell_pepper leaf` y `Apple leaf`:**
 
-- *Evidencia textual (según lo aportado por el equipo; no verificada por nosotros contra el paper
-  completo):* el paper de PlantDoc (Singh et al.) declara 27 clases = 17 de enfermedad + 10 sanas, y
-  las 10 clases "X leaf" sin calificador son exactamente esas 10 (`Apple leaf`, `Bell_pepper leaf`,
-  `Blueberry leaf`, `Cherry leaf`, `Peach leaf`, `Raspberry leaf`, `Soyabean leaf`, `Strawberry leaf`,
-  `Tomato leaf`, `grape leaf`). Lo que sí se pudo confirmar en el abstract (arXiv 1911.10317): 13
-  especies, "up to 17 classes of diseases", 2.598 imágenes. **Discrepancias con el árbol del commit
-  fijado:** tiene 28 carpetas (no 27), o sea 18 de enfermedad + 10 "X leaf" (no 17 + 10), y 2.578
-  imágenes (no 2.598).
+- *Evidencia textual (pendiente de confirmar a mano; leída en la sesión 5 con una herramienta de lectura de la página):* la introducción del paper de PlantDoc (Singh et al., arXiv
+  1911.10317, versión ar5iv <https://ar5iv.labs.arxiv.org/html/1911.10317>) dice: "development of PlantDoc: a dataset of
+  2,598 images across 13 plant species and 27 classes (17-10, disease-healthy)"; la sección 3 repite "a total of 27 classes
+  spanning over 13 species with 2,598 images". Es la fuente del "27 = 17 + 10" (17 de enfermedad + 10 sanas); las 10 clases
+  "X leaf" sin calificador son exactamente esas 10 (`Apple leaf`, `Bell_pepper leaf`, `Blueberry leaf`, `Cherry leaf`,
+  `Peach leaf`, `Raspberry leaf`, `Soyabean leaf`, `Strawberry leaf`, `Tomato leaf`, `grape leaf`). *Aviso:* el texto se leyó
+  con una herramienta de lectura de la página, no a mano; conviene que alguien del equipo confirme las citas en el paper antes
+  de reproducirlas en el informe. **Discrepancias con el árbol del commit fijado** (siguen vigentes): tiene 28 carpetas (no
+  27), o sea 18 de enfermedad + 10 "X leaf" (carpetas de PlantDoc en el árbol: ver listado de `docs/exploracion_datasets.md` §2), y 2.578 imágenes (no 2.598).
 - *Evidencia visual (3a, sesión 3, 24 imágenes al azar de train, semilla 42):* son imágenes "sin
   diagnóstico de enfermedad", pero heterogéneas y distintas de `*___healthy` de PlantVillage (plantas
   enteras, frutos, stock photos; en `Tomato leaf`, rótulos de archivo como `Bacterial-leafspot…` y
@@ -109,9 +110,9 @@ metodológico. Se resolvieron sin alterar el árbol oficial ni perder imágenes,
 cada archivo afectado con `git cat-file` (por hash de blob, no por ruta) y guardándolo con
 un nombre local saneado:
 
-1. **87 archivos con `?` en el nombre** (vienen de URLs de descarga con query string, ej.
+1. **87 archivos con `?` en el nombre** (85 según la clasificación exclusiva del CSV: 2 de ellos también son de ruta larga) (vienen de URLs de descarga con query string, ej.
    `imagen.jpg?id=123`): carácter no válido en NTFS. Se reemplaza por `_`.
-2. **8 archivos con ruta demasiado larga** para el límite de Windows (nombres descriptivos
+2. **8 archivos con ruta demasiado larga** (10 según la clasificación exclusiva del CSV, que cuenta los 2 que además tienen `?`) para el límite de Windows (nombres descriptivos
    largos, típicos de bancos de imágenes): se truncan con un sufijo hash de 8 caracteres
    para evitar colisiones.
 3. **6 archivos perdidos por colisión de mayúsculas/minúsculas**: PlantDoc tiene pares de
@@ -123,7 +124,7 @@ un nombre local saneado:
    que faltaba con un sufijo `__colision_mayusc`.
 
 El mapeo nombre original → nombre local de los 101 archivos afectados (95 de los puntos 1
-y 2, 6 del punto 3) está en `docs/bitacora/plantdoc_archivos_renombrados.csv`. Los conteos
+y 2 — 85 `caracter_invalido_ntfs` + 10 `ruta_demasiado_larga` en el CSV —, 6 del punto 3) está en `docs/bitacora/plantdoc_archivos_renombrados.csv`. Los conteos
 de esta tabla (arriba) son los oficiales del árbol de git, no los del disco local, así que
 no están afectados por ninguno de estos tres problemas. El detalle completo está en
 `docs/exploracion_datasets.md` §2.
@@ -134,6 +135,19 @@ no están afectados por ninguno de estos tres problemas. El detalle completo est
   `docs/exploracion_sesion3.md` §1); Target_Spot además no tiene par en PlantDoc.
 - El split oficial de PlantDoc tiene 6 pares train↔test duplicados en las clases candidatas, uno de
   ellos con etiquetas contradictorias (papa early vs. late blight): ver §2a del mismo documento.
+
+## Decisiones del equipo y evidencia nueva (sesión 5, 2026-10-08)
+
+- **Clases de entrenamiento y evaluación: 12** = las 13 con par en PlantDoc menos `Tomato two spotted spider mites leaf`
+  (2 imágenes en train, 0 en test). Fuera del entrenamiento: `Tomato___Target_Spot` (sin par), `Potato___healthy` (sin par) y
+  `Tomato___Spider_mites…`. Columna `clase_eval` en los manifiestos. Maíz sigue fuera.
+- **Duplicados entre clases en PlantDoc.** En la sección 3.1 del paper (según la misma lectura de ar5iv) los autores dicen haber
+  quitado "duplicate images across classes downloaded due to web search"; el paper **no** menciona duplicados dentro de una misma
+  clase. En la copia fijada (commit `5467f601…`) quedan, en el pool de las 12 clases, **29 grupos de la misma foto con etiquetas
+  contradictorias (60 imágenes)** a phash ≤ 6 (en la sesión 4 se confirmó a ojo que 31 de los 32 pares ≤ 6 entre clases distintas son la misma foto;
+  el restante no lo parecía y la regla mecánica igualmente lo cuenta). O sea: la limpieza declarada no se cumple del todo en esta copia, o se hizo con otro criterio. Es lo que
+  justifica la exclusión previa de grupos contradictorios. Detalle y matriz de combinaciones en `docs/exploracion_sesion5.md`.
+- Ninguno de los 29 grupos involucra `Tomato leaf` ni `Bell_pepper leaf` (ver el mismo documento).
 
 ## Próximo paso
 
