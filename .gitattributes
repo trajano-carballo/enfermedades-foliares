@@ -1,0 +1,17 @@
+# Fin de línea: todo el texto se guarda y se baja con LF, en cualquier sistema. Así un CSV generado en Windows
+# y otro en Linux/Colab con el mismo contenido tienen el mismo sha256 (los manifiestos se comparan por hash).
+* text=auto eol=lf
+*.py text eol=lf
+*.md text eol=lf
+*.csv text eol=lf
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.txt text eol=lf
+*.ipynb text eol=lf
+# Binarios: nunca se tocan.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.tar binary
+*.npz binary
