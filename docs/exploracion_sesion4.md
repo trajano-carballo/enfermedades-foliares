@@ -53,6 +53,7 @@ matplotlib, pytest + ipykernel/nbformat/nbclient para ejecutar notebooks), `pypr
 
 Tamaños medidos del subconjunto candidato: PlantVillage color 353 MB, segmented 196 MB, PlantDoc (13 carpetas)
 326 MB → **≈ 0,9 GB**; los clones completos pesan 2,57 GB + 2,10 GB. Los datos no se versionan.
+(Aclaración de la sesión 5d: estos "MB" y "GB" son **MiB y GiB** — 2^20 y 2^30 bytes —; ver `exploracion_datasets.md` §7.)
 
 | Opción | Cómo funciona | Costo |
 |---|---|---|

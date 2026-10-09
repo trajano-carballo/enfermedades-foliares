@@ -60,4 +60,6 @@ Uso académico, sin redistribución: los datos no se suben al repositorio.
 
 ## Entorno
 
-Pendiente de definir en etapa 0 (Colab gratuito para entrenamiento, local para la app).
+**Python ≥ 3.11.4** (`requires-python` en `pyproject.toml`). Instalación: `pip install -r requirements.txt` y `pip install -e . --no-deps`.
+Colab gratuito para entrenamiento, local para la app. Tests: `python -m pytest -rs`.
+Los CSV y `.meta.json` que escribe el código salen con fin de línea LF (ver `.gitattributes`), para que los sha256 coincidan entre PC.

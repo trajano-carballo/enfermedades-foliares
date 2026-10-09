@@ -53,6 +53,8 @@ proyecto.
 nombre original en este filesystem:
 - 87 tienen `?` en el nombre (vienen de URLs con query string), carácter inválido en NTFS.
 - 8 tienen una ruta que supera el límite de longitud de Windows.
+  (87 + 8 + 6 es el conteo por orden de chequeo: primero `?`, después ruta larga. 2 de los 87 archivos con `?` también superan el límite de
+  ruta larga, así que en la clasificación exclusiva del CSV (`motivo`) son **85** `caracter_invalido_ntfs` + **10** `ruta_demasiado_larga` + **6** `colision_mayusculas_ntfs` = 101.)
 - 6 se pierden silenciosamente por colisión de mayúsculas/minúsculas: PlantDoc tiene
   pares de archivos que difieren solo en capitalización (ej. `Peach-Leaf.jpg` y
   `peach-leaf.jpg`), válidos como dos archivos distintos en git (case-sensitive) pero que
@@ -64,6 +66,25 @@ perdió ninguna imagen. Mapeo nombre original → nombre local en
 `docs/bitacora/plantdoc_archivos_renombrados.csv`. Los conteos de esta sección salen de
 `git ls-tree` (autoritativos), no del disco, así que no están afectados por este problema
 — se verificó que el conteo en disco post-rescate coincide exactamente con el oficial.
+
+### Procedimiento para materializar PlantDoc en Windows (sesión 5c, PC personal; reproducible con el script)
+
+Las tres causas de arriba hacen que **el checkout por defecto falle entero** y que haya que armar el árbol en tres pasos. Los logs de la 5c quedaron en
+`data/interim/ejecuciones_pc_personal/` (no versionados).
+
+1. **Checkout por defecto: falla.** `git checkout` del árbol completo termina con 87 errores `invalid path` (los nombres con `?`) y no deja la copia de trabajo usable
+   (`checkout_plantdoc.log`, 87 líneas).
+2. **Checkout por pathspec literal de las rutas representables.** Se arma la lista con `git ls-tree -r -z` menos los 87 nombres con `?`: **2.494 rutas** (3 archivos de la raíz + 2.491 imágenes), separadas por NUL
+   (`pathspec_validos.bin`), y se hace el checkout solo de esas, con pathspec *literal* para que `[`, `*` u otros caracteres de los nombres no se interpreten como patrón:
+   `git -C data/raw/plantdoc --literal-pathspecs checkout HEAD --pathspec-from-file=<lista> --pathspec-file-nul` (forma del comando; la lista y el log exactos son los de la 5c).
+   Resultado: `Updated 2488 paths` y 6 líneas `unable to create file … Filename too long` en `checkout_selectivo_plantdoc.log`. **Qué rutas largas se materializan depende del largo del prefijo del repo en cada PC**
+   (el límite de 260 caracteres cuenta la ruta absoluta); por eso el paso 3 no se apoya en lo que haya quedado en el disco. Las 6 colisiones de mayúsculas están en la lista y git no avisa: queda una sola de cada par.
+3. **Rescate por hash de blob** con `scripts/rescatar_archivos_plantdoc.py --rev 5467f6012d78d1c446145d5f582da6096f852ae8`: aplica **siempre** las 101 filas de `docs/bitacora/plantdoc_archivos_renombrados.csv`
+   (extrae cada blob con `git cat-file` al nombre local; las colisiones llevan el sufijo `__colision_mayusc` y motivo `colision_mayusculas_ntfs`). Nunca sobrescribe: si un destino existe con otro contenido, lista el conflicto y no escribe nada;
+   si git materializó un original que el mapeo renombra (rutas largas habilitadas), avisa y, con `--mover-originales`, lo renombra al nombre local (así el resultado es el mismo en todas las PC). Escribe
+   la lista de rutas faltantes (`git ls-tree` contra el disco) y, con `--regenerar`, el mapeo recalculado desde cero para compararlo con el versionado; ambos en `data/interim/` (por defecto no toca el CSV versionado).
+4. **Verificación sha1 contra el árbol** (último paso del script, `--sin-verificar` lo omite): el sha1 de blob de cada archivo del disco (con su nombre local si está en el mapeo) debe coincidir con el de `git ls-tree`, sin faltantes ni sobrantes.
+   En la 5d: 2.578 esperados, 2.578 en disco, 0 faltan, 0 con sha1 distinto, 0 sobran; el mapeo regenerado (101 filas) es igual al versionado.
 
 ## 3. Verificación formal de la exclusión de maíz (leaf_grouping)
 
@@ -130,6 +151,9 @@ cómputo de más: 22.787 imágenes de PlantVillage contra 1.100 de PlantDoc.
   el notebook §6 igual, por si el equipo quiere revisarlos.
 
 ## 7. Tamaño en disco y tiempo de descarga
+
+> **Unidades (aclaración de la sesión 5d):** los tamaños se calcularon dividiendo por 2^20 y 2^30, es decir, son **MiB y GiB** aunque se escriban "MB" y "GB". Verificado para las cifras de la sesión 5 (459 MiB = 481 MB decimales;
+> 326 MiB = 341 MB; PlantVillage color 353 MiB y segmented 196 MiB = 370 y 206 MB). De la tabla de abajo (sesión 2) solo se re-midió el clon de PlantVillage (2,56 GiB, coincide con los 2,57); el resto se presume en la misma unidad y no se re-midió.
 
 | | Clon completo (incl. `.git`) | Solo imágenes |
 |---|---:|---:|

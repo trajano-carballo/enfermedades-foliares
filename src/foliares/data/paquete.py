@@ -8,12 +8,14 @@ también en Linux/Colab. Sin compresión (los JPG ya están comprimidos).
 from __future__ import annotations
 
 import csv
+import os
 import tarfile
 from pathlib import Path
 
 import pandas as pd
 
 from foliares.data.congelar import sha256_archivo
+from foliares.utils.archivos import escribir_texto
 
 
 def lista_plantvillage(manifiesto: pd.DataFrame) -> list[str]:
@@ -32,25 +34,33 @@ def nombre_manifiesto(dataset: str) -> str:
 
 
 def empaquetar(rutas: list[str], data_root: Path, tar_path: Path, dataset: str) -> dict:
-    """Escribe `tar_path` (con el manifiesto como primer miembro) y `tar_path.sha256`. Devuelve un resumen."""
+    """Escribe `tar_path` (con el manifiesto como primer miembro) y `tar_path.sha256`. Devuelve un resumen.
+    No deja archivos parciales: arma todo con nombres temporales y, si algo falla, los borra; el `.tar` y su
+    `.sha256` definitivos aparecen solo cuando están completos (y uno viejo no se pierde por un intento fallido)."""
     faltan = [r for r in rutas if not (data_root / r).is_file()]
     if faltan:
         raise FileNotFoundError(f"{len(faltan)} archivos de la lista no existen en {data_root} (p. ej. {faltan[:3]})")
     filas = [{"ruta": r, "sha256": sha256_archivo(data_root / r), "bytes": (data_root / r).stat().st_size} for r in rutas]
     tar_path.parent.mkdir(parents=True, exist_ok=True)
-    man = tar_path.with_suffix(".manifiesto.tmp.csv")
-    with open(man, "w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=["ruta", "sha256", "bytes"])
-        w.writeheader()
-        w.writerows(filas)
-    tar_path.parent.mkdir(parents=True, exist_ok=True)
-    with tarfile.open(tar_path, "w") as tf:
-        tf.add(man, arcname=nombre_manifiesto(dataset))
-        for r in rutas:
-            tf.add(data_root / r, arcname=r, recursive=False)
-    man.unlink()
-    suma = sha256_archivo(tar_path)
-    tar_path.with_name(tar_path.name + ".sha256").write_text(f"{suma}  {tar_path.name}\n", encoding="utf-8")
+    man = tar_path.with_name(tar_path.name + ".manifiesto.tmp")
+    parcial = tar_path.with_name(tar_path.name + ".parcial")
+    suma_parcial = tar_path.with_name(tar_path.name + ".sha256.parcial")
+    try:
+        with open(man, "w", newline="", encoding="utf-8") as f:
+            w = csv.DictWriter(f, fieldnames=["ruta", "sha256", "bytes"], lineterminator="\n")
+            w.writeheader()
+            w.writerows(filas)
+        with tarfile.open(parcial, "w") as tf:
+            tf.add(man, arcname=nombre_manifiesto(dataset))
+            for r in rutas:
+                tf.add(data_root / r, arcname=r, recursive=False)
+        suma = sha256_archivo(parcial)
+        escribir_texto(suma_parcial, f"{suma}  {tar_path.name}\n")
+        os.replace(parcial, tar_path)
+        os.replace(suma_parcial, tar_path.with_name(tar_path.name + ".sha256"))
+    finally:
+        for tmp in (man, parcial, suma_parcial):
+            tmp.unlink(missing_ok=True)
     return {"archivos": len(filas), "bytes": sum(f["bytes"] for f in filas), "tar_sha256": suma}
 
 

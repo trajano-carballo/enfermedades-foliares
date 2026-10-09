@@ -48,7 +48,7 @@ Fuente de los conteos:
 **Propuesta, pendiente de verificación visual (3a) — NO cerrada. Evidencia para `Tomato leaf`,
 `Bell_pepper leaf` y `Apple leaf`:**
 
-- *Evidencia textual (verificada en la sesión 5):* la introducción del paper de PlantDoc (Singh et al., arXiv
+- *Evidencia textual (pendiente de confirmar a mano; leída en la sesión 5 con una herramienta de lectura de la página):* la introducción del paper de PlantDoc (Singh et al., arXiv
   1911.10317, versión ar5iv <https://ar5iv.labs.arxiv.org/html/1911.10317>) dice: "development of PlantDoc: a dataset of
   2,598 images across 13 plant species and 27 classes (17-10, disease-healthy)"; la sección 3 repite "a total of 27 classes
   spanning over 13 species with 2,598 images". Es la fuente del "27 = 17 + 10" (17 de enfermedad + 10 sanas); las 10 clases
@@ -110,9 +110,9 @@ metodológico. Se resolvieron sin alterar el árbol oficial ni perder imágenes,
 cada archivo afectado con `git cat-file` (por hash de blob, no por ruta) y guardándolo con
 un nombre local saneado:
 
-1. **87 archivos con `?` en el nombre** (vienen de URLs de descarga con query string, ej.
+1. **87 archivos con `?` en el nombre** (85 según la clasificación exclusiva del CSV: 2 de ellos también son de ruta larga) (vienen de URLs de descarga con query string, ej.
    `imagen.jpg?id=123`): carácter no válido en NTFS. Se reemplaza por `_`.
-2. **8 archivos con ruta demasiado larga** para el límite de Windows (nombres descriptivos
+2. **8 archivos con ruta demasiado larga** (10 según la clasificación exclusiva del CSV, que cuenta los 2 que además tienen `?`) para el límite de Windows (nombres descriptivos
    largos, típicos de bancos de imágenes): se truncan con un sufijo hash de 8 caracteres
    para evitar colisiones.
 3. **6 archivos perdidos por colisión de mayúsculas/minúsculas**: PlantDoc tiene pares de
@@ -124,7 +124,7 @@ un nombre local saneado:
    que faltaba con un sufijo `__colision_mayusc`.
 
 El mapeo nombre original → nombre local de los 101 archivos afectados (95 de los puntos 1
-y 2, 6 del punto 3) está en `docs/bitacora/plantdoc_archivos_renombrados.csv`. Los conteos
+y 2 — 85 `caracter_invalido_ntfs` + 10 `ruta_demasiado_larga` en el CSV —, 6 del punto 3) está en `docs/bitacora/plantdoc_archivos_renombrados.csv`. Los conteos
 de esta tabla (arriba) son los oficiales del árbol de git, no los del disco local, así que
 no están afectados por ninguno de estos tres problemas. El detalle completo está en
 `docs/exploracion_datasets.md` §2.

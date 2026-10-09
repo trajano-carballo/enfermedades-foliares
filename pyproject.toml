@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "foliares"
 version = "0.1.0"
 description = "Brecha ID->OOD en enfermedades foliares (PlantVillage -> PlantDoc)"
-requires-python = ">=3.10"
+requires-python = ">=3.11.4"
 # Las dependencias viven en requirements.txt (en Colab torch ya está instalado).
 dependencies = []
 

@@ -4,6 +4,9 @@ data/interim/**
 data/processed/**
 !data/**/
 !data/**/.gitkeep
+# Paquetes de datos para Colab (se generan con scripts/empaquetar_subconjunto.py)
+*.tar
+*.tar.sha256
 # Pesos de modelos
 artifacts/**
 !artifacts/**/
