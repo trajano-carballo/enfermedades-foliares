@@ -1,6 +1,8 @@
 """Pruebas de la lógica de congelamiento sobre directorios temporales (nunca toca data/splits/)."""
 
 import json
+import shutil
+import subprocess
 
 import pandas as pd
 import pytest
@@ -78,3 +80,41 @@ def test_archivos_que_escribe_congelar_salen_con_lf(dirs):
     congelar(CFG, repo, i, s)
     for nombre in ("SHA256SUMS.txt", "README_VERSION.md"):
         assert b"\r" not in (s / nombre).read_bytes(), nombre
+
+
+# ------------------------------------------------------------------ flag "cambios sin commitear" del README
+def _git(repo, *args):
+    subprocess.run(["git", "-C", str(repo), "-c", "user.name=t", "-c", "user.email=t@t", *args], check=True, capture_output=True)
+
+
+@pytest.fixture
+def repo_git(tmp_path):
+    """Repo git temporal con la misma disposición que el real: `interim/` ignorado y `splits/` versionable."""
+    if shutil.which("git") is None:
+        pytest.skip("git no está disponible")
+    i, s = tmp_path / "interim", tmp_path / "splits"
+    i.mkdir()
+    pd.DataFrame({"particion": ["train", "val", "test"]}).to_csv(i / "pv.csv", index=False)
+    pd.DataFrame({"particion_propuesta": ["dev", "test", ""]}).to_csv(i / "pd.csv", index=False)
+    (i / "pv.json").write_text(json.dumps({"semilla": 42}))
+    (i / "pd.json").write_text(json.dumps({"revision_estado": "COMPLETO"}))
+    (tmp_path / ".gitignore").write_text("interim/\n")
+    (tmp_path / "codigo.py").write_text("x = 1\n")
+    _git(tmp_path, "init", "-q")
+    _git(tmp_path, "add", ".gitignore", "codigo.py")
+    _git(tmp_path, "commit", "-q", "-m", "base")
+    return tmp_path, i, s
+
+
+def test_readme_arbol_limpio_dice_no_aunque_el_script_escriba_en_splits(repo_git):
+    # Los archivos que escribe el propio script (CSV y SHA256SUMS.txt, sin seguimiento en git) no son "cambios".
+    repo, i, s = repo_git
+    congelar(CFG, repo, i, s)
+    assert "(cambios sin commitear: no)" in (s / "README_VERSION.md").read_text(encoding="utf-8")
+
+
+def test_readme_con_cambio_real_en_archivo_versionado_dice_si(repo_git):
+    repo, i, s = repo_git
+    (repo / "codigo.py").write_text("x = 2\n")
+    congelar(CFG, repo, i, s)
+    assert "(cambios sin commitear: sí)" in (s / "README_VERSION.md").read_text(encoding="utf-8")

@@ -58,6 +58,9 @@ def planificar(cfg: dict, interim: Path, splits: Path, force: bool, permitir_pro
 
 def congelar(cfg: dict, repo: Path, interim: Path, splits: Path, force: bool = False,
              permitir_provisional: bool = False, dry_run: bool = False, hoy: str | None = None) -> dict:
+    # El estado de git se captura ANTES de escribir en SPLITS_DIR: data/splits/ no está en .gitignore, así que los
+    # archivos que escribe este mismo script contarían como "cambios sin commitear".
+    git = info_repo(repo)
     plan = planificar(cfg, interim, splits, force, permitir_provisional)
     sumas, resumen = {}, {}
     for a in plan["archivos"]:
@@ -73,7 +76,6 @@ def congelar(cfg: dict, repo: Path, interim: Path, splits: Path, force: bool = F
         assert sha256_archivo(a["destino"]) == sumas[a["destino"].name], "la copia no coincide con el origen"
     escribir_texto(splits / "SHA256SUMS.txt", "".join(f"{h}  {n}\n" for n, h in sorted(sumas.items())))
     estados = {k: v.get("revision_estado", "n/a") for k, v in plan["metas"].items()}
-    git = info_repo(repo)
     sucio = bool(git["cambios_sin_commitear"])
     lineas = [f"# Particiones congeladas — versión {cfg['version']}", "",
               f"- Fecha: {hoy or dt.date.today().isoformat()}",
