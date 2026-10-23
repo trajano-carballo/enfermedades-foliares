@@ -2,6 +2,40 @@
 
 > Se actualiza al cierre de cada sesión de trabajo. Lo más reciente arriba.
 
+## 2026-10-23 — Sesión 6: cierre de datos (etapa 1) — CONGELADO (sin modelos)
+
+**Estado: congelado.** `data/splits/` v1 está congelada (commit `b79d3a2`, "cambios sin commitear: no", revisión humana COMPLETO) con `plantvillage_particion.csv`, `plantdoc_particion.csv`, `SHA256SUMS.txt` y `README_VERSION.md`; los sha256 son iguales a los del dry-run y a los candidatos. **Desde acá `data/splits/` no se regenera (invariante 2).** Los candidatos de `data/interim/` se habían regenerado desde un árbol limpio (commit `a6423b5`); PlantDoc dice **COMPLETO**, `revision_pendiente` vacío. `data/splits/` v1 está versionado (commit `1f4a42e`; registro en `decisiones.md` y este handoff en `1a93b3d`).
+
+**Hecho**
+- Entorno: PC personal con `.venv` (usar siempre `.venv\Scripts\python.exe`), datos copiados desde la PC de la 5d. Verificados: commits de ambos datasets, `DATA_ROOT` y 0 rutas inexistentes en los manifiestos, 101 archivos rescatados (sha1 contra el árbol, 101/101), y los sha256 de la 5d (normalizados y "tal cual") coincidían antes de re-ejecutar.
+- Tests: 96 pasan, 0 saltados (94 más 2 nuevos de `congelar`, ver abajo). `test_original_materializado_por_git…` exige **Windows con rutas largas habilitadas** (`LongPathsEnabled=1`, ya activado por el usuario en esta PC; en otra PC con Windows hay que activarlo, si no ese test falla por `FileNotFoundError`).
+- Validación de la revisión humana (solo lectura): planilla 124 filas (114 `mantener`, 10 `descartar`; motivos 1/2/3 = 7/1/2), pares 3 `misma_foto`; funciones de 01b sin errores ni avisos; 130 imágenes miradas = 16 de test oficial + 39 del test propuesto (2 en ambos; 53 distintas). Ambos CSV: UTF-8 con BOM, coma, LF; 01b lee con `utf-8-sig`.
+- `accesos_test.md`: nota de la revisión humana. `decisiones.md`: "Hallazgos de la sesión 6" y una fila con las decisiones operativas de la sesión. Commit `a6423b5` (hecho por Claude Code a pedido expreso del usuario, excepción puntual a la regla de CLAUDE.md; sin push).
+- Re-ejecución en copias (`data/interim/ejecuciones_pc_personal/*.6.ejecutado.ipynb`, logs `6_run_01*.log`; respaldo de los candidatos de la 5d en `6_base_5d/`). `git status --short` vacío antes y después de cada notebook: ningún archivo versionado cambió (las figuras de `docs/figuras_sesion5/` no se reescribieron o salieron idénticas byte a byte).
+- Resultados (comparados con la 5d):
+  - PlantVillage: sin cambios, 11.968 / 2.207 / 2.170 (12 clases; 3.210 excluidas); sha256 normalizado `319739c0a043e1bf00af29f714486f4c02f8f21dcef439a20c3effbb4ed776a6`; "tal cual" `1ff04397bed8182b901609f2e0d3e0e8b3ceed3ac4b7739512b64f9b366713dd`.
+  - PlantDoc: conservadas 1.010 → **996** (dev 707 → **696**, test 303 → **300**); excluidas: contradictorias 60 → 62, duplicadas 28 → 30, revisión 0 → 10, fuera de alcance 2. Cambian solo las 5 clases esperadas (`Tomato leaf` −7, `Bell_pepper leaf` −3, `Potato leaf early blight` −2, `Potato leaf late blight` −1, `Tomato Early blight leaf` −1 conservadas); las otras 666 imágenes conservan estado y partición idénticos. Mínimos (12 clases): dev 37 (mosaic), test 16 (mosaic); sin alertas.
+  - PlantDoc sha256 normalizado `22e0ec1dec0e43548af335d86541fe8d9b587f6052181b7a0bd82fc11cf452f6`; "tal cual" `dc82e2d5af43a91610a0342023f34a972561fe143e8dfe13c6d4cc02768c8bba` (cambia respecto de la 5d a propósito: nuevas exclusiones y `revision_estado` = `COMPLETO`).
+- `congelar_splits.py --dry-run`: OK (PlantVillage 22.787 filas = 14.648 train / 2.483 val / 2.446 test / 3.210 excluidas, con las 15 clases del candidato; PlantDoc 1.100 filas = 696 dev / 300 test / 104 sin partición). Los sha256 del dry-run son los "tal cual" de arriba.
+- **Congelamiento v1 (equipo, con la corrección de Claude Code):** el primer congelamiento dejó en `README_VERSION.md` "cambios sin commitear: sí" con el árbol limpio, porque `congelar()` llamaba a `info_repo` después de escribir los CSV y `SHA256SUMS.txt` (sin seguimiento en git; `data/splits/` no está en `.gitignore`). Corregido en `congelar.py` (el estado de git se captura antes de escribir, sin excluir `data/splits/`) con 2 tests de repo git temporal (árbol limpio → "no"; cambio real → "sí"); decisión del equipo (opción A, ver `decisiones.md`): se borró `data/splits/` antes de su primer commit y se re-congeló. Resultado: commit `b79d3a2`, "no", mismos sha256 (CSV idénticos byte a byte). Verificado en solo lectura: `SHA256SUMS.txt` coincide con los archivos, los CSV son iguales a los candidatos de `data/interim/`, README UTF-8 sin mojibake; PlantVillage 12 clases 11.968 / 2.207 / 2.170 y PlantDoc dev 696 / test 300.
+**Qué quedó a medias**
+- `REPO_URL` y `DRIVE_DIR` de `notebooks/colab_arranque.ipynb`; `empaquetar_subconjunto.py` y `verificar_paquete.py` sin ejecutar en datos reales; la rama de torch de `fijar_semillas` sin probar; la propuesta sin editar (`exploracion_sesion5.md` §5).
+
+**Próximos pasos — sesión 7**
+1. Verificar `data/splits/` v1 (ya versionado en `1f4a42e`): en Git Bash, `cd data/splits && sha256sum -c SHA256SUMS.txt` (tiene que dar `OK` para los dos CSV; los nombres del archivo no llevan carpeta, así que desde la raíz del repo falla) o el equivalente en Python con `hashlib`. No regenerar ni editar los archivos de `data/splits/` (invariante 2); cualquier cambio requiere decisión del equipo y una versión nueva. Desde la sesión 7 los commits los hace el usuario.
+2. Empaquetar el subconjunto de 12 clases para Colab (`scripts/empaquetar_subconjunto.py`, luego `verificar_paquete.py`), subir los `.tar` a Drive y completar `REPO_URL` / `DRIVE_DIR` en `notebooks/colab_arranque.ipynb`.
+3. Etapa 2: modelo base (`02_modelo_base.ipynb`), solo con `data/splits/` congelado. Cabezal GAP→Linear, mismo preproceso y pesos en ambos dominios, semillas y config en `configs/*.yaml`, resultados trazables a config y commit, métricas OOD con IC bootstrap.
+4. Antes de calcular o mostrar cualquier número sobre un test, agregar la fila en `accesos_test.md`. PlantDoc-dev se usa para elegir variantes; PlantDoc-test se evalúa una sola vez por variante final.
+5. El código de la etapa 2 debe cargar las particiones filtrando explícitamente las filas sin partición/`excluida` y usar `clase_eval` para las 12 clases de PlantVillage.
+
+**Decisiones pendientes**
+- Ninguna metodológica abierta. Operativa: ¿se activa `LongPathsEnabled` también en la otra PC Windows, o se hace que ese test se salte solo cuando no hay rutas largas?
+
+**Riesgos abiertos**
+- Los 104 sin partición de PlantDoc y las 3.210 excluidas de PlantVillage quedan en los CSV congelados con partición vacía/`excluida`: el código de la etapa 2 debe filtrarlas explícitamente (y PlantVillage trae 15 clases; usar `clase_eval` para las 12).
+- El test propuesto (300) viene casi todo de la carpeta *train* oficial: no comparable con el test oficial (advertir en el informe).
+- `Tomato leaf`/`Bell_pepper leaf` conservan ruido de etiqueta posible tras la revisión de un solo revisor (D1).
+
 ## 2026-10-09 — Sesiones 5c y 5d: PlantDoc en la PC personal, reglas de revisión de un revisor y arreglos de la revisión de 92725bc (sin modelos)
 
 **Sesión 5c (PC personal; lo que consta en los artefactos de `data/interim/ejecuciones_pc_personal/`)**

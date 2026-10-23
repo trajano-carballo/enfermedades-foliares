@@ -18,7 +18,8 @@ def git_salida(repo: str | Path, *args: str) -> str:
 
 def info_repo(repo: str | Path) -> dict:
     """`commit` (HEAD) y `cambios_sin_commitear` (True/False; None si no hay git).
-    Los datos (`data/`) están en .gitignore, así que no cuentan como cambios."""
+    Los datos ignorados por git (`data/raw`, `data/interim`, `data/processed`) no cuentan como cambios; `data/splits/`
+    sí cuenta, porque se versiona."""
     commit = git_salida(repo, "rev-parse", "HEAD")
     estado = git_salida(repo, "status", "--porcelain")
     return {"commit": commit, "cambios_sin_commitear": None if SIN_GIT in (commit, estado) else estado != ""}
