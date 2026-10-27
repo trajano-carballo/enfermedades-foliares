@@ -2,6 +2,52 @@
 
 > Se actualiza al cierre de cada sesión de trabajo. Lo más reciente arriba.
 
+## 2026-10-27 — Sesión 7: Colab y entorno (puente etapa 1 → 2) — LISTO PARA CORRER EN COLAB (sin modelos entrenados)
+
+**Estado:** paquetes generados y verificados en la PC; código, tests y notebook de Colab listos. **Falta lo que solo el usuario puede hacer** (ver "Próximos pasos"): commit + push de `sesion-7/colab`, subir los 4 archivos de paquetes a Drive y ejecutar el notebook; la tarea 5 (verificar la salida de Colab) queda esperando esa salida.
+
+**Hecho**
+- Arranque: rama `sesion-7/colab`, árbol limpio, 96 tests; `data/splits/` verificado (`cd data/splits && sha256sum -c SHA256SUMS.txt` → OK). Al cierre: **122 pasan, 0 saltados**.
+- **Entorno local:** el `.venv` ya traía torch **2.14.1+cpu** y torchvision **0.29.1+cpu** (Python 3.13.7, numpy 2.5.4, pandas 3.1.0, pillow 12.3.0); sin GPU (`nvidia-smi` no existe). Fijar versiones exactas: decisión pendiente (ver abajo); `requirements.txt` sin tocar.
+- **Semillas:** `tests/test_semillas_torch.py` corre dos veces forward/backward/paso de MobileNetV3-Small con la misma semilla: idéntico bit a bit en CPU (mismo proceso y entre procesos); con otra cantidad de hilos difiere por redondeo (~1e-7). `fijar_semillas` ahora registra `determinista` y fija `CUBLAS_WORKSPACE_CONFIG`. Qué no se garantiza en GPU y cómo se documenta: `docs/reproducibilidad.md` (sin verificar en GPU; la sonda de la celda de Colab lo mide).
+- **Modelo mínimo con el cabezal del invariante 4:** `src/foliares/models/mobilenet.py` (`features` de torchvision → `AdaptiveAvgPool2d(1)` → `Linear(576, n)`; sin dropout; test de que no hay capa oculta y de que CAM sale del mismo forward).
+- **Paquetes** (`empaquetar_subconjunto.py`, 308 s) en `C:\Users\xbetr\paquetes_foliares\` (fuera del repo; `*.tar` además está en `.gitignore`, 0 `.tar` versionados): `plantvillage_subconjunto.tar` 558.612.480 B (39.110 archivos = 19.555 color + 19.555 segmented; sha256 `813578b3…087d5fa`) y `plantdoc_subconjunto.tar` 343.480.320 B (1.098 archivos; sha256 `aa0f5113…f17b7d1`); más sus `.sha256`. Contenido = `data/splits/` exacto (ni falta ni sobra). Descomprimidos en `…\_extraido`: `verificar_paquete.py --tar … --data-root …` → **código 0** (descomprimir 90 s, verificar 399 s en Windows).
+  - Archivos por clase: PlantVillage color = segmented por clase: Pepper bacterial spot 997, Pepper healthy 1.478, Potato early 1.000, Potato late 1.000, Tomato bacterial spot 2.127, Tomato early 1.000, Tomato late 1.909, Leaf Mold 952, Septoria 1.771, YLCV 5.357, mosaic 373, Tomato healthy 1.591. PlantDoc: Bell_pepper leaf 61, Bell_pepper leaf spot 71, Potato early 117, Potato late 105, Tomato Early blight 88, Septoria 151, Tomato leaf 63, bacterial spot 110, late blight 111, mosaic 54, yellow virus 76, mold 91.
+- **Prueba de humo** (`scripts/colab_humo.py` + `configs/colab_humo.yaml` + `src/foliares/training/{checkpoint,prueba_humo}.py`, `foliares/data/lote_humo.py`, `foliares/utils/sesion.py`): MobileNetV3-Small con pesos ImageNet, un lote de 32 imágenes de **PlantVillage-train** (la función no admite otra partición ni rutas que no sean de PlantVillage), forward/backward, checkpoint atómico, y **fase 2 en un proceso nuevo** (sin pesos, otra semilla) que reanuda y compara con la corrida continua; cada fase escribe su JSON (config, commit, cambios sin commitear, sha256 de los splits, semillas, torch/CUDA/cuDNN, dispositivo/GPU, tiempo, memoria pico). Corrida local en CPU con imágenes reales (y también leyendo del paquete descomprimido): `reanudacion_ok: true`, bit a bit. El checkpoint se carga con `weights_only=True`.
+- **Notebook de Colab** (`notebooks/colab_arranque.ipynb`): `REPO_URL` y `DRIVE_DIR` completos, `REPO_REF = "sesion-7/colab"` (pasar a `main` al mergear), tiempos de clonar/pip/copiar/descomprimir/verificar, `sha256sum -c` de los splits, commit clonado vs. rama remota, JSON de sesión en Drive, celdas de la prueba de humo y un resumen final para pegar. Repo público: se clona sin token (el notebook explica cómo hacerlo con un Secret si pasara a privado).
+- `accesos_test.md`: nota de la sesión 7 (el empaquetado leyó los bytes de los test; ninguna imagen de test abierta; la prueba de humo solo usa train). `decisiones.md`: Drive compartido + Colab (Equipo), `13bc199` en la fila operativa de la sesión 6, hallazgos de la sesión 7.
+
+**Cómo arrancar una sesión de Colab en 5 pasos**
+1. En Colab: *Entorno de ejecución → Cambiar tipo → GPU (T4)*; abrir `notebooks/colab_arranque.ipynb` (Archivo → Abrir cuaderno → GitHub → `trajano-carballo/enfermedades-foliares`, rama `REPO_REF`). Tener el acceso directo `foliares` en *Mi unidad*.
+2. Celdas 1–4: montar Drive, variables, clonar el repo en `REPO_REF`, `pip install -e . --no-deps`.
+3. Celdas 5–6: copiar los `.tar` de `foliares/paquetes/` a `/content/paquetes`, descomprimir en `/content/data` y correr `verificar_paquete.py`: **tiene que dar código 0**; si imprime MAL, no seguir y recopiar los `.tar`.
+4. Celdas 7–8: `sha256sum -c` de `data/splits/`, commit clonado = rama remota y JSON de sesión en `foliares/results/colab_sesion/<run_id>/` (queda registrado cuánto tardó la preparación).
+5. Trabajar guardando checkpoints en `foliares/checkpoints/` (`guardar_checkpoint`) y resultados en `foliares/results/`; la prueba de humo (celdas 9–11) se corre la primera vez o si cambia el entorno.
+
+**Qué quedó a medias**
+- **Tarea 5 (esperando la salida de Colab):** verificar `verificar_paquete.py` = 0 en Colab, que el commit clonado coincide con la rama, cuánto tarda copiar + descomprimir + verificar, y qué dice la sonda de determinismo en GPU. Referencia en la PC (Windows): descomprimir 90 s, verificar 399 s.
+- Decisión sobre versiones exactas de `requirements.txt`; `empaquetar` listo pero los `.tar` todavía no están en Drive.
+- `docs/reproducibilidad.md` dice "sin verificar en GPU" en lo de CUDA hasta tener la salida de Colab.
+
+**Próximos pasos**
+1. **Usuario:** commitear y pushear `sesion-7/colab` (commits sugeridos en el reporte de la sesión) — Colab clona de GitHub, sin esto el notebook no tiene el código nuevo.
+2. **Usuario:** subir a `foliares/paquetes/` de Drive los 4 archivos de `C:\Users\xbetr\paquetes_foliares\` (`plantvillage_subconjunto.tar` y `.tar.sha256`, `plantdoc_subconjunto.tar` y `.tar.sha256`) y comprobar que el sha256 en la PC (`Get-FileHash`) coincide con el `.sha256`.
+3. **Usuario:** ejecutar el notebook en Colab con GPU y pegar la salida de la celda 11.
+4. Con esa salida: cerrar la tarea 5, completar `docs/reproducibilidad.md` con lo medido en GPU y decidir `REPO_REF = "main"` tras el merge.
+5. Etapa 2 (modelo base, `02_modelo_base.ipynb`): solo con `data/splits/` congelado y el invariante 1 (PlantDoc nunca en entrenamiento ni en val de PlantVillage); filtrar filas sin partición/`excluida` y usar `clase_eval` (heredado de la sesión 6).
+
+**Decisiones pendientes** (opciones y costo en el reporte de la sesión)
+- Fijar versiones exactas de torch/torchvision en `requirements.txt` (o dejar cotas mínimas + registrar versiones en cada JSON).
+- Subcarpeta nueva `results/` en el Drive compartido (la sesión la usa; el pedido definía solo `paquetes/` y `checkpoints/`) o anidarla dentro de `checkpoints/`.
+- Qué hacer con `info_repo` cuando las salidas caen dentro del repo (`results/` sin seguimiento cuenta como "cambios sin commitear", igual que pasó con `data/splits/`): hoy se evita escribiendo fuera del repo.
+- Los segmented son 19.555 de los 39.110 archivos de PlantVillage (≈ la mitad del paquete): se mantienen mientras la supresión de fondo siga en el alcance.
+- Heredada: `LongPathsEnabled` en la otra PC Windows o saltar ese test.
+
+**Riesgos abiertos**
+- El no-determinismo en GPU (9 bloques Squeeze-Excitation + GAP) significa que dos corridas con la misma semilla no darán lo mismo: comparar variantes con varias semillas e IC, no con una sola corrida.
+- Colab gratuito asigna GPU y versión de torch distintas según el día: cada JSON registra `torch`, `cuda_runtime`, `cudnn` y `gpu`.
+- La verificación completa de 40.208 archivos tarda ~7 min en la PC (Windows); si en Colab tarda mucho, `verificar_paquete.py --rapido` compara solo existencia y tamaño (el sha256 de los `.tar` ya cubre la integridad de la copia).
+
 ## 2026-10-23 — Sesión 6: cierre de datos (etapa 1) — CONGELADO (sin modelos)
 
 **Estado: congelado.** `data/splits/` v1 está congelada (commit `b79d3a2`, "cambios sin commitear: no", revisión humana COMPLETO) con `plantvillage_particion.csv`, `plantdoc_particion.csv`, `SHA256SUMS.txt` y `README_VERSION.md`; los sha256 son iguales a los del dry-run y a los candidatos. **Desde acá `data/splits/` no se regenera (invariante 2).** Los candidatos de `data/interim/` se habían regenerado desde un árbol limpio (commit `a6423b5`); PlantDoc dice **COMPLETO**, `revision_pendiente` vacío. `data/splits/` v1 está versionado (commit `1f4a42e`; registro en `decisiones.md` y este handoff en `1a93b3d`).
