@@ -12,14 +12,16 @@ import numpy as np
 def fijar_semillas(semilla: int, determinista: bool = False) -> dict:
     """Fija las semillas de python, numpy y (si está instalado) torch.
 
-    `determinista=True` además pide a torch algoritmos deterministas (más lento).
+    `determinista=True` además pide a torch algoritmos deterministas (más lento; con `warn_only`: las operaciones
+    sin versión determinista avisan en vez de fallar). En CUDA exige `CUBLAS_WORKSPACE_CONFIG`, que se fija acá
+    (hay que llamar antes del primer uso de CUDA). Qué se garantiza y qué no: `docs/reproducibilidad.md`.
     Devuelve qué se fijó, para registrarlo junto a los resultados.
     PYTHONHASHSEED solo afecta a procesos hijos: el intérprete actual ya arrancó.
     """
     os.environ["PYTHONHASHSEED"] = str(semilla)
     random.seed(semilla)
     np.random.seed(semilla)
-    fijado = {"semilla": semilla, "python": True, "numpy": True, "torch": False, "cuda": False}
+    fijado = {"semilla": semilla, "python": True, "numpy": True, "torch": False, "cuda": False, "determinista": determinista}
     try:
         import torch
     except ImportError:
@@ -30,6 +32,7 @@ def fijar_semillas(semilla: int, determinista: bool = False) -> dict:
         torch.cuda.manual_seed_all(semilla)
         fijado["cuda"] = True
     if determinista:
+        os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
         torch.backends.cudnn.deterministic = True
         torch.backends.cudnn.benchmark = False
         torch.use_deterministic_algorithms(True, warn_only=True)
