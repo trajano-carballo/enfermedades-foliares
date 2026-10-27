@@ -32,9 +32,12 @@ def estados_rng() -> dict:
 
 
 def restaurar_rng(estados: dict) -> None:
+    """Los estados de los generadores viven en CPU: `numpy`, `torch.set_rng_state` y `random` no aceptan tensores en la GPU
+    (con `torch.load(map_location=cuda)` el checkpoint entero, estados de RNG incluidos, llega a la GPU), así que todos
+    los tensores se traen a CPU acá, sea cual sea el `map_location` con el que se cargó."""
     py, npy = estados["python"], estados["numpy"]
     random.setstate((py["version"], tuple(py["estado"]), py["gauss"]))
-    np.random.set_state(("MT19937", npy["clave"].numpy().astype(np.uint32), npy["pos"], npy["tiene_gauss"], npy["gauss"]))
+    np.random.set_state(("MT19937", npy["clave"].cpu().numpy().astype(np.uint32), npy["pos"], npy["tiene_gauss"], npy["gauss"]))
     torch.set_rng_state(estados["torch"].cpu())
     if estados.get("cuda") is not None and torch.cuda.is_available():
         torch.cuda.set_rng_state_all([s.cpu() for s in estados["cuda"]])
@@ -57,8 +60,11 @@ def guardar_checkpoint(ruta: str | Path, modelo: torch.nn.Module, optimizador: t
 
 
 def cargar_checkpoint(ruta: str | Path, modelo: torch.nn.Module, optimizador: torch.optim.Optimizer | None = None,
-                      map_location=None, restaurar_generadores: bool = True) -> dict:
-    """Carga modelo (y optimizador y generadores si se piden). Devuelve {paso, extra}."""
+                      map_location="cpu", restaurar_generadores: bool = True) -> dict:
+    """Carga modelo (y optimizador y generadores si se piden). Devuelve {paso, extra}.
+
+    Por defecto el checkpoint se lee a CPU: `load_state_dict` copia cada tensor al dispositivo de los parámetros del
+    modelo y del optimizador, así que no hace falta (ni conviene) cargarlo entero en la GPU."""
     ck = torch.load(ruta, map_location=map_location, weights_only=True)
     if ck.get("formato") != FORMATO:
         raise ValueError(f"Formato de checkpoint desconocido: {ck.get('formato')!r} (se esperaba {FORMATO})")

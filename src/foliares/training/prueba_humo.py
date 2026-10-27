@@ -120,7 +120,7 @@ def fase_reanudar(cfg: dict, repo: Path, splits_dir: Path, data_root: Path, sali
     x, y = x.to(dev), y.to(dev)
     modelo, opt = _armar(cfg, len(clases_eval(splits_dir)), False, dev)  # sin pesos de ImageNet: todo sale del checkpoint
     with Medidor() as med:
-        info = cargar_checkpoint(ruta_ck, modelo, opt, map_location=dev)
+        info = cargar_checkpoint(ruta_ck, modelo, opt)  # se lee a CPU; load_state_dict copia a la GPU
         hash_cargado = hash_pesos(modelo)
         reanudadas = [_paso(modelo, opt, x, y) for _ in range(cfg["pasos_despues"])]
         hash_final = hash_pesos(modelo)

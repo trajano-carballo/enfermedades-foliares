@@ -83,3 +83,51 @@ def test_formato_desconocido_se_rechaza(tmp_path):
     m, o = _armar(1)
     with pytest.raises(ValueError, match="Formato de checkpoint"):
         cargar_checkpoint(tmp_path / "mal.pt", m, o)
+
+
+class _TensorEnCuda(torch.Tensor):
+    """Simula un tensor en `cuda:0` sin GPU: `.numpy()` falla como en CUDA y `.cpu()` lo devuelve a CPU."""
+
+    def numpy(self, *a, **k):
+        raise TypeError("can't convert cuda:0 device type tensor to numpy. Use Tensor.cpu() to copy the tensor to host memory first.")
+
+    def cpu(self, *a, **k):
+        return self.as_subclass(torch.Tensor)
+
+
+def _como_si_estuviera_en_cuda(obj):
+    """Lo que hace `torch.load(map_location=cuda)`: todos los tensores del checkpoint, también los estados de RNG."""
+    if isinstance(obj, torch.Tensor):
+        return obj.as_subclass(_TensorEnCuda)
+    if isinstance(obj, dict):
+        return {k: _como_si_estuviera_en_cuda(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_como_si_estuviera_en_cuda(v) for v in obj]
+    return obj
+
+
+def test_los_generadores_se_restauran_aunque_torch_load_deje_los_tensores_en_cuda(tmp_path, monkeypatch):
+    # Regresión de la segunda corrida de Colab: cargar con map_location=cuda movía también el estado de RNG a la GPU y
+    # `restaurar_rng` fallaba con "can't convert cuda:0 device type tensor to numpy".
+    m, o = _armar(1)
+    guardar_checkpoint(tmp_path / "ck.pt", m, o, paso=0)
+    esperado = (random.random(), float(np.random.rand()), torch.rand(3))
+    random.seed(5), np.random.seed(5), torch.manual_seed(5)
+    carga_real = torch.load
+    # el torch.load real no puede ir a "cuda" sin GPU: carga a CPU y el mock deja los tensores "en cuda"
+    monkeypatch.setattr(torch, "load", lambda *a, **k: _como_si_estuviera_en_cuda(carga_real(*a, **{**k, "map_location": "cpu"})))
+    cargar_checkpoint(tmp_path / "ck.pt", m, o, map_location="cuda")
+    obtenido = (random.random(), float(np.random.rand()), torch.rand(3))
+    assert esperado[0] == obtenido[0] and esperado[1] == obtenido[1] and torch.equal(esperado[2], obtenido[2])
+
+
+def test_por_defecto_se_carga_siempre_a_cpu(tmp_path, monkeypatch):
+    # El modelo y el optimizador reciben los tensores igual (`load_state_dict` copia al dispositivo de los parámetros):
+    # no hace falta cargar el checkpoint entero en la GPU.
+    m, o = _armar(1)
+    guardar_checkpoint(tmp_path / "ck.pt", m, o, paso=0)
+    vistos = []
+    carga_real = torch.load
+    monkeypatch.setattr(torch, "load", lambda *a, **k: vistos.append(k.get("map_location")) or carga_real(*a, **k))
+    cargar_checkpoint(tmp_path / "ck.pt", m, o)
+    assert vistos == ["cpu"]
