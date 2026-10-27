@@ -7,12 +7,20 @@ PyTorch y sin verificar**.
 
 ## En CPU (medido)
 Torch 2.14.1+cpu, PC personal.
-- Misma semilla, mismo torch, misma máquina y **mismos hilos**: logits, pérdidas, gradientes y pesos tras 2 pasos de
-  MobileNetV3-Small son **idénticos bit a bit**, en el mismo proceso y entre procesos distintos.
+Lo que **cubre un test** (`tests/test_semillas_torch.py`):
+- Misma semilla, mismo torch, misma máquina y mismos hilos: logits, pérdidas, gradientes y pesos tras 2 pasos de
+  MobileNetV3-Small son **idénticos bit a bit**, en dos corridas dentro del mismo proceso.
 - `determinista=True` no cambia el resultado en CPU.
 - Semilla distinta → resultado distinto.
-- **Cambiar la cantidad de hilos cambia el resultado** (el orden de las reducciones): con 1 hilo vs 6 hilos la diferencia
-  de pesos tras 2 pasos fue de ~1e-7 (redondeo de float32), no igualdad exacta. Por eso cada resultado registra los hilos.
+- Con otra cantidad de hilos (el test compara 1 vs 2) los pesos coinciden solo con tolerancia (`allclose`, 1e-4), no bit a bit:
+  el orden de las reducciones depende de los hilos. Por eso cada resultado registra los hilos.
+
+Lo que se **midió pero no tiene test** (exploración de la sesión 7, scripts descartables; cifras citadas, no reproducibles desde el repo):
+- Entre procesos: dos procesos nuevos con los mismos hilos dieron el mismo hash de los pesos. También la prueba de humo local
+  (fase 1 y fase 2 en procesos distintos) dio `igual_bit_a_bit: true`; sus JSON están en
+  `C:\Users\xbetr\paquetes_foliares\_humo_local*`, fuera del repo.
+- Hilos: con 1 hilo vs 6 hilos la diferencia máxima de pesos tras 2 pasos fue de 1,2e-07 (y de 2,4e-07 en la pérdida): redondeo
+  de float32.
 
 ## En GPU (medido en Colab)
 Tesla T4, torch 2.11.0+cu130, CUDA 13.0, cuDNN 92700, Python 3.13.16, en dos sesiones del 2026-10-27 (commits `bdd9805` y
@@ -63,8 +71,9 @@ de PyTorch sigue valiendo para `AdaptiveAvgPool2d` con `output_size > 1`, que ac
 - Cada corrida escribe un JSON con semillas, `determinista`, versión de torch/CUDA/cuDNN, dispositivo y nombre de la GPU, hilos
   de CPU, commit, tiempo y memoria pico (ver `foliares.utils.sesion`).
 - Para igualdad exacta entre corridas, usar `determinista=True` en la misma GPU y versión (costo en velocidad: no medido). Las
-  comparaciones entre variantes **no** se apoyan en igualdad bit a bit: se reportan con varias semillas y con el intervalo
-  bootstrap de siempre.
+  comparaciones entre variantes **no** deberían apoyarse en igualdad bit a bit. **Propuesta pendiente de decisión del equipo
+  (sesión 8):** repetir cada variante con varias semillas (cuántas: a definir) y reportarlas con el intervalo bootstrap de
+  siempre; hoy no está decidido.
 - Reanudar desde un checkpoint guarda también los estados de los generadores (python, numpy, torch, CUDA); en CPU la reanudación
   reproduce la corrida continua bit a bit (test). En GPU, con `determinista=False`, reproduce las pérdidas pero no
   necesariamente los pesos finales bit a bit (ver arriba).

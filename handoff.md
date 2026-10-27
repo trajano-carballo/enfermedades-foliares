@@ -4,7 +4,9 @@
 
 ## 2026-10-27 — Sesión 7: Colab y entorno (puente etapa 1 → 2) — LISTO PARA LA ETAPA 2: prueba de humo de Colab completa en la T4 (sin modelos entrenados)
 
-**Estado: el puente etapa 1 → 2 está cerrado.** La tercera corrida de Colab (commit `161b553` = punta de `origin/sesion-7/colab`, Tesla T4, torch 2.11.0+cu130, `cambios_sin_commitear` false) recorrió todas las celdas: `verificar_paquete.py` = 0, los splits verifican, el commit clonado coincide con la rama, la fase 1 y la **fase 2 (reanudar desde el checkpoint de Drive en un proceso nuevo)** dieron `reanudacion_ok: true` y la sonda de determinismo quedó medida. La tarea 5 de la sesión está cerrada. Lo único que queda de esta sesión es commitear estos registros (ver "Qué quedó a medias").
+**Estado: el puente etapa 1 → 2 está cerrado.** La tercera corrida de Colab (commit `161b553` = punta de `origin/sesion-7/colab`, Tesla T4, torch 2.11.0+cu130, `cambios_sin_commitear` false) recorrió todas las celdas: `verificar_paquete.py` = 0, los splits verifican, el commit clonado coincide con la rama, la fase 1 y la **fase 2 (reanudar desde el checkpoint de Drive en un proceso nuevo)** dieron `reanudacion_ok: true` y la sonda de determinismo quedó medida. La tarea 5 de la sesión está cerrada. Los registros de la tercera corrida y el cambio de `REPO_REF` están en `4ececcc`.
+
+**Quién commiteó:** los 9 commits de la sesión 7 (`aa01a14` … `4ececcc`) y sus push los hizo el usuario, con el mensaje sugerido por Claude Code; el trailer `Co-Authored-By` indica coautoría del código, no quién commiteó.
 
 **Resultado de la tercera corrida de Colab (2026-10-27, run `20261027_175847`)**
 - **Reanudación en GPU:** `reanudacion_ok: true`, las 5 comprobaciones verdaderas y las 3 pérdidas reanudadas **idénticas** a las de la corrida continua (dif. 0,0). `igual_bit_a_bit: false` porque el hash de los pesos finales difiere: la corrida fue con `determinista: false` (coherente con la sonda); no se midió cuánto difieren los pesos finales ni se probó con `determinista: true`. Fase 1: 2,827 s, 577,5 MB de GPU, 1.489,7 MB de CPU; fase 2: 0,714 s; checkpoint 7.662.496 B en `foliares/checkpoints/colab_humo/20261027_175847/`.
@@ -25,10 +27,18 @@
 - **Arreglo** (`src/foliares/training/checkpoint.py`, `prueba_humo.py`): el checkpoint se lee a CPU por defecto (`load_state_dict` copia a la GPU) y `restaurar_rng` trae a CPU todos sus tensores. Tests de regresión en `tests/test_checkpoint.py` con un tensor que simula CUDA sin GPU: fallan con el código anterior con el mismo error de Colab y pasan con el nuevo.
 - `docs/reproducibilidad.md` actualizado con la medición de la T4 y la corrección; `decisiones.md` con el hallazgo (Colab usó torch 2.11.0+cu130 y la PC 2.14.1+cpu, consistente con requirements A + C).
 
+**Ajustes tras la review de `sesion-7/colab`**
+- `scripts/colab_humo.py`: `--salida` es obligatorio (sin default dentro del repo); el notebook ya lo pasa en las dos fases. Tests en `tests/test_colab_humo_cli.py` (argparse falla sin `--salida`; el notebook lo incluye).
+- `fijar_semillas` fija siempre los dos estados (`use_deterministic_algorithms(determinista, warn_only=True)` y `cudnn.deterministic`); `benchmark=False` solo si `determinista`. Antes, una llamada con `False` heredaba el `True` de una anterior. Test `True → False`.
+- La sonda de determinismo restaura el modo determinista con el que entró (antes lo dejaba en `False`). Test con los dos modos de entrada.
+- `.gitignore`: `*.pt.tmp` (el temporal del checkpoint atómico). `results/` en `.gitignore`: **no se tocó** (decisión g de la sesión 8).
+- `accesos_test.md`: nota de Colab (tres sesiones, qué se copió y verificó sin decodificar, y que la prueba de humo solo leyó PlantVillage-train) que corrige "la de Colab la ejecuta el usuario". `decisiones.md`: el hallazgo (4) aclara que la prueba local fue preliminar con código sin commitear y que la evidencia rastreable es la de Colab (`161b553`); el hallazgo (2) queda marcado "(corregido abajo)".
+- `docs/reproducibilidad.md`: separa lo que cubre un test de lo que se midió sin test (entre procesos; 1 vs 6 hilos) y marca "varias semillas" como propuesta pendiente de decisión.
+
 **Hecho**
-- Arranque: rama `sesion-7/colab`, árbol limpio, 96 tests; `data/splits/` verificado (`cd data/splits && sha256sum -c SHA256SUMS.txt` → OK). Al cierre: **122 pasan, 0 saltados**.
+- Arranque: rama `sesion-7/colab`, árbol limpio, 96 tests; `data/splits/` verificado (`cd data/splits && sha256sum -c SHA256SUMS.txt` → OK). Al cierre: **132 pasan, 0 saltados**.
 - **Entorno local:** el `.venv` ya traía torch **2.14.1+cpu** y torchvision **0.29.1+cpu** (Python 3.13.7, numpy 2.5.4, pandas 3.1.0, pillow 12.3.0); sin GPU (`nvidia-smi` no existe). Versiones: el equipo decidió dejar `requirements.txt` con cotas mínimas (sin tocar) y registrar las versiones en cada JSON; referencia del entorno local en `docs/entorno_referencia.txt`.
-- **Semillas:** `tests/test_semillas_torch.py` corre dos veces forward/backward/paso de MobileNetV3-Small con la misma semilla: idéntico bit a bit en CPU (mismo proceso y entre procesos); con otra cantidad de hilos difiere por redondeo (~1e-7). `fijar_semillas` ahora registra `determinista` y fija `CUBLAS_WORKSPACE_CONFIG`. Qué se garantiza y qué no, con lo medido en CPU y en la T4: `docs/reproducibilidad.md`.
+- **Semillas:** `tests/test_semillas_torch.py` corre dos veces forward/backward/paso de MobileNetV3-Small con la misma semilla: idéntico bit a bit en CPU en el mismo proceso (entre procesos y 1 vs 6 hilos: medido sin test, ver `docs/reproducibilidad.md`); con otra cantidad de hilos los pesos coinciden solo con tolerancia. `fijar_semillas` ahora registra `determinista`, fija `CUBLAS_WORKSPACE_CONFIG` y fija siempre los dos estados de torch. Qué se garantiza y qué no, con lo medido en CPU y en la T4: `docs/reproducibilidad.md`.
 - **Modelo mínimo con el cabezal del invariante 4:** `src/foliares/models/mobilenet.py` (`features` de torchvision → `AdaptiveAvgPool2d(1)` → `Linear(576, n)`; sin dropout; test de que no hay capa oculta y de que CAM sale del mismo forward).
 - **Paquetes** (`empaquetar_subconjunto.py`, 308 s) en `C:\Users\xbetr\paquetes_foliares\` (fuera del repo; `*.tar` además está en `.gitignore`, 0 `.tar` versionados): `plantvillage_subconjunto.tar` 558.612.480 B (39.110 archivos = 19.555 color + 19.555 segmented; sha256 `813578b3…087d5fa`) y `plantdoc_subconjunto.tar` 343.480.320 B (1.098 archivos; sha256 `aa0f5113…f17b7d1`); más sus `.sha256`. Contenido = `data/splits/` exacto (ni falta ni sobra). Descomprimidos en `…\_extraido`: `verificar_paquete.py --tar … --data-root …` → **código 0** (descomprimir 90 s, verificar 399 s en Windows).
   - Archivos por clase: PlantVillage color = segmented por clase: Pepper bacterial spot 997, Pepper healthy 1.478, Potato early 1.000, Potato late 1.000, Tomato bacterial spot 2.127, Tomato early 1.000, Tomato late 1.909, Leaf Mold 952, Septoria 1.771, YLCV 5.357, mosaic 373, Tomato healthy 1.591. PlantDoc: Bell_pepper leaf 61, Bell_pepper leaf spot 71, Potato early 117, Potato late 105, Tomato Early blight 88, Septoria 151, Tomato leaf 63, bacterial spot 110, late blight 111, mosaic 54, yellow virus 76, mold 91.
@@ -44,18 +54,17 @@
 5. Trabajar guardando checkpoints en `foliares/checkpoints/` (`guardar_checkpoint`) y resultados en `foliares/results/`; la prueba de humo (celdas 9–11) se corre la primera vez o si cambia el entorno.
 
 **Qué quedó a medias**
-- Nada de código ni de la tarea 5. Los registros de la tercera corrida (`reproducibilidad.md`, `decisiones.md` y este handoff) están sin commitear.
+- Nada de código ni de la tarea 5.
 - Opcional, no necesario para la etapa 2: repetir la prueba de humo con `determinista: true` en `configs/colab_humo.yaml` para comprobar que la reanudación en GPU es bit a bit, y guardar los pesos finales de la fase 1 para medir cuánto difieren cuando no lo es.
 
 **Próximos pasos**
-1. **Usuario:** commitear y pushear los registros de la tercera corrida y el cambio de `REPO_REF`; hacer el PR de `sesion-7/colab` a `main`. Ya no hay que tocar el notebook después del merge.
-2. (Hecho por el usuario) Paquetes subidos a `foliares/paquetes/` de Drive, rama pusheada y notebook corrido de punta a punta en la T4.
-5. Etapa 2 (modelo base, `02_modelo_base.ipynb`): solo con `data/splits/` congelado y el invariante 1 (PlantDoc nunca en entrenamiento ni en val de PlantVillage); filtrar filas sin partición/`excluida` y usar `clase_eval` (heredado de la sesión 6).
+1. **Usuario:** hacer el PR de `sesion-7/colab` a `main` (ya no hay que tocar el notebook después del merge).
+2. Etapa 2 (modelo base, `02_modelo_base.ipynb`): solo con `data/splits/` congelado y el invariante 1 (PlantDoc nunca en entrenamiento ni en val de PlantVillage); filtrar filas sin partición/`excluida` y usar `clase_eval` (heredado de la sesión 6).
 
-**Decisiones pendientes:** ninguna. Las de esta sesión quedaron resueltas por el equipo (ver `decisiones.md`): `requirements.txt` A + C; `results/` en `foliares/results/`; `info_repo` opción A (las corridas escriben fuera del repo); los segmented se quedan; `LongPathsEnabled` se activa en la otra PC cuando se use (hasta entonces, en esa PC el test de rutas largas falla).
+**Decisiones pendientes:** ninguna de esta sesión; para la sesión 8, `results/` en `.gitignore` (decisión g) y la propuesta de varias semillas por variante (ver riesgos). Las de esta sesión quedaron resueltas por el equipo (ver `decisiones.md`): `requirements.txt` A + C; `results/` en `foliares/results/`; `info_repo` opción A (las corridas escriben fuera del repo); los segmented se quedan; `LongPathsEnabled` se activa en la otra PC cuando se use (hasta entonces, en esa PC el test de rutas largas falla).
 
 **Riesgos abiertos**
-- Determinismo en GPU: medido en dos sesiones de Colab con la misma T4 (2 a 3 pasos, lote de 32): con `determinista=True` bit a bit, sin él ~1e-7 en los pesos. Otra GPU, otra versión de torch o corridas largas pueden comportarse distinto: comparar variantes con varias semillas e IC, no con una sola corrida.
+- Determinismo en GPU: medido en dos sesiones de Colab con la misma T4 (2 a 3 pasos, lote de 32): con `determinista=True` bit a bit, sin él ~1e-7 en los pesos. Otra GPU, otra versión de torch o corridas largas pueden comportarse distinto. Propuesta **pendiente de decisión del equipo (sesión 8)**: repetir cada variante con varias semillas (cuántas, a definir) además del IC bootstrap.
 - Colab gratuito asigna GPU y versión de torch distintas según el día: cada JSON registra `torch`, `cuda_runtime`, `cudnn` y `gpu`.
 - La verificación completa de 40.208 archivos tarda ~7 min en la PC (Windows) y 9,9 s en Colab (Linux, T4): en Colab no hace falta `--rapido`.
 
