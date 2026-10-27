@@ -2,13 +2,20 @@
 
 > Se actualiza al cierre de cada sesión de trabajo. Lo más reciente arriba.
 
-## 2026-10-27 — Sesión 7: Colab y entorno (puente etapa 1 → 2) — LISTO PARA CORRER EN COLAB (sin modelos entrenados)
+## 2026-10-27 — Sesión 7: Colab y entorno (puente etapa 1 → 2) — primera corrida de Colab: celdas 1–6 OK, celda 7 corregida (sin modelos entrenados)
 
-**Estado:** paquetes generados y verificados en la PC; código, tests y notebook de Colab listos. **Falta lo que solo el usuario puede hacer** (ver "Próximos pasos"): commit + push de `sesion-7/colab`, subir los 4 archivos de paquetes a Drive y ejecutar el notebook; la tarea 5 (verificar la salida de Colab) queda esperando esa salida.
+**Estado:** paquetes en Drive y verificados también en Colab (primera corrida, T4, commit clonado `e941355` = punta de `origin/sesion-7/colab`): `verificar_paquete.py` código 0. La celda 7 falló con `No module named 'foliares.utils'`; el arreglo está en el árbol de trabajo **sin commitear** (ver "Corrección tras la primera corrida de Colab"). Faltan las celdas 7–11 (splits, JSON de sesión, prueba de humo en GPU): hay que volver a correr el notebook con el commit corregido.
+
+**Corrección tras la primera corrida de Colab (2026-10-27)**
+- **Causa:** (a) el `pip install -e .` de la celda 4 no se ve en un kernel ya iniciado (el `.pth` del editable se procesa al arrancar el intérprete) y (b) el clon se llamaba `/content/foliares`, igual que el paquete: con ese directorio alcanzable por `sys.path`, `import foliares` devolvía un paquete *namespace* vacío (de ahí `foliares.utils` y no `foliares`). Reproducido en local con un intérprete sin el editable y un directorio `foliares` en `sys.path`.
+- **Arreglo** (`notebooks/colab_arranque.ipynb`): el clon pasa a `REPO_DIR = /content/enfermedades-foliares`; la celda 4 pone `REPO_DIR/src` primero en `sys.path` y en `PYTHONPATH`, descarta un `foliares` vacío cacheado en `sys.modules`, invalida cachés de import, imprime `foliares.__file__` y falla si no sale de `src`. Sin reiniciar el entorno.
+- **Test** (`tests/test_notebook_colab.py`): ejecuta el código real de la celda 4 en un intérprete aparte, sin el paquete instalado y con un directorio `foliares` alcanzable; la celda vieja (`e941355`) falla con el mismo error y la nueva pasa. Hay además un control que confirma que sin el arreglo el import falla.
+- **Primera corrida (hallazgos):** `verificar_paquete.py` = 0 (plantvillage 39.110, plantdoc 1.098, 0 faltan / 0 tamaño distinto / 0 sha256 distinto). Tiempos de preparación en Colab: clonar 2,6 s, pip 7,1 s, copiar 23,3 s, descomprimir 11,8 s, verificar 9,9 s → **copiar + descomprimir + verificar = 45,0 s** (54,7 s con clonar y pip), contra 90 s de descompresión y 399 s de verificación en la PC con Windows.
+- **Decisiones del equipo sobre los pendientes** (registradas en `decisiones.md`): `requirements.txt` opción A + C (cotas mínimas + versiones en cada JSON + referencia en `docs/entorno_referencia.txt`, creada); `results/` en `foliares/results/` del Drive compartido; `info_repo` opción A (las corridas siguen escribiendo fuera del repo); los segmented se quedan en el paquete; `LongPathsEnabled` se activa en la otra PC cuando se use.
 
 **Hecho**
 - Arranque: rama `sesion-7/colab`, árbol limpio, 96 tests; `data/splits/` verificado (`cd data/splits && sha256sum -c SHA256SUMS.txt` → OK). Al cierre: **122 pasan, 0 saltados**.
-- **Entorno local:** el `.venv` ya traía torch **2.14.1+cpu** y torchvision **0.29.1+cpu** (Python 3.13.7, numpy 2.5.4, pandas 3.1.0, pillow 12.3.0); sin GPU (`nvidia-smi` no existe). Fijar versiones exactas: decisión pendiente (ver abajo); `requirements.txt` sin tocar.
+- **Entorno local:** el `.venv` ya traía torch **2.14.1+cpu** y torchvision **0.29.1+cpu** (Python 3.13.7, numpy 2.5.4, pandas 3.1.0, pillow 12.3.0); sin GPU (`nvidia-smi` no existe). Versiones: el equipo decidió dejar `requirements.txt` con cotas mínimas (sin tocar) y registrar las versiones en cada JSON; referencia del entorno local en `docs/entorno_referencia.txt`.
 - **Semillas:** `tests/test_semillas_torch.py` corre dos veces forward/backward/paso de MobileNetV3-Small con la misma semilla: idéntico bit a bit en CPU (mismo proceso y entre procesos); con otra cantidad de hilos difiere por redondeo (~1e-7). `fijar_semillas` ahora registra `determinista` y fija `CUBLAS_WORKSPACE_CONFIG`. Qué no se garantiza en GPU y cómo se documenta: `docs/reproducibilidad.md` (sin verificar en GPU; la sonda de la celda de Colab lo mide).
 - **Modelo mínimo con el cabezal del invariante 4:** `src/foliares/models/mobilenet.py` (`features` de torchvision → `AdaptiveAvgPool2d(1)` → `Linear(576, n)`; sin dropout; test de que no hay capa oculta y de que CAM sale del mismo forward).
 - **Paquetes** (`empaquetar_subconjunto.py`, 308 s) en `C:\Users\xbetr\paquetes_foliares\` (fuera del repo; `*.tar` además está en `.gitignore`, 0 `.tar` versionados): `plantvillage_subconjunto.tar` 558.612.480 B (39.110 archivos = 19.555 color + 19.555 segmented; sha256 `813578b3…087d5fa`) y `plantdoc_subconjunto.tar` 343.480.320 B (1.098 archivos; sha256 `aa0f5113…f17b7d1`); más sus `.sha256`. Contenido = `data/splits/` exacto (ni falta ni sobra). Descomprimidos en `…\_extraido`: `verificar_paquete.py --tar … --data-root …` → **código 0** (descomprimir 90 s, verificar 399 s en Windows).
@@ -19,34 +26,29 @@
 
 **Cómo arrancar una sesión de Colab en 5 pasos**
 1. En Colab: *Entorno de ejecución → Cambiar tipo → GPU (T4)*; abrir `notebooks/colab_arranque.ipynb` (Archivo → Abrir cuaderno → GitHub → `trajano-carballo/enfermedades-foliares`, rama `REPO_REF`). Tener el acceso directo `foliares` en *Mi unidad*.
-2. Celdas 1–4: montar Drive, variables, clonar el repo en `REPO_REF`, `pip install -e . --no-deps`.
+2. Celdas 1–4: montar Drive, variables, clonar el repo en `REPO_REF` (en `/content/enfermedades-foliares`), `pip install -e . --no-deps` y hacer visible `src` en el kernel (la celda 4 imprime `foliares.__file__`; sin reiniciar el entorno).
 3. Celdas 5–6: copiar los `.tar` de `foliares/paquetes/` a `/content/paquetes`, descomprimir en `/content/data` y correr `verificar_paquete.py`: **tiene que dar código 0**; si imprime MAL, no seguir y recopiar los `.tar`.
 4. Celdas 7–8: `sha256sum -c` de `data/splits/`, commit clonado = rama remota y JSON de sesión en `foliares/results/colab_sesion/<run_id>/` (queda registrado cuánto tardó la preparación).
 5. Trabajar guardando checkpoints en `foliares/checkpoints/` (`guardar_checkpoint`) y resultados en `foliares/results/`; la prueba de humo (celdas 9–11) se corre la primera vez o si cambia el entorno.
 
 **Qué quedó a medias**
-- **Tarea 5 (esperando la salida de Colab):** verificar `verificar_paquete.py` = 0 en Colab, que el commit clonado coincide con la rama, cuánto tarda copiar + descomprimir + verificar, y qué dice la sonda de determinismo en GPU. Referencia en la PC (Windows): descomprimir 90 s, verificar 399 s.
-- Decisión sobre versiones exactas de `requirements.txt`; `empaquetar` listo pero los `.tar` todavía no están en Drive.
-- `docs/reproducibilidad.md` dice "sin verificar en GPU" en lo de CUDA hasta tener la salida de Colab.
+- **Tarea 5, parcial:** ya están `verificar_paquete.py` = 0 en Colab, el commit clonado (`e941355` = punta de la rama) y los tiempos de preparación. Falta la salida de las celdas 7–11 con el notebook corregido: JSON de sesión, la prueba de humo en GPU (reanudación) y la sonda de determinismo.
+- `docs/reproducibilidad.md` dice "sin verificar en GPU" en lo de CUDA hasta tener esa salida.
+- El arreglo de la celda 4 y esta documentación están sin commitear.
 
 **Próximos pasos**
-1. **Usuario:** commitear y pushear `sesion-7/colab` (commits sugeridos en el reporte de la sesión) — Colab clona de GitHub, sin esto el notebook no tiene el código nuevo.
-2. **Usuario:** subir a `foliares/paquetes/` de Drive los 4 archivos de `C:\Users\xbetr\paquetes_foliares\` (`plantvillage_subconjunto.tar` y `.tar.sha256`, `plantdoc_subconjunto.tar` y `.tar.sha256`) y comprobar que el sha256 en la PC (`Get-FileHash`) coincide con el `.sha256`.
-3. **Usuario:** ejecutar el notebook en Colab con GPU y pegar la salida de la celda 11.
-4. Con esa salida: cerrar la tarea 5, completar `docs/reproducibilidad.md` con lo medido en GPU y decidir `REPO_REF = "main"` tras el merge.
+1. **Usuario:** commitear y pushear a `sesion-7/colab` el arreglo de la celda 4 (Colab clona de GitHub: sin el push sigue el notebook viejo).
+2. **Usuario:** volver a ejecutar el notebook en Colab con GPU (en una sesión nueva o con el entorno reiniciado, para que el clon quede en `/content/enfermedades-foliares`) y pegar la salida de las celdas 4 y 11.
+3. Con esa salida: cerrar la tarea 5, completar `docs/reproducibilidad.md` con lo medido en GPU y decidir `REPO_REF = "main"` tras el merge.
+4. (Hecho por el usuario) Paquetes subidos a `foliares/paquetes/` de Drive y rama pusheada.
 5. Etapa 2 (modelo base, `02_modelo_base.ipynb`): solo con `data/splits/` congelado y el invariante 1 (PlantDoc nunca en entrenamiento ni en val de PlantVillage); filtrar filas sin partición/`excluida` y usar `clase_eval` (heredado de la sesión 6).
 
-**Decisiones pendientes** (opciones y costo en el reporte de la sesión)
-- Fijar versiones exactas de torch/torchvision en `requirements.txt` (o dejar cotas mínimas + registrar versiones en cada JSON).
-- Subcarpeta nueva `results/` en el Drive compartido (la sesión la usa; el pedido definía solo `paquetes/` y `checkpoints/`) o anidarla dentro de `checkpoints/`.
-- Qué hacer con `info_repo` cuando las salidas caen dentro del repo (`results/` sin seguimiento cuenta como "cambios sin commitear", igual que pasó con `data/splits/`): hoy se evita escribiendo fuera del repo.
-- Los segmented son 19.555 de los 39.110 archivos de PlantVillage (≈ la mitad del paquete): se mantienen mientras la supresión de fondo siga en el alcance.
-- Heredada: `LongPathsEnabled` en la otra PC Windows o saltar ese test.
+**Decisiones pendientes:** ninguna. Las de esta sesión quedaron resueltas por el equipo (ver `decisiones.md`): `requirements.txt` A + C; `results/` en `foliares/results/`; `info_repo` opción A (las corridas escriben fuera del repo); los segmented se quedan; `LongPathsEnabled` se activa en la otra PC cuando se use (hasta entonces, en esa PC el test de rutas largas falla).
 
 **Riesgos abiertos**
 - El no-determinismo en GPU (9 bloques Squeeze-Excitation + GAP) significa que dos corridas con la misma semilla no darán lo mismo: comparar variantes con varias semillas e IC, no con una sola corrida.
 - Colab gratuito asigna GPU y versión de torch distintas según el día: cada JSON registra `torch`, `cuda_runtime`, `cudnn` y `gpu`.
-- La verificación completa de 40.208 archivos tarda ~7 min en la PC (Windows); si en Colab tarda mucho, `verificar_paquete.py --rapido` compara solo existencia y tamaño (el sha256 de los `.tar` ya cubre la integridad de la copia).
+- La verificación completa de 40.208 archivos tarda ~7 min en la PC (Windows) y 9,9 s en Colab (Linux, T4): en Colab no hace falta `--rapido`.
 
 ## 2026-10-23 — Sesión 6: cierre de datos (etapa 1) — CONGELADO (sin modelos)
 
