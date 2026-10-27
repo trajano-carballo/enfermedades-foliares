@@ -2,9 +2,9 @@
 
 > Se actualiza al cierre de cada sesión de trabajo. Lo más reciente arriba.
 
-## 2026-10-27 — Sesión 7: Colab y entorno (puente etapa 1 → 2) — primera corrida de Colab: celdas 1–6 OK, celda 7 corregida (sin modelos entrenados)
+## 2026-10-27 — Sesión 7: Colab y entorno (puente etapa 1 → 2) — segunda corrida de Colab: celdas 1–9 OK, fase 2 de la prueba de humo corregida (sin modelos entrenados)
 
-**Estado:** paquetes en Drive y verificados también en Colab (primera corrida, T4, commit clonado `e941355` = punta de `origin/sesion-7/colab`): `verificar_paquete.py` código 0. La celda 7 falló con `No module named 'foliares.utils'`; el arreglo está en el árbol de trabajo **sin commitear** (ver "Corrección tras la primera corrida de Colab"). Faltan las celdas 7–11 (splits, JSON de sesión, prueba de humo en GPU): hay que volver a correr el notebook con el commit corregido.
+**Estado:** en la segunda corrida de Colab (commit `bdd9805` = rama remota, T4, torch 2.11.0+cu130) las celdas 1–9 salieron bien: el import de `foliares` quedó arreglado, `verificar_paquete.py` dio 0, los splits verifican, la preparación tardó 44,5 s y la fase 1 de la prueba de humo corrió en GPU. **La fase 2 falló** al restaurar el RNG tras `torch.load(map_location=cuda)`; el arreglo y sus tests están en el árbol de trabajo **sin commitear** (ver "Corrección tras la segunda corrida de Colab"). Falta volver a correr el notebook con el commit corregido para cerrar la reanudación en GPU.
 
 **Corrección tras la primera corrida de Colab (2026-10-27)**
 - **Causa:** (a) el `pip install -e .` de la celda 4 no se ve en un kernel ya iniciado (el `.pth` del editable se procesa al arrancar el intérprete) y (b) el clon se llamaba `/content/foliares`, igual que el paquete: con ese directorio alcanzable por `sys.path`, `import foliares` devolvía un paquete *namespace* vacío (de ahí `foliares.utils` y no `foliares`). Reproducido en local con un intérprete sin el editable y un directorio `foliares` en `sys.path`.
@@ -13,10 +13,17 @@
 - **Primera corrida (hallazgos):** `verificar_paquete.py` = 0 (plantvillage 39.110, plantdoc 1.098, 0 faltan / 0 tamaño distinto / 0 sha256 distinto). Tiempos de preparación en Colab: clonar 2,6 s, pip 7,1 s, copiar 23,3 s, descomprimir 11,8 s, verificar 9,9 s → **copiar + descomprimir + verificar = 45,0 s** (54,7 s con clonar y pip), contra 90 s de descompresión y 399 s de verificación en la PC con Windows.
 - **Decisiones del equipo sobre los pendientes** (registradas en `decisiones.md`): `requirements.txt` opción A + C (cotas mínimas + versiones en cada JSON + referencia en `docs/entorno_referencia.txt`, creada); `results/` en `foliares/results/` del Drive compartido; `info_repo` opción A (las corridas siguen escribiendo fuera del repo); los segmented se quedan en el paquete; `LongPathsEnabled` se activa en la otra PC cuando se use.
 
+**Corrección tras la segunda corrida de Colab (2026-10-27)**
+- **Resultados** (commit `bdd9805`, Tesla T4, torch 2.11.0+cu130, CUDA 13.0, cuDNN 92700, Python 3.13.16): celda 4 con `foliares.__file__ = /content/enfermedades-foliares/src/foliares/__init__.py`; celda 6 con `verificar_paquete.py` = 0 (39.110 y 1.098); celda 7 con sha256 de `data/splits/` OK y commit clonado = rama remota; celda 8 con `cambios_sin_commitear` false y preparación 44,5 s (clonar 2,1, pip 10,8, copiar 7,2, descomprimir 14,3, verificar 10,1). Fase 1: código 0, cuda, 2,381 s, memoria pico 577,5 MB de GPU y 1.488,9 MB de CPU.
+- **Sonda de determinismo en la T4:** `determinista=False` → no bit a bit (máx. dif. de pesos 1,0058e-07, pérdidas 0,0); `determinista=True` → bit a bit, sin avisos. Esto **corrige** lo que decían esta entrada y `docs/reproducibilidad.md` (que `AdaptiveAvgPool2d` volvía no determinista el backward en CUDA): con `output_size=1` torch usa un promedio (`MeanBackward1`) y la T4 no emitió avisos. Alcance: una sesión, una GPU, 2 pasos.
+- **Fallo de la fase 2:** `cargar_checkpoint(map_location=cuda)` movía también los estados de RNG a la GPU y `restaurar_rng` llamaba a `.numpy()` sobre un tensor de CUDA (`TypeError: can't convert cuda:0 device type tensor to numpy`); la celda 11 falló en cascada por no existir `fase2_reanudar.json`.
+- **Arreglo** (`src/foliares/training/checkpoint.py`, `prueba_humo.py`): el checkpoint se lee a CPU por defecto (`load_state_dict` copia a la GPU) y `restaurar_rng` trae a CPU todos sus tensores. Tests de regresión en `tests/test_checkpoint.py` con un tensor que simula CUDA sin GPU: fallan con el código anterior con el mismo error de Colab y pasan con el nuevo.
+- `docs/reproducibilidad.md` actualizado con la medición de la T4 y la corrección; `decisiones.md` con el hallazgo (Colab usó torch 2.11.0+cu130 y la PC 2.14.1+cpu, consistente con requirements A + C).
+
 **Hecho**
 - Arranque: rama `sesion-7/colab`, árbol limpio, 96 tests; `data/splits/` verificado (`cd data/splits && sha256sum -c SHA256SUMS.txt` → OK). Al cierre: **122 pasan, 0 saltados**.
 - **Entorno local:** el `.venv` ya traía torch **2.14.1+cpu** y torchvision **0.29.1+cpu** (Python 3.13.7, numpy 2.5.4, pandas 3.1.0, pillow 12.3.0); sin GPU (`nvidia-smi` no existe). Versiones: el equipo decidió dejar `requirements.txt` con cotas mínimas (sin tocar) y registrar las versiones en cada JSON; referencia del entorno local en `docs/entorno_referencia.txt`.
-- **Semillas:** `tests/test_semillas_torch.py` corre dos veces forward/backward/paso de MobileNetV3-Small con la misma semilla: idéntico bit a bit en CPU (mismo proceso y entre procesos); con otra cantidad de hilos difiere por redondeo (~1e-7). `fijar_semillas` ahora registra `determinista` y fija `CUBLAS_WORKSPACE_CONFIG`. Qué no se garantiza en GPU y cómo se documenta: `docs/reproducibilidad.md` (sin verificar en GPU; la sonda de la celda de Colab lo mide).
+- **Semillas:** `tests/test_semillas_torch.py` corre dos veces forward/backward/paso de MobileNetV3-Small con la misma semilla: idéntico bit a bit en CPU (mismo proceso y entre procesos); con otra cantidad de hilos difiere por redondeo (~1e-7). `fijar_semillas` ahora registra `determinista` y fija `CUBLAS_WORKSPACE_CONFIG`. Qué se garantiza y qué no, con lo medido en CPU y en la T4: `docs/reproducibilidad.md`.
 - **Modelo mínimo con el cabezal del invariante 4:** `src/foliares/models/mobilenet.py` (`features` de torchvision → `AdaptiveAvgPool2d(1)` → `Linear(576, n)`; sin dropout; test de que no hay capa oculta y de que CAM sale del mismo forward).
 - **Paquetes** (`empaquetar_subconjunto.py`, 308 s) en `C:\Users\xbetr\paquetes_foliares\` (fuera del repo; `*.tar` además está en `.gitignore`, 0 `.tar` versionados): `plantvillage_subconjunto.tar` 558.612.480 B (39.110 archivos = 19.555 color + 19.555 segmented; sha256 `813578b3…087d5fa`) y `plantdoc_subconjunto.tar` 343.480.320 B (1.098 archivos; sha256 `aa0f5113…f17b7d1`); más sus `.sha256`. Contenido = `data/splits/` exacto (ni falta ni sobra). Descomprimidos en `…\_extraido`: `verificar_paquete.py --tar … --data-root …` → **código 0** (descomprimir 90 s, verificar 399 s en Windows).
   - Archivos por clase: PlantVillage color = segmented por clase: Pepper bacterial spot 997, Pepper healthy 1.478, Potato early 1.000, Potato late 1.000, Tomato bacterial spot 2.127, Tomato early 1.000, Tomato late 1.909, Leaf Mold 952, Septoria 1.771, YLCV 5.357, mosaic 373, Tomato healthy 1.591. PlantDoc: Bell_pepper leaf 61, Bell_pepper leaf spot 71, Potato early 117, Potato late 105, Tomato Early blight 88, Septoria 151, Tomato leaf 63, bacterial spot 110, late blight 111, mosaic 54, yellow virus 76, mold 91.
@@ -32,21 +39,20 @@
 5. Trabajar guardando checkpoints en `foliares/checkpoints/` (`guardar_checkpoint`) y resultados en `foliares/results/`; la prueba de humo (celdas 9–11) se corre la primera vez o si cambia el entorno.
 
 **Qué quedó a medias**
-- **Tarea 5, parcial:** ya están `verificar_paquete.py` = 0 en Colab, el commit clonado (`e941355` = punta de la rama) y los tiempos de preparación. Falta la salida de las celdas 7–11 con el notebook corregido: JSON de sesión, la prueba de humo en GPU (reanudación) y la sonda de determinismo.
-- `docs/reproducibilidad.md` dice "sin verificar en GPU" en lo de CUDA hasta tener esa salida.
-- El arreglo de la celda 4 y esta documentación están sin commitear.
+- **Tarea 5, casi cerrada:** `verificar_paquete.py` = 0 en Colab, commit clonado = rama remota (`bdd9805`), preparación 44,5 s y sonda de determinismo medidos. Falta la **fase 2 (reanudación en GPU)** y la celda 11 (resumen), que dependen de volver a correr el notebook con el arreglo.
+- El arreglo del checkpoint, los tests y esta documentación están sin commitear.
 
 **Próximos pasos**
-1. **Usuario:** commitear y pushear a `sesion-7/colab` el arreglo de la celda 4 (Colab clona de GitHub: sin el push sigue el notebook viejo).
-2. **Usuario:** volver a ejecutar el notebook en Colab con GPU (en una sesión nueva o con el entorno reiniciado, para que el clon quede en `/content/enfermedades-foliares`) y pegar la salida de las celdas 4 y 11.
-3. Con esa salida: cerrar la tarea 5, completar `docs/reproducibilidad.md` con lo medido en GPU y decidir `REPO_REF = "main"` tras el merge.
+1. **Usuario:** commitear y pushear a `sesion-7/colab` el arreglo del checkpoint (Colab clona de GitHub: sin el push sigue el código anterior).
+2. **Usuario:** volver a ejecutar el notebook en Colab con GPU y pegar la salida de las celdas 10 y 11 (`reanudacion_ok`, `igual_bit_a_bit`, `max_abs_dif_perdidas`, `comprobaciones`).
+3. Con esa salida: cerrar la tarea 5, completar en `docs/reproducibilidad.md` la reanudación en GPU y decidir `REPO_REF = "main"` tras el merge.
 4. (Hecho por el usuario) Paquetes subidos a `foliares/paquetes/` de Drive y rama pusheada.
 5. Etapa 2 (modelo base, `02_modelo_base.ipynb`): solo con `data/splits/` congelado y el invariante 1 (PlantDoc nunca en entrenamiento ni en val de PlantVillage); filtrar filas sin partición/`excluida` y usar `clase_eval` (heredado de la sesión 6).
 
 **Decisiones pendientes:** ninguna. Las de esta sesión quedaron resueltas por el equipo (ver `decisiones.md`): `requirements.txt` A + C; `results/` en `foliares/results/`; `info_repo` opción A (las corridas escriben fuera del repo); los segmented se quedan; `LongPathsEnabled` se activa en la otra PC cuando se use (hasta entonces, en esa PC el test de rutas largas falla).
 
 **Riesgos abiertos**
-- El no-determinismo en GPU (9 bloques Squeeze-Excitation + GAP) significa que dos corridas con la misma semilla no darán lo mismo: comparar variantes con varias semillas e IC, no con una sola corrida.
+- Determinismo en GPU: medido solo en una sesión (T4, 2 pasos, lote de 32): con `determinista=True` bit a bit, sin él ~1e-7 en los pesos. Otra GPU, otra versión de torch o corridas largas pueden comportarse distinto: comparar variantes con varias semillas e IC, no con una sola corrida.
 - Colab gratuito asigna GPU y versión de torch distintas según el día: cada JSON registra `torch`, `cuda_runtime`, `cudnn` y `gpu`.
 - La verificación completa de 40.208 archivos tarda ~7 min en la PC (Windows) y 9,9 s en Colab (Linux, T4): en Colab no hace falta `--rapido`.
 
