@@ -75,3 +75,12 @@ def test_fijar_semillas_informa_lo_fijado_y_prepara_cublas(monkeypatch):
     r = fijar_semillas(7, determinista=True)
     assert r["determinista"] is True and os.environ["CUBLAS_WORKSPACE_CONFIG"] == ":4096:8"
     assert torch.are_deterministic_algorithms_enabled()
+
+
+def test_pasar_de_determinista_a_no_determinista_deja_los_dos_estados_en_false():
+    # fijar_semillas fija SIEMPRE los dos estados: una llamada con determinista=False no puede heredar el True de una anterior.
+    r = fijar_semillas(1, determinista=True)
+    assert r["determinista"] is True and torch.are_deterministic_algorithms_enabled() and torch.backends.cudnn.deterministic
+    r = fijar_semillas(1, determinista=False)
+    assert r["determinista"] is False
+    assert not torch.are_deterministic_algorithms_enabled() and not torch.backends.cudnn.deterministic

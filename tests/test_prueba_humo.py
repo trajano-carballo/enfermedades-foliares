@@ -69,3 +69,13 @@ def test_un_checkpoint_que_no_es_el_de_la_fase_1_no_se_acepta(tmp_path, pv_sinte
     assert f2["reanudacion_ok"] is False                                     # el sha256 y los pesos cargados no coinciden
     assert f2["comprobaciones"]["checkpoint_sha256_igual_al_de_la_fase_1"] is False
     assert f2["comprobaciones"]["pesos_cargados_iguales_a_los_guardados"] is False
+
+
+@pytest.mark.parametrize("antes", [False, True])
+def test_la_sonda_restaura_el_modo_determinista_que_tenia_al_entrar(antes):
+    torch.use_deterministic_algorithms(antes, warn_only=True)
+    torch.backends.cudnn.deterministic = antes
+    g = torch.Generator().manual_seed(0)
+    x, y = torch.randn(4, 3, 64, 64, generator=g), torch.randint(0, 2, (4,), generator=g)
+    ph.sonda_determinismo(CFG, x, y, 2, torch.device("cpu"))
+    assert torch.are_deterministic_algorithms_enabled() is antes and torch.backends.cudnn.deterministic is antes

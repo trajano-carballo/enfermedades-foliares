@@ -64,6 +64,7 @@ def sonda_determinismo(cfg: dict, x: torch.Tensor, y: torch.Tensor, n_clases: in
     Con GPU muestra empíricamente lo que `docs/reproducibilidad.md` dice que no se puede garantizar."""
     resultado = {}
     cudnn = (torch.backends.cudnn.deterministic, torch.backends.cudnn.benchmark)
+    modo = (torch.are_deterministic_algorithms_enabled(), torch.is_deterministic_algorithms_warn_only_enabled())
     for determinista in (False, True):
         with warnings.catch_warnings(record=True) as avisos:
             warnings.simplefilter("always")
@@ -79,7 +80,7 @@ def sonda_determinismo(cfg: dict, x: torch.Tensor, y: torch.Tensor, n_clases: in
             "igual_bit_a_bit": dif == 0.0 and p1 == p2, "max_abs_dif_pesos": dif,
             "max_abs_dif_perdidas": max(abs(a - b) for a, b in zip(p1, p2)),
             "avisos_de_torch": sorted({str(a.message).split("\n")[0][:160] for a in avisos})[:3]}
-    torch.use_deterministic_algorithms(False)  # la sonda no deja el modo global cambiado
+    torch.use_deterministic_algorithms(modo[0], warn_only=modo[1])  # la sonda deja el modo global como lo encontró
     torch.backends.cudnn.deterministic, torch.backends.cudnn.benchmark = cudnn
     return resultado
 

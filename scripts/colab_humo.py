@@ -4,8 +4,8 @@ Uso (el notebook `colab_arranque.ipynb` lo orquesta):
   python scripts/colab_humo.py --config configs/colab_humo.yaml --salida <dir> --ckpt-dir <dir> --run-id <id> --fase entrenar
   python scripts/colab_humo.py --config configs/colab_humo.yaml --salida <dir> --ckpt-dir <dir> --run-id <id> --fase reanudar
 Escribe `<salida>/<experimento>/<run_id>/fase{1,2}_*.json` y el checkpoint en `--ckpt-dir` (en Colab: Drive).
-`--salida` por defecto es `results/` del repo; en Colab conviene Drive (la sesión se corta) y evita que las salidas sin
-seguimiento cuenten como "cambios sin commitear" en la fase 2.
+`--salida` es obligatorio y no tiene un default dentro del repo: en Colab va a Drive (la sesión se corta) y así las salidas
+sin seguimiento no cuentan como "cambios sin commitear" en la fase 2.
 """
 
 import os
@@ -29,13 +29,13 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--config", required=True, type=Path)
     ap.add_argument("--fase", required=True, choices=["entrenar", "reanudar"])
-    ap.add_argument("--salida", type=Path, default=None, help="por defecto, results/ del repo")
+    ap.add_argument("--salida", required=True, type=Path, help="carpeta de resultados (en Colab, en Drive; no dentro del repo)")
     ap.add_argument("--ckpt-dir", type=Path, default=None, help="por defecto, el directorio de la corrida")
     ap.add_argument("--run-id", default=None, help="obligatorio en `reanudar`; en `entrenar`, se genera si falta")
     a = ap.parse_args()
     cfg = yaml.safe_load(a.config.read_text(encoding="utf-8"))
     R = cargar_rutas()
-    salida = a.salida or (R.repo / "results")
+    salida = a.salida
     if a.fase == "reanudar" and not a.run_id:
         ap.error("--run-id es obligatorio en la fase reanudar")
     run_id = a.run_id or nuevo_run_id(cfg["experimento"])
