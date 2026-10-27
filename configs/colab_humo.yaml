@@ -1,0 +1,16 @@
+# Config de scripts/colab_humo.py: prueba de humo de Colab (sesión 7). NO es una corrida de entrenamiento ni elige hiperparámetros
+# de la etapa 2: solo comprueba GPU, lectura de datos desde DATA_ROOT, checkpoint en Drive y reanudación.
+# Datos: SOLO PlantVillage-train (ver foliares.data.lote_humo). PlantDoc y los tests no se tocan.
+experimento: colab_humo
+semilla: 42
+determinista: false              # ver docs/reproducibilidad.md
+n_imagenes: 32                   # un lote
+tamano: 224                      # solo humo; el preproceso definitivo se decide en la etapa 2
+pesos_imagenet: true             # fase 1; la fase 2 arranca sin pesos y todo sale del checkpoint
+lr: 0.001                        # solo humo
+momentum: 0.9
+pasos_antes: 3                   # pasos antes del checkpoint
+pasos_despues: 3                 # pasos después (corrida continua en la fase 1; reanudada en la fase 2)
+tolerancia_perdida: 1.0e-3       # en CPU se espera igualdad exacta; en GPU, tolerancia por no-determinismo
+sonda_determinismo: true         # repite pasos desde la misma semilla y mide cuánto difieren (documenta la GPU)
+pasos_sonda: 2

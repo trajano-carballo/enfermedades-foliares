@@ -12,6 +12,7 @@ artifacts/**
 !artifacts/**/
 !artifacts/**/.gitkeep
 *.pt
+*.pt.tmp
 *.pth
 *.onnx
 # Python / entornos

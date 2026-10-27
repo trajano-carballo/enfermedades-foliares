@@ -12,14 +12,20 @@ import numpy as np
 def fijar_semillas(semilla: int, determinista: bool = False) -> dict:
     """Fija las semillas de python, numpy y (si está instalado) torch.
 
-    `determinista=True` además pide a torch algoritmos deterministas (más lento).
+    Fija SIEMPRE los dos estados globales de torch según `determinista`: `use_deterministic_algorithms(determinista,
+    warn_only=True)` (con `warn_only`, las operaciones sin versión determinista avisan en vez de fallar) y
+    `cudnn.deterministic`. Una llamada con `determinista=False` desactiva lo que dejó una anterior con `True`.
+    `cudnn.benchmark = False` se fija solo si `determinista` (sin él se deja el valor que haya: el autotuner de cuDNN
+    elige algoritmos según la medición y puede cambiar de una corrida a otra). En CUDA, `determinista=True` exige
+    `CUBLAS_WORKSPACE_CONFIG`, que se fija acá (hay que llamar antes del primer uso de CUDA; no se deshace con False).
+    Qué se garantiza y qué no: `docs/reproducibilidad.md`.
     Devuelve qué se fijó, para registrarlo junto a los resultados.
     PYTHONHASHSEED solo afecta a procesos hijos: el intérprete actual ya arrancó.
     """
     os.environ["PYTHONHASHSEED"] = str(semilla)
     random.seed(semilla)
     np.random.seed(semilla)
-    fijado = {"semilla": semilla, "python": True, "numpy": True, "torch": False, "cuda": False}
+    fijado = {"semilla": semilla, "python": True, "numpy": True, "torch": False, "cuda": False, "determinista": determinista}
     try:
         import torch
     except ImportError:
@@ -30,9 +36,10 @@ def fijar_semillas(semilla: int, determinista: bool = False) -> dict:
         torch.cuda.manual_seed_all(semilla)
         fijado["cuda"] = True
     if determinista:
-        torch.backends.cudnn.deterministic = True
+        os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
         torch.backends.cudnn.benchmark = False
-        torch.use_deterministic_algorithms(True, warn_only=True)
+    torch.backends.cudnn.deterministic = determinista
+    torch.use_deterministic_algorithms(determinista, warn_only=True)
     return fijado
 
 
