@@ -1,0 +1,22 @@
+{
+  "clave": {
+    "dataset": "plantvillage",
+    "particion": "val",
+    "n": 2207,
+    "sha256_rutas_y_etiquetas": "0a0a6d011315bc2ecc0b449e5f33cce5ae7b5f61f25166a32b790d9a3cc543bc",
+    "sha256_csv_splits": "1ff04397bed8182b901609f2e0d3e0e8b3ceed3ac4b7739512b64f9b366713dd",
+    "geometria": "aplastar",
+    "tamano": 224,
+    "pesos": "IMAGENET1K_V1",
+    "torch": "2.14.1+cpu",
+    "torchvision": "0.29.1+cpu",
+    "dispositivo": "cpu"
+  },
+  "sha256": "628bc5a7dd76ab8c12e8cb4be58c9b20bf993b943dbfbb1be09f775a433be98d",
+  "tiempo_extraccion_s": 51.548,
+  "forma": [
+    2207,
+    576
+  ],
+  "fecha": "2026-11-04 20:18:14"
+}

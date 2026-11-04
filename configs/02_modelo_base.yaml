@@ -1,0 +1,53 @@
+# Config de scripts/entrenar.py: modelo base (etapa 2, sesión 8). Decisiones del equipo a–h en docs/bitacora/decisiones.md.
+# Solo PlantVillage-train y PlantVillage-val: PV-test y PlantDoc (dev y test) NO se tocan en esta etapa (sesión 9).
+experimento: 02_modelo_base
+semilla: 42
+determinista: true                    # (f) una sola semilla en el base
+
+splits:
+  plantvillage: plantvillage_particion.csv
+  plantdoc: plantdoc_particion.csv
+
+# (h) Orden de clases = índice de la salida del Linear. Alfabético (orden de Python, sensible a mayúsculas) según el nombre de
+# clase de PlantVillage de las 12 con clase_eval; `plantdoc` = carpeta de PlantDoc según docs/mapeo_clases.md.
+clases:
+  - {pv: "Pepper,_bell___Bacterial_spot", plantdoc: "Bell_pepper leaf spot"}
+  - {pv: "Pepper,_bell___healthy", plantdoc: "Bell_pepper leaf"}
+  - {pv: "Potato___Early_blight", plantdoc: "Potato leaf early blight"}
+  - {pv: "Potato___Late_blight", plantdoc: "Potato leaf late blight"}
+  - {pv: "Tomato___Bacterial_spot", plantdoc: "Tomato leaf bacterial spot"}
+  - {pv: "Tomato___Early_blight", plantdoc: "Tomato Early blight leaf"}
+  - {pv: "Tomato___Late_blight", plantdoc: "Tomato leaf late blight"}
+  - {pv: "Tomato___Leaf_Mold", plantdoc: "Tomato mold leaf"}
+  - {pv: "Tomato___Septoria_leaf_spot", plantdoc: "Tomato Septoria leaf spot"}
+  - {pv: "Tomato___Tomato_Yellow_Leaf_Curl_Virus", plantdoc: "Tomato leaf yellow virus"}
+  - {pv: "Tomato___Tomato_mosaic_virus", plantdoc: "Tomato leaf mosaic virus"}
+  - {pv: "Tomato___healthy", plantdoc: "Tomato leaf"}
+clase_mosaic: "Tomato___Tomato_mosaic_virus"   # para el macro-F1 "sin mosaic" (análisis de sensibilidad)
+
+preproceso:                           # (e) misma función para ambos dominios, parametrizada por geometría
+  geometria: aplastar                 # aplastar | resize_recorte | relleno
+  tamano: 224
+
+modelo:
+  pesos_imagenet: true                # backbone congelado; cabezal GAP -> Linear(576, 12) (invariante 4)
+
+features:                             # (c) se calculan una vez y se cachean fuera del repo
+  batch: 64                           # solo extracción (modo eval, sin gradiente): no cambia el resultado
+
+entrenamiento:                        # (d)
+  optimizador: adam
+  lr: 1.0e-3
+  batch: 256
+  max_epocas: 100
+  paciencia: 10
+  criterio: macro_f1_val_con_mosaic   # mejor macro-F1 en PV-val con mosaic (estrictamente mayor: ante empate, la primera)
+
+aumentacion: ninguna                  # (a)
+ponderacion_clases: false             # (b)
+umbral_desbalance: 5                  # (b) si max/min de PV-train lo supera, el script se detiene antes de entrenar
+desbalance_aceptado_por_el_equipo: true   # 2026-11-04: max/min = 1500/262 = 5,73 aceptado sin ponderar (opción A)
+
+metricas:                             # definiciones fijadas por el equipo el 2026-11-04, antes de calcular
+  modo_sin_mosaic: sin_imagenes_de_la_clase   # se quitan las imágenes de mosaic y su clase del promedio (sesión 5 (3))
+  desempate_trivial: primera_en_orden         # empate Late blight / YLCV (1.500 c/u): la primera de la config, Tomato___Late_blight

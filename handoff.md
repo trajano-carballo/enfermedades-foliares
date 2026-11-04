@@ -2,6 +2,44 @@
 
 > Se actualiza al cierre de cada sesión de trabajo. Lo más reciente arriba.
 
+## 2026-11-04 — Sesión 8: modelo base (etapa 2) — MODELO BASE ENTRENADO (PV-val macro-F1 0,956)
+
+**Estado: modelo base entrenado** (run `02_modelo_base_20261104_201229`, commit `74ff5de`, `cambios_sin_commitear: false`, CPU, torch 2.14.1+cpu, semilla 42 determinista). Solo PV-train y PV-val: PV-test y PlantDoc no se tocaron (sesión 9).
+
+**Resultado en PV-val** (2.207 imágenes; época elegida **68** de 78, detenido por paciencia)
+- **Macro-F1 con mosaic 0,9559; sin mosaic 0,9519** (`sin_imagenes_de_la_clase`); exactitud 0,9610. Pérdida train 0,0598 / val 0,1302 en la época elegida.
+- **Trivial** (siempre `Tomato___Late_blight`, desempate `primera_en_orden`): macro-F1 0,0097 (sin mosaic 0,0107), exactitud 0,0616.
+- Recall por clase: Pepper bacterial spot 0,936; Pepper healthy 1,000; Potato early 0,987; Potato late 0,947; Tomato bacterial spot 0,972; **Tomato early blight 0,849** (la más baja: se confunde con Septoria 9, bacterial spot 6 y late blight 6); Tomato late blight 0,926; Leaf Mold 0,958; Septoria 0,908; YLCV 0,998; mosaic 1,000 (36 imágenes); Tomato healthy 0,987. La matriz completa está en el JSON.
+- Tiempos: extracción 344,6 s (train 292,8 s + val 51,5 s; 11.968 y 2.207 features de 576), entrenamiento 9,8 s. Memoria pico CPU 551,9 MB (es el máximo del proceso: incluye la extracción).
+- Rutas: JSON completo y checkpoint (3.940.491 B, sha256 `592eadc3d124a119…`) en `C:\Users\xbetr\foliares_salidas\02_modelo_base\02_modelo_base_20261104_201229\`; caché de features en `C:\Users\xbetr\foliares_salidas\cache_features\`; JSON chicos (`resultados.json` y los dos `.meta.json` de features, sin pesos) en `results/02_modelo_base/02_modelo_base_20261104_201229/` del repo.
+- Lectura: el macro-F1 in-distribution es alto, como se espera en PlantVillage; mosaic tiene 36 imágenes en val y recall 1,0, y quitarlo baja el macro-F1 0,004. No hay todavía número sobre PlantDoc: la brecha ID→OOD es de la sesión 9.
+
+**Hecho**
+- Arranque: rama `sesion-8/modelo-base`, árbol limpio, HEAD `ad7a2ef`, 132 tests. Al cierre: **179 pasan, 0 saltados**.
+- Decisiones a–h del equipo registradas en `decisiones.md` antes de entrenar.
+- `configs/02_modelo_base.yaml`: las 12 clases en orden alfabético de PV (orden de Python) con su carpeta de PlantDoc (un test verifica que coincide con `sorted(CLASES_EVAL_PV)` y con `PAR_CANDIDATO_PLANTDOC`), geometría `aplastar` 224, Adam 1e-3, batch 256, 100 épocas, paciencia 10, `umbral_desbalance: 5`.
+- `src/foliares/data/dataset.py`: `filas_particion` / `DatasetParticion` sobre `data/splits/`. Filtra a las 12 de `clase_eval`, rechaza `excluida` y vacías, falla si aparece una clase fuera de la config o si a la config le sobra una, y rechaza PlantDoc en los roles `entrenamiento` y `validacion` (invariante 1).
+- `src/foliares/data/preproceso.py`: `preprocesar(imagen, geometria, tamano)` con `aplastar`, `resize_recorte` y `relleno` (con la media de ImageNet); una sola función para ambos dominios.
+- `src/foliares/training/features.py`: backbone congelado, extracción en modo eval sin gradiente, caché fuera del repo con la clave (sha256 del CSV, de las rutas y etiquetas, geometría, pesos, versiones de torch/torchvision, dispositivo) en el nombre y en un `.meta.json`; carga con `weights_only=True` y verificación del sha256.
+- `src/foliares/train.py` + `scripts/entrenar.py`: entrena solo el `Linear(576, 12)` (reiniciado desde la semilla), early stopping por macro-F1 de PV-val con mosaic, checkpoint del mejor fuera del repo y JSON con todo el bloque común (config, commit, cambios sin commitear, sha256 de los splits, semillas, torch, dispositivo, tiempos de extracción y de entrenamiento, memoria, curva por época, conteo por clase, control de desbalance, métricas de PV-val y del trivial) en `<salida>/02_modelo_base/<run_id>/`, con copia de los JSON chicos a `results/02_modelo_base/<run_id>/`. `--salida` es obligatorio y tiene que estar fuera del repo. Se detiene antes de entrenar, sin escribir nada, si el desbalance supera el umbral (código 3) o si faltan las definiciones de métricas (código 2).
+- `src/foliares/eval/metricas.py`: matriz de confusión, precisión, recall y F1 por clase, macro-F1, macro-F1 sin una clase (dos modos), clase mayoritaria (dos desempates) y resumen.
+- Tests nuevos: `test_preproceso.py`, `test_dataset.py`, `test_metricas.py` (casos a mano) y `test_modelo_base.py` (un solo Linear 576→12; solo `fc` entrenable con el backbone congelado; train/val no se construyen con PlantDoc; misma semilla → mismo resultado sobre features; early stopping; caché; freno por desbalance; salida fuera del repo; corrida de punta a punta con un PV sintético).
+- Corrida real del script con la config real: frena con `max/min = 1500/262 = 5.7252 > 5`, código 3, sin escribir nada. Medición de la extracción en CPU: 22,6 ms/imagen (256 de PV-train), ~5,3 min para PV-train + PV-val, 543 MB.
+- **Accesos a test:** ninguno. No se leyó PV-test ni PlantDoc; las únicas imágenes leídas fueron 256 de PV-train (para medir el tiempo).
+
+**Qué quedó a medias**
+- Decisiones del equipo sobre los pendientes (2026-11-04): desbalance aceptado (opción A; `desbalance_aceptado_por_el_equipo: true`, y el JSON registra `control_desbalance.aceptado_por_el_equipo`), `metricas.modo_sin_mosaic: sin_imagenes_de_la_clase` y `metricas.desempate_trivial: primera_en_orden`. Se borró `src/foliares/evaluation/` (vacío, sin imports). Tests: la config real trae las tres decisiones; con el desbalance aceptado el script entrena y lo registra; sin aceptarlo frena.
+
+**Próximos pasos**
+1. **Usuario:** commitear `results/02_modelo_base/02_modelo_base_20261104_201229/` y este handoff.
+2. Sesión 9: PV-test y PlantDoc (dev para geometría, temperatura y umbral; test una vez), con registro previo en `accesos_test.md`.
+
+**Decisiones pendientes:** ninguna para el modelo base (las tres se resolvieron el 2026-11-04, ver `decisiones.md`).
+
+**Riesgos abiertos**
+- Presentación del 06/11: si las decisiones llegan tarde, el base no estará entrenado; la corrida en sí tarda ~6 min.
+- El orden alfabético es el de Python (mayúsculas antes que minúsculas: `Tomato___healthy` queda última).
+
 ## 2026-10-27 — Sesión 7: Colab y entorno (puente etapa 1 → 2) — LISTO PARA LA ETAPA 2: prueba de humo de Colab completa en la T4 (sin modelos entrenados)
 
 **Estado: el puente etapa 1 → 2 está cerrado.** La tercera corrida de Colab (commit `161b553` = punta de `origin/sesion-7/colab`, Tesla T4, torch 2.11.0+cu130, `cambios_sin_commitear` false) recorrió todas las celdas: `verificar_paquete.py` = 0, los splits verifican, el commit clonado coincide con la rama, la fase 1 y la **fase 2 (reanudar desde el checkpoint de Drive en un proceso nuevo)** dieron `reanudacion_ok: true` y la sonda de determinismo quedó medida. La tarea 5 de la sesión está cerrada. Los registros de la tercera corrida y el cambio de `REPO_REF` están en `4ececcc`.
