@@ -1,7 +1,8 @@
 """Dataset sobre las particiones congeladas de `data/splits/`, con las guardas de los invariantes 1 y 2.
 
 - Lee un CSV de `data/splits/` y una partición; las rutas se resuelven contra DATA_ROOT.
-- PlantVillage: filtra a las 12 clases de `clase_eval` y a la partición pedida; `excluida` y las filas sin partición no se
+- PlantVillage: cada partición tiene un solo rol (train -> entrenamiento, val -> validacion, test -> evaluacion); filtra a
+  las 12 clases de `clase_eval` y a la partición pedida; `excluida` y las filas sin partición no se
   pueden pedir. El CSV trae 15 clases: las 3 fuera de alcance tienen train/val/test y se descartan acá, explícitamente.
 - PlantDoc: SOLO en el rol `evaluacion` (invariante 1: nunca en entrenamiento ni en validación/early stopping); solo filas
   `conservada` con `particion_propuesta` dev o test.
@@ -20,6 +21,7 @@ from torch.utils.data import Dataset
 from foliares.data.preproceso import preprocesar
 
 ROLES = ("entrenamiento", "validacion", "evaluacion")
+ROL_DE_PARTICION_PV = {"train": "entrenamiento", "val": "validacion", "test": "evaluacion"}
 ARCHIVOS = {"plantvillage": "plantvillage_particion.csv", "plantdoc": "plantdoc_particion.csv"}
 
 
@@ -43,6 +45,9 @@ def filas_particion(splits_dir: str | Path, dataset: str, particion: str, rol: s
     if dataset == "plantvillage":
         if particion not in ("train", "val", "test"):
             raise ParticionInvalida(f"PlantVillage no tiene la partición {particion!r} (train, val o test)")
+        if rol != ROL_DE_PARTICION_PV[particion]:
+            raise ParticionInvalida(f"PlantVillage-{particion} solo puede usarse en el rol {ROL_DE_PARTICION_PV[particion]!r}, "
+                                    f"no en {rol!r} (train entrena, val valida y elige el checkpoint, test solo evalúa)")
         df = df[(df.clase_eval.str.lower() == "true") & (df.particion == particion)]
         filas = pd.DataFrame({"ruta": df.ruta_color, "clase": df.clase})
         nombres = list(clases_pv)

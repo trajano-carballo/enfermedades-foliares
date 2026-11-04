@@ -57,3 +57,18 @@ def test_items_y_etiquetas(pv_sintetico):
     x, y = d[0]
     assert len(d) == 6 and x.shape == (3, 32, 32) and y.dtype == torch.int64
     assert torch.equal(d.etiquetas, torch.tensor(d.filas.etiqueta.to_numpy()))
+
+
+@pytest.mark.parametrize("particion,rol", [("train", "validacion"), ("train", "evaluacion"), ("val", "entrenamiento"),
+                                            ("val", "evaluacion"), ("test", "entrenamiento"), ("test", "validacion")])
+def test_plantvillage_cada_particion_solo_en_su_rol(pv_sintetico, particion, rol):
+    # M1 (review de la sesión 8): train -> entrenamiento, val -> validacion, test -> evaluacion; cualquier otra combinación falla.
+    splits, _ = pv_sintetico
+    with pytest.raises(ParticionInvalida, match="solo puede usarse en el rol"):
+        filas_particion(splits, "plantvillage", particion, rol, CLASES)
+
+
+@pytest.mark.parametrize("particion,rol", [("train", "entrenamiento"), ("val", "validacion"), ("test", "evaluacion")])
+def test_plantvillage_combinaciones_permitidas(pv_sintetico, particion, rol):
+    splits, _ = pv_sintetico
+    assert len(filas_particion(splits, "plantvillage", particion, rol, CLASES)) > 0

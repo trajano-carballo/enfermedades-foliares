@@ -8,6 +8,7 @@ determinista. Solo PlantVillage-train (entrenamiento) y PlantVillage-val (valida
 from __future__ import annotations
 
 import copy
+import os
 import shutil
 import time
 from pathlib import Path
@@ -100,6 +101,21 @@ def entrenar_cabezal(fc: nn.Linear, Xtr: torch.Tensor, ytr: torch.Tensor, Xva: t
             "detenido_por": detenido_por, "curva": curva}
 
 
+def _exigir_implementado(cfg: dict) -> None:
+    """La config no puede pedir algo que el código no hace (M3, review de la sesión 8): fallaría en silencio."""
+    pedidos = {"entrenamiento.criterio": (cfg["entrenamiento"].get("criterio"), "macro_f1_val_con_mosaic"),
+               "aumentacion": (cfg.get("aumentacion"), "ninguna"), "ponderacion_clases": (cfg.get("ponderacion_clases"), False)}
+    malos = {k: v for k, (v, ok) in pedidos.items() if v != ok}
+    if malos:
+        raise ValueError(f"La config pide algo que no está implementado: {malos} (implementado: "
+                         f"{ {k: ok for k, (_, ok) in pedidos.items()} })")
+
+
+def _relativa(ruta: str | Path, base: Path) -> str:
+    """Ruta relativa a la carpeta de salida, con `/`: el JSON no lleva rutas de una máquina en particular."""
+    return Path(os.path.relpath(Path(ruta).resolve(), base)).as_posix()
+
+
 def _exigir_definiciones(cfg: dict) -> tuple[str, str]:
     """Las dos definiciones que el equipo tiene que fijar ANTES de calcular los números (ver `foliares.eval.metricas`)."""
     m = cfg.get("metricas") or {}
@@ -118,6 +134,7 @@ def ejecutar(cfg: dict, repo: Path, splits_dir: Path, data_root: Path, salida: P
     registro = registro_base(repo, splits_dir, cfg, {})          # estado de git antes de escribir nada
     salida = exigir_fuera_del_repo(salida, repo, "--salida")
     cache_dir = exigir_fuera_del_repo(cache_dir, repo, "el caché de features")
+    _exigir_implementado(cfg)
     nombres = [c["pv"] for c in cfg["clases"]]
     i_mosaic = nombres.index(cfg["clase_mosaic"])
     geo, tam = cfg["preproceso"]["geometria"], cfg["preproceso"]["tamano"]
@@ -165,10 +182,14 @@ def ejecutar(cfg: dict, repo: Path, splits_dir: Path, data_root: Path, salida: P
     trivial["clase"] = nombres[trivial_clase]
     datos = {**registro, "run_id": run_id, "prueba_corta": bool(limite), "dispositivo_features": dev.type,
              "conteo_por_clase": conteo, "control_desbalance": desbalance,
-             "features": {p: {k: v for k, v in f.items() if k not in ("X", "y")} for p, f in feats.items()},
+             "features": {p: {**{k: v for k, v in f.items() if k not in ("X", "y")}, "archivo": _relativa(f["archivo"], salida)}
+                          for p, f in feats.items()},
              "tiempo_extraccion_s": med_ext.resumen()["tiempo_s"], "memoria_extraccion": med_ext.resumen(),
              "tiempo_entrenamiento_s": med_ent.resumen()["tiempo_s"], "memoria_entrenamiento": med_ent.resumen(),
-             "entrenamiento": ent, "checkpoint": ckpt, "pv_val": val, "trivial_pv_val": trivial,
+             "entrenamiento": ent, "checkpoint": {**ckpt, "ruta": _relativa(ckpt["ruta"], salida)}, "pv_val": val,
+             "trivial_pv_val": trivial, "rutas_relativas_a": "la carpeta --salida",
+             "nota_memoria": "memoria_pico_cpu_mb es el máximo del proceso entero hasta ese momento (en entrenamiento incluye la "
+                             "extracción); memoria_pico_gpu_mb se reinicia en cada bloque",
              "orden_clases": cfg["clases"]}
     escribir_json(dir_corrida / "resultados.json", datos)
     if not limite:

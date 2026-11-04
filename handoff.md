@@ -10,7 +10,7 @@
 - **Macro-F1 con mosaic 0,9559; sin mosaic 0,9519** (`sin_imagenes_de_la_clase`); exactitud 0,9610. Pérdida train 0,0598 / val 0,1302 en la época elegida.
 - **Trivial** (siempre `Tomato___Late_blight`, desempate `primera_en_orden`): macro-F1 0,0097 (sin mosaic 0,0107), exactitud 0,0616.
 - Recall por clase: Pepper bacterial spot 0,936; Pepper healthy 1,000; Potato early 0,987; Potato late 0,947; Tomato bacterial spot 0,972; **Tomato early blight 0,849** (la más baja: se confunde con Septoria 9, bacterial spot 6 y late blight 6); Tomato late blight 0,926; Leaf Mold 0,958; Septoria 0,908; YLCV 0,998; mosaic 1,000 (36 imágenes); Tomato healthy 0,987. La matriz completa está en el JSON.
-- Tiempos: extracción 344,6 s (train 292,8 s + val 51,5 s; 11.968 y 2.207 features de 576), entrenamiento 9,8 s. Memoria pico CPU 551,9 MB (es el máximo del proceso: incluye la extracción).
+- Tiempos: extracción 344,6 s (train 292,8 s + val 51,5 s; 11.968 y 2.207 features de 576), entrenamiento 9,8 s. Memoria pico CPU 551,9 MB en los dos bloques: es el máximo del **proceso entero** (`ru_maxrss`/`peak_wset`), así que el valor de `memoria_entrenamiento` incluye la extracción. El JSON versionado de este run no se reescribe; los JSON de corridas nuevas lo aclaran en `nota_memoria` (sesión 9) y llevan rutas relativas a `--salida`.
 - Rutas: JSON completo y checkpoint (3.940.491 B, sha256 `592eadc3d124a119…`) en `C:\Users\xbetr\foliares_salidas\02_modelo_base\02_modelo_base_20261104_201229\`; caché de features en `C:\Users\xbetr\foliares_salidas\cache_features\`; JSON chicos (`resultados.json` y los dos `.meta.json` de features, sin pesos) en `results/02_modelo_base/02_modelo_base_20261104_201229/` del repo.
 - Lectura: el macro-F1 in-distribution es alto, como se espera en PlantVillage; mosaic tiene 36 imágenes en val y recall 1,0, y quitarlo baja el macro-F1 0,004. No hay todavía número sobre PlantDoc: la brecha ID→OOD es de la sesión 9.
 
@@ -31,7 +31,7 @@
 - Decisiones del equipo sobre los pendientes (2026-11-04): desbalance aceptado (opción A; `desbalance_aceptado_por_el_equipo: true`, y el JSON registra `control_desbalance.aceptado_por_el_equipo`), `metricas.modo_sin_mosaic: sin_imagenes_de_la_clase` y `metricas.desempate_trivial: primera_en_orden`. Se borró `src/foliares/evaluation/` (vacío, sin imports). Tests: la config real trae las tres decisiones; con el desbalance aceptado el script entrena y lo registra; sin aceptarlo frena.
 
 **Próximos pasos**
-1. **Usuario:** commitear `results/02_modelo_base/02_modelo_base_20261104_201229/` y este handoff.
+1. (Hecho) `results/02_modelo_base/02_modelo_base_20261104_201229/` y este handoff están en `ef70ccc`; PR #6 mergeado (`e49f416`).
 2. Sesión 9: PV-test y PlantDoc (dev para geometría, temperatura y umbral; test una vez), con registro previo en `accesos_test.md`.
 
 **Decisiones pendientes:** ninguna para el modelo base (las tres se resolvieron el 2026-11-04, ver `decisiones.md`).
