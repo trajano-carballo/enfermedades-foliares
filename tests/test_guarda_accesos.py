@@ -96,3 +96,8 @@ def test_lee_la_tabla_real_de_accesos():
     texto = (Path(__file__).resolve().parents[1] / "docs" / "bitacora" / "accesos_test.md").read_text(encoding="utf-8")
     filas = filas_de_la_tabla(texto)
     assert all(isinstance(k, int) and f["test"] for k, f in filas.items())     # las notas en prosa no cuentan como filas
+
+
+def test_fuera_de_un_repo_git(tmp_path):
+    with pytest.raises(AccesoNoRegistrado, match="no es un repositorio git"):
+        exigir_fila_accesos(tmp_path, 1, "PD-test", "configs/03_brecha.yaml")

@@ -14,6 +14,13 @@ Invariantes que aplica: 1 (PlantDoc-dev elige la geometría; PlantDoc-test se ev
 - Si ninguna lo logra, queda `aplastar`. Si dos lo logran, gana la de mayor diferencia media.
 - La geometría elegida se fija en `configs/03_brecha.yaml` y es la misma para PV-test y PD-test (invariante 3).
 
+**Aclaración 2026-11-04, antes de calcular cualquier número de PlantDoc** (decisión del equipo; el texto de arriba se deja como
+estaba). "Excluye el 0" también lo cumple una geometría peor (IC entero debajo de 0), y la redacción dejaba un caso ambiguo
+(la de mayor macro-F1 que no supera el criterio). La regla que se aplica es:
+- una geometría g **califica** solo si el límite inferior del IC 95 % pareado de macro-F1(g) − macro-F1(`aplastar`) es **> 0**;
+- entre las que califican, gana la de **mayor diferencia media** (promedio de las réplicas bootstrap);
+- si ninguna califica, queda `aplastar`.
+
 ## b. Bootstrap
 - 2.000 réplicas, IC 95 % por percentiles (2,5 y 97,5), semilla 42.
 - Remuestreo de imágenes con reposición, **estratificado por clase** (cada réplica conserva el número de imágenes de cada clase).

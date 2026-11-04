@@ -43,6 +43,8 @@ def exigir_fila_accesos(repo: str | Path, fila: int, test: str, config_rel: str)
     repo = Path(repo)
     if test not in TESTS:
         raise AccesoNoRegistrado(f"Test desconocido: {test!r}; opciones: {TESTS}")
+    if _git(repo, "rev-parse", "--is-inside-work-tree", check=False).returncode:
+        raise AccesoNoRegistrado(f"{repo} no es un repositorio git: no se puede verificar la fila de acceso")
     sucio = _git(repo, "status", "--porcelain").stdout.strip()
     if sucio:
         raise AccesoNoRegistrado(f"El árbol tiene cambios sin commitear; se evalúa solo desde un HEAD limpio:\n{sucio}")
