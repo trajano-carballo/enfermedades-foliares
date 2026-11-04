@@ -2,9 +2,17 @@
 
 > Se actualiza al cierre de cada sesión de trabajo. Lo más reciente arriba.
 
-## 2026-11-04 — Sesión 8: modelo base (etapa 2) — PIPELINE LISTO, decisiones tomadas, a la espera del árbol limpio para entrenar
+## 2026-11-04 — Sesión 8: modelo base (etapa 2) — MODELO BASE ENTRENADO (PV-val macro-F1 0,956)
 
-**Estado:** el pipeline del modelo base está implementado y probado (179 tests). **Todavía no se entrenó.** Primero la decisión (b) frenó el entrenamiento: en PV-train max/min = 1.500 / 262 = 5,73 > 5. Después el equipo resolvió los tres pendientes: aceptar el desbalance sin ponderar, macro-F1 "sin mosaic" = `sin_imagenes_de_la_clase` y desempate del trivial = `primera_en_orden` (`Tomato___Late_blight`). Están en la config y en `decisiones.md`. Se entrena cuando el usuario commitee y avise con el árbol limpio: es local (~5,3 min de extracción en CPU), sin Colab.
+**Estado: modelo base entrenado** (run `02_modelo_base_20261104_201229`, commit `74ff5de`, `cambios_sin_commitear: false`, CPU, torch 2.14.1+cpu, semilla 42 determinista). Solo PV-train y PV-val: PV-test y PlantDoc no se tocaron (sesión 9).
+
+**Resultado en PV-val** (2.207 imágenes; época elegida **68** de 78, detenido por paciencia)
+- **Macro-F1 con mosaic 0,9559; sin mosaic 0,9519** (`sin_imagenes_de_la_clase`); exactitud 0,9610. Pérdida train 0,0598 / val 0,1302 en la época elegida.
+- **Trivial** (siempre `Tomato___Late_blight`, desempate `primera_en_orden`): macro-F1 0,0097 (sin mosaic 0,0107), exactitud 0,0616.
+- Recall por clase: Pepper bacterial spot 0,936; Pepper healthy 1,000; Potato early 0,987; Potato late 0,947; Tomato bacterial spot 0,972; **Tomato early blight 0,849** (la más baja: se confunde con Septoria 9, bacterial spot 6 y late blight 6); Tomato late blight 0,926; Leaf Mold 0,958; Septoria 0,908; YLCV 0,998; mosaic 1,000 (36 imágenes); Tomato healthy 0,987. La matriz completa está en el JSON.
+- Tiempos: extracción 344,6 s (train 292,8 s + val 51,5 s; 11.968 y 2.207 features de 576), entrenamiento 9,8 s. Memoria pico CPU 551,9 MB (es el máximo del proceso: incluye la extracción).
+- Rutas: JSON completo y checkpoint (3.940.491 B, sha256 `592eadc3d124a119…`) en `C:\Users\xbetr\foliares_salidas\02_modelo_base\02_modelo_base_20261104_201229\`; caché de features en `C:\Users\xbetr\foliares_salidas\cache_features\`; JSON chicos (`resultados.json` y los dos `.meta.json` de features, sin pesos) en `results/02_modelo_base/02_modelo_base_20261104_201229/` del repo.
+- Lectura: el macro-F1 in-distribution es alto, como se espera en PlantVillage; mosaic tiene 36 imágenes en val y recall 1,0, y quitarlo baja el macro-F1 0,004. No hay todavía número sobre PlantDoc: la brecha ID→OOD es de la sesión 9.
 
 **Hecho**
 - Arranque: rama `sesion-8/modelo-base`, árbol limpio, HEAD `ad7a2ef`, 132 tests. Al cierre: **179 pasan, 0 saltados**.
@@ -20,13 +28,11 @@
 - **Accesos a test:** ninguno. No se leyó PV-test ni PlantDoc; las únicas imágenes leídas fueron 256 de PV-train (para medir el tiempo).
 
 **Qué quedó a medias**
-- El entrenamiento y todo el reporte de la tarea 7 (macro-F1 de PV-val con y sin mosaic, recall por clase, matriz, trivial, época elegida, tiempos de la corrida completa): dependen de las decisiones pendientes.
 - Decisiones del equipo sobre los pendientes (2026-11-04): desbalance aceptado (opción A; `desbalance_aceptado_por_el_equipo: true`, y el JSON registra `control_desbalance.aceptado_por_el_equipo`), `metricas.modo_sin_mosaic: sin_imagenes_de_la_clase` y `metricas.desempate_trivial: primera_en_orden`. Se borró `src/foliares/evaluation/` (vacío, sin imports). Tests: la config real trae las tres decisiones; con el desbalance aceptado el script entrena y lo registra; sin aceptarlo frena.
 
 **Próximos pasos**
-1. **Usuario:** commitear y avisar con el árbol limpio.
-2. Con el árbol limpio, correr `.venv\Scripts\python.exe scripts\entrenar.py --config configs\02_modelo_base.yaml --salida C:\Users\xbetr\foliares_salidas` (~6 min en CPU).
-3. Sesión 9: PV-test y PlantDoc (dev para geometría, temperatura y umbral; test una vez), con registro previo en `accesos_test.md`.
+1. **Usuario:** commitear `results/02_modelo_base/02_modelo_base_20261104_201229/` y este handoff.
+2. Sesión 9: PV-test y PlantDoc (dev para geometría, temperatura y umbral; test una vez), con registro previo en `accesos_test.md`.
 
 **Decisiones pendientes:** ninguna para el modelo base (las tres se resolvieron el 2026-11-04, ver `decisiones.md`).
 

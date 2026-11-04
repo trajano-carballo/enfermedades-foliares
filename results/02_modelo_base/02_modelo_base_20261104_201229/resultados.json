@@ -1,0 +1,1456 @@
+{
+  "fecha": "2026-11-04 20:12:29",
+  "commit": "74ff5de4d63661c7d588162ebadd292ce541a69b",
+  "cambios_sin_commitear": false,
+  "config": {
+    "experimento": "02_modelo_base",
+    "semilla": 42,
+    "determinista": true,
+    "splits": {
+      "plantvillage": "plantvillage_particion.csv",
+      "plantdoc": "plantdoc_particion.csv"
+    },
+    "clases": [
+      {
+        "pv": "Pepper,_bell___Bacterial_spot",
+        "plantdoc": "Bell_pepper leaf spot"
+      },
+      {
+        "pv": "Pepper,_bell___healthy",
+        "plantdoc": "Bell_pepper leaf"
+      },
+      {
+        "pv": "Potato___Early_blight",
+        "plantdoc": "Potato leaf early blight"
+      },
+      {
+        "pv": "Potato___Late_blight",
+        "plantdoc": "Potato leaf late blight"
+      },
+      {
+        "pv": "Tomato___Bacterial_spot",
+        "plantdoc": "Tomato leaf bacterial spot"
+      },
+      {
+        "pv": "Tomato___Early_blight",
+        "plantdoc": "Tomato Early blight leaf"
+      },
+      {
+        "pv": "Tomato___Late_blight",
+        "plantdoc": "Tomato leaf late blight"
+      },
+      {
+        "pv": "Tomato___Leaf_Mold",
+        "plantdoc": "Tomato mold leaf"
+      },
+      {
+        "pv": "Tomato___Septoria_leaf_spot",
+        "plantdoc": "Tomato Septoria leaf spot"
+      },
+      {
+        "pv": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+        "plantdoc": "Tomato leaf yellow virus"
+      },
+      {
+        "pv": "Tomato___Tomato_mosaic_virus",
+        "plantdoc": "Tomato leaf mosaic virus"
+      },
+      {
+        "pv": "Tomato___healthy",
+        "plantdoc": "Tomato leaf"
+      }
+    ],
+    "clase_mosaic": "Tomato___Tomato_mosaic_virus",
+    "preproceso": {
+      "geometria": "aplastar",
+      "tamano": 224
+    },
+    "modelo": {
+      "pesos_imagenet": true
+    },
+    "features": {
+      "batch": 64
+    },
+    "entrenamiento": {
+      "optimizador": "adam",
+      "lr": 0.001,
+      "batch": 256,
+      "max_epocas": 100,
+      "paciencia": 10,
+      "criterio": "macro_f1_val_con_mosaic"
+    },
+    "aumentacion": "ninguna",
+    "ponderacion_clases": false,
+    "umbral_desbalance": 5,
+    "desbalance_aceptado_por_el_equipo": true,
+    "metricas": {
+      "modo_sin_mosaic": "sin_imagenes_de_la_clase",
+      "desempate_trivial": "primera_en_orden"
+    }
+  },
+  "sha256_splits": {
+    "plantdoc_particion.csv": "dc82e2d5af43a91610a0342023f34a972561fe143e8dfe13c6d4cc02768c8bba",
+    "plantvillage_particion.csv": "1ff04397bed8182b901609f2e0d3e0e8b3ceed3ac4b7739512b64f9b366713dd"
+  },
+  "semillas": {
+    "semilla": 42,
+    "python": true,
+    "numpy": true,
+    "torch": true,
+    "cuda": false,
+    "determinista": true
+  },
+  "python": "3.13.7",
+  "plataforma": "Windows-11-10.0.26200-SP0",
+  "torch": "2.14.1+cpu",
+  "cuda_runtime": null,
+  "cudnn": null,
+  "dispositivo": "cpu",
+  "gpu": null,
+  "hilos_cpu": 6,
+  "run_id": "02_modelo_base_20261104_201229",
+  "prueba_corta": false,
+  "dispositivo_features": "cpu",
+  "conteo_por_clase": {
+    "train": {
+      "Pepper,_bell___Bacterial_spot": 695,
+      "Pepper,_bell___healthy": 1017,
+      "Potato___Early_blight": 696,
+      "Potato___Late_blight": 696,
+      "Tomato___Bacterial_spot": 1488,
+      "Tomato___Early_blight": 696,
+      "Tomato___Late_blight": 1500,
+      "Tomato___Leaf_Mold": 664,
+      "Tomato___Septoria_leaf_spot": 1467,
+      "Tomato___Tomato_Yellow_Leaf_Curl_Virus": 1500,
+      "Tomato___Tomato_mosaic_virus": 262,
+      "Tomato___healthy": 1287
+    },
+    "val": {
+      "Pepper,_bell___Bacterial_spot": 171,
+      "Pepper,_bell___healthy": 228,
+      "Potato___Early_blight": 152,
+      "Potato___Late_blight": 152,
+      "Tomato___Bacterial_spot": 320,
+      "Tomato___Early_blight": 152,
+      "Tomato___Late_blight": 136,
+      "Tomato___Leaf_Mold": 144,
+      "Tomato___Septoria_leaf_spot": 152,
+      "Tomato___Tomato_Yellow_Leaf_Curl_Virus": 412,
+      "Tomato___Tomato_mosaic_virus": 36,
+      "Tomato___healthy": 152
+    }
+  },
+  "control_desbalance": {
+    "max": 1500,
+    "min": 262,
+    "cociente_max_min": 5.7252,
+    "umbral": 5,
+    "excede": true,
+    "aceptado_por_el_equipo": true
+  },
+  "features": {
+    "train": {
+      "desde_cache": false,
+      "tiempo_s": 292.832,
+      "archivo": "C:\\Users\\xbetr\\foliares_salidas\\cache_features\\features_plantvillage_train_2178754c0e347a89.pt",
+      "meta": {
+        "clave": {
+          "dataset": "plantvillage",
+          "particion": "train",
+          "n": 11968,
+          "sha256_rutas_y_etiquetas": "5fdf0825ae33964d2aec559d113735977ffa0149e4f6bd2767972e8be62ae1fc",
+          "sha256_csv_splits": "1ff04397bed8182b901609f2e0d3e0e8b3ceed3ac4b7739512b64f9b366713dd",
+          "geometria": "aplastar",
+          "tamano": 224,
+          "pesos": "IMAGENET1K_V1",
+          "torch": "2.14.1+cpu",
+          "torchvision": "0.29.1+cpu",
+          "dispositivo": "cpu"
+        },
+        "sha256": "e45a2ac1e1b1a54e559c509dd5688a60915852e29643610ec69d549cb239b7c8",
+        "tiempo_extraccion_s": 292.832,
+        "forma": [
+          11968,
+          576
+        ],
+        "fecha": "2026-11-04 20:17:23"
+      }
+    },
+    "val": {
+      "desde_cache": false,
+      "tiempo_s": 51.548,
+      "archivo": "C:\\Users\\xbetr\\foliares_salidas\\cache_features\\features_plantvillage_val_2c17ae6ed14f233c.pt",
+      "meta": {
+        "clave": {
+          "dataset": "plantvillage",
+          "particion": "val",
+          "n": 2207,
+          "sha256_rutas_y_etiquetas": "0a0a6d011315bc2ecc0b449e5f33cce5ae7b5f61f25166a32b790d9a3cc543bc",
+          "sha256_csv_splits": "1ff04397bed8182b901609f2e0d3e0e8b3ceed3ac4b7739512b64f9b366713dd",
+          "geometria": "aplastar",
+          "tamano": 224,
+          "pesos": "IMAGENET1K_V1",
+          "torch": "2.14.1+cpu",
+          "torchvision": "0.29.1+cpu",
+          "dispositivo": "cpu"
+        },
+        "sha256": "628bc5a7dd76ab8c12e8cb4be58c9b20bf993b943dbfbb1be09f775a433be98d",
+        "tiempo_extraccion_s": 51.548,
+        "forma": [
+          2207,
+          576
+        ],
+        "fecha": "2026-11-04 20:18:14"
+      }
+    }
+  },
+  "tiempo_extraccion_s": 344.641,
+  "memoria_extraccion": {
+    "tiempo_s": 344.641,
+    "memoria_pico_gpu_mb": null,
+    "memoria_pico_cpu_mb": 551.9
+  },
+  "tiempo_entrenamiento_s": 9.834,
+  "memoria_entrenamiento": {
+    "tiempo_s": 9.834,
+    "memoria_pico_gpu_mb": null,
+    "memoria_pico_cpu_mb": 551.9
+  },
+  "entrenamiento": {
+    "epoca_elegida": 68,
+    "macro_f1_val_elegida": 0.9558872035989506,
+    "epocas_corridas": 78,
+    "detenido_por": "paciencia",
+    "curva": [
+      {
+        "epoca": 1,
+        "perdida_train": 1.6378495087598097,
+        "perdida_val": 1.1497912406921387,
+        "macro_f1_val": 0.6935052041818249,
+        "exactitud_val": 0.7684639692306519,
+        "macro_f1_val_sin_clase": 0.744111399033815,
+        "tiempo_s": 0.2871
+      },
+      {
+        "epoca": 2,
+        "perdida_train": 0.8726246691642598,
+        "perdida_val": 0.7817145586013794,
+        "macro_f1_val": 0.8015036844525426,
+        "exactitud_val": 0.8337109088897705,
+        "macro_f1_val_sin_clase": 0.8176902661534364,
+        "tiempo_s": 0.1661
+      },
+      {
+        "epoca": 3,
+        "perdida_train": 0.6272040066872051,
+        "perdida_val": 0.60837322473526,
+        "macro_f1_val": 0.8475750774001556,
+        "exactitud_val": 0.8667874932289124,
+        "macro_f1_val_sin_clase": 0.850455490915316,
+        "tiempo_s": 0.2005
+      },
+      {
+        "epoca": 4,
+        "perdida_train": 0.5069323363788625,
+        "perdida_val": 0.5166077017784119,
+        "macro_f1_val": 0.8603440546375628,
+        "exactitud_val": 0.8803806304931641,
+        "macro_f1_val_sin_clase": 0.8644425005590716,
+        "tiempo_s": 0.1367
+      },
+      {
+        "epoca": 5,
+        "perdida_train": 0.4332345832477916,
+        "perdida_val": 0.4532516300678253,
+        "macro_f1_val": 0.8818795857827619,
+        "exactitud_val": 0.8962392210960388,
+        "macro_f1_val_sin_clase": 0.8782403143132226,
+        "tiempo_s": 0.12
+      },
+      {
+        "epoca": 6,
+        "perdida_train": 0.3820582480035364,
+        "perdida_val": 0.40292152762413025,
+        "macro_f1_val": 0.8927854456988569,
+        "exactitud_val": 0.9062075018882751,
+        "macro_f1_val_sin_clase": 0.8906197087279545,
+        "tiempo_s": 0.1011
+      },
+      {
+        "epoca": 7,
+        "perdida_train": 0.343653469321562,
+        "perdida_val": 0.37726154923439026,
+        "macro_f1_val": 0.8976170510958754,
+        "exactitud_val": 0.9107385873794556,
+        "macro_f1_val_sin_clase": 0.8957100625376145,
+        "tiempo_s": 0.1012
+      },
+      {
+        "epoca": 8,
+        "perdida_train": 0.3131278353260163,
+        "perdida_val": 0.3415992856025696,
+        "macro_f1_val": 0.9042071565882678,
+        "exactitud_val": 0.9170820116996765,
+        "macro_f1_val_sin_clase": 0.9006456392207604,
+        "tiempo_s": 0.1164
+      },
+      {
+        "epoca": 9,
+        "perdida_train": 0.289948491489186,
+        "perdida_val": 0.3231563866138458,
+        "macro_f1_val": 0.9090312279269347,
+        "exactitud_val": 0.9211599230766296,
+        "macro_f1_val_sin_clase": 0.9047299959504607,
+        "tiempo_s": 0.1049
+      },
+      {
+        "epoca": 10,
+        "perdida_train": 0.269577980519616,
+        "perdida_val": 0.3089277148246765,
+        "macro_f1_val": 0.9087164606820292,
+        "exactitud_val": 0.9220661520957947,
+        "macro_f1_val_sin_clase": 0.9055635775399128,
+        "tiempo_s": 0.082
+      },
+      {
+        "epoca": 11,
+        "perdida_train": 0.2520937368990903,
+        "perdida_val": 0.29563024640083313,
+        "macro_f1_val": 0.9140209902552813,
+        "exactitud_val": 0.9252378940582275,
+        "macro_f1_val_sin_clase": 0.910168944699134,
+        "tiempo_s": 0.0969
+      },
+      {
+        "epoca": 12,
+        "perdida_train": 0.23733960362997922,
+        "perdida_val": 0.2791086435317993,
+        "macro_f1_val": 0.9199093507516966,
+        "exactitud_val": 0.9306751489639282,
+        "macro_f1_val_sin_clase": 0.9166012635276689,
+        "tiempo_s": 0.1008
+      },
+      {
+        "epoca": 13,
+        "perdida_train": 0.22480700288545638,
+        "perdida_val": 0.2669096887111664,
+        "macro_f1_val": 0.9236770278785752,
+        "exactitud_val": 0.9342999458312988,
+        "macro_f1_val_sin_clase": 0.9207269090200029,
+        "tiempo_s": 0.1119
+      },
+      {
+        "epoca": 14,
+        "perdida_train": 0.2135474607746869,
+        "perdida_val": 0.2596370279788971,
+        "macro_f1_val": 0.9230089472680137,
+        "exactitud_val": 0.9333937764167786,
+        "macro_f1_val_sin_clase": 0.9199871536620869,
+        "tiempo_s": 0.1107
+      },
+      {
+        "epoca": 15,
+        "perdida_train": 0.20381101344358474,
+        "perdida_val": 0.25099799036979675,
+        "macro_f1_val": 0.928042142616608,
+        "exactitud_val": 0.9370185732841492,
+        "macro_f1_val_sin_clase": 0.9239575216751202,
+        "tiempo_s": 0.1048
+      },
+      {
+        "epoca": 16,
+        "perdida_train": 0.1945679692182949,
+        "perdida_val": 0.24012409150600433,
+        "macro_f1_val": 0.9324877539694256,
+        "exactitud_val": 0.940190315246582,
+        "macro_f1_val_sin_clase": 0.9275956070700085,
+        "tiempo_s": 0.0922
+      },
+      {
+        "epoca": 17,
+        "perdida_train": 0.1857984769631197,
+        "perdida_val": 0.23600663244724274,
+        "macro_f1_val": 0.9293188330809875,
+        "exactitud_val": 0.9379248023033142,
+        "macro_f1_val_sin_clase": 0.9256610200211358,
+        "tiempo_s": 0.1176
+      },
+      {
+        "epoca": 18,
+        "perdida_train": 0.17901967880241373,
+        "perdida_val": 0.2306099832057953,
+        "macro_f1_val": 0.9314276773250633,
+        "exactitud_val": 0.9397372007369995,
+        "macro_f1_val_sin_clase": 0.9279610477387368,
+        "tiempo_s": 0.1091
+      },
+      {
+        "epoca": 19,
+        "perdida_train": 0.1717950428392798,
+        "perdida_val": 0.22681230306625366,
+        "macro_f1_val": 0.9337463088424323,
+        "exactitud_val": 0.9410964846611023,
+        "macro_f1_val_sin_clase": 0.9289685760223794,
+        "tiempo_s": 0.1009
+      },
+      {
+        "epoca": 20,
+        "perdida_train": 0.16562138322521658,
+        "perdida_val": 0.21326620876789093,
+        "macro_f1_val": 0.9327677457412148,
+        "exactitud_val": 0.940190315246582,
+        "macro_f1_val_sin_clase": 0.9279010526392331,
+        "tiempo_s": 0.0946
+      },
+      {
+        "epoca": 21,
+        "perdida_train": 0.16028823970473385,
+        "perdida_val": 0.21294741332530975,
+        "macro_f1_val": 0.9345699536826783,
+        "exactitud_val": 0.9420027136802673,
+        "macro_f1_val_sin_clase": 0.9298670976662841,
+        "tiempo_s": 0.0896
+      },
+      {
+        "epoca": 22,
+        "perdida_train": 0.1546173918055978,
+        "perdida_val": 0.20920173823833466,
+        "macro_f1_val": 0.9357271789130809,
+        "exactitud_val": 0.9429089426994324,
+        "macro_f1_val_sin_clase": 0.9311295251903597,
+        "tiempo_s": 0.0943
+      },
+      {
+        "epoca": 23,
+        "perdida_train": 0.14993069237247508,
+        "perdida_val": 0.20489224791526794,
+        "macro_f1_val": 0.9354846510589369,
+        "exactitud_val": 0.9433620572090149,
+        "macro_f1_val_sin_clase": 0.9323893788113732,
+        "tiempo_s": 0.0925
+      },
+      {
+        "epoca": 24,
+        "perdida_train": 0.1451975794877598,
+        "perdida_val": 0.2002379596233368,
+        "macro_f1_val": 0.9394993049650969,
+        "exactitud_val": 0.9456275701522827,
+        "macro_f1_val_sin_clase": 0.9339992417801057,
+        "tiempo_s": 0.0861
+      },
+      {
+        "epoca": 25,
+        "perdida_train": 0.14114754252574024,
+        "perdida_val": 0.1938856542110443,
+        "macro_f1_val": 0.940657269017177,
+        "exactitud_val": 0.9469868540763855,
+        "macro_f1_val_sin_clase": 0.9365078053039191,
+        "tiempo_s": 0.0951
+      },
+      {
+        "epoca": 26,
+        "perdida_train": 0.13650694672755379,
+        "perdida_val": 0.19105152785778046,
+        "macro_f1_val": 0.9367581910320818,
+        "exactitud_val": 0.9438151121139526,
+        "macro_f1_val_sin_clase": 0.9322542656838152,
+        "tiempo_s": 0.125
+      },
+      {
+        "epoca": 27,
+        "perdida_train": 0.133153706629646,
+        "perdida_val": 0.19015277922153473,
+        "macro_f1_val": 0.9366326991917387,
+        "exactitud_val": 0.9438151121139526,
+        "macro_f1_val_sin_clase": 0.9321173654943501,
+        "tiempo_s": 0.1079
+      },
+      {
+        "epoca": 28,
+        "perdida_train": 0.12915131306265765,
+        "perdida_val": 0.18631203472614288,
+        "macro_f1_val": 0.9365241498357842,
+        "exactitud_val": 0.9438151121139526,
+        "macro_f1_val_sin_clase": 0.9319989480151271,
+        "tiempo_s": 0.119
+      },
+      {
+        "epoca": 29,
+        "perdida_train": 0.1256191722929159,
+        "perdida_val": 0.18322046101093292,
+        "macro_f1_val": 0.9414688486391003,
+        "exactitud_val": 0.9478930830955505,
+        "macro_f1_val_sin_clase": 0.9373931648914717,
+        "tiempo_s": 0.1202
+      },
+      {
+        "epoca": 30,
+        "perdida_train": 0.1227215644828776,
+        "perdida_val": 0.1814335584640503,
+        "macro_f1_val": 0.940264422193393,
+        "exactitud_val": 0.9469868540763855,
+        "macro_f1_val_sin_clase": 0.9360792451325183,
+        "tiempo_s": 0.1124
+      },
+      {
+        "epoca": 31,
+        "perdida_train": 0.11961674514938803,
+        "perdida_val": 0.17662233114242554,
+        "macro_f1_val": 0.9427688757842666,
+        "exactitud_val": 0.9483461976051331,
+        "macro_f1_val_sin_clase": 0.9375660463101091,
+        "tiempo_s": 0.0894
+      },
+      {
+        "epoca": 32,
+        "perdida_train": 0.11657428932699927,
+        "perdida_val": 0.17602132260799408,
+        "macro_f1_val": 0.9443972295303,
+        "exactitud_val": 0.9497054815292358,
+        "macro_f1_val_sin_clase": 0.9393424322148728,
+        "tiempo_s": 0.0911
+      },
+      {
+        "epoca": 33,
+        "perdida_train": 0.11379345725564395,
+        "perdida_val": 0.17106284201145172,
+        "macro_f1_val": 0.942370603521144,
+        "exactitud_val": 0.9492523670196533,
+        "macro_f1_val_sin_clase": 0.9383768974900648,
+        "tiempo_s": 0.1029
+      },
+      {
+        "epoca": 34,
+        "perdida_train": 0.11097080101144505,
+        "perdida_val": 0.17029109597206116,
+        "macro_f1_val": 0.9474576431423577,
+        "exactitud_val": 0.9524241089820862,
+        "macro_f1_val_sin_clase": 0.9426810652462084,
+        "tiempo_s": 0.092
+      },
+      {
+        "epoca": 35,
+        "perdida_train": 0.10811989093049962,
+        "perdida_val": 0.16751307249069214,
+        "macro_f1_val": 0.9446322664364876,
+        "exactitud_val": 0.9510647654533386,
+        "macro_f1_val_sin_clase": 0.9408441661249852,
+        "tiempo_s": 0.1027
+      },
+      {
+        "epoca": 36,
+        "perdida_train": 0.10597112571651285,
+        "perdida_val": 0.16602899134159088,
+        "macro_f1_val": 0.9432597440376553,
+        "exactitud_val": 0.9497054815292358,
+        "macro_f1_val_sin_clase": 0.9393468689626228,
+        "tiempo_s": 0.0929
+      },
+      {
+        "epoca": 37,
+        "perdida_train": 0.10397563404577939,
+        "perdida_val": 0.16447865962982178,
+        "macro_f1_val": 0.9442713232869121,
+        "exactitud_val": 0.9506117105484009,
+        "macro_f1_val_sin_clase": 0.940450409961812,
+        "tiempo_s": 0.0939
+      },
+      {
+        "epoca": 38,
+        "perdida_train": 0.10153118246060641,
+        "perdida_val": 0.16389034688472748,
+        "macro_f1_val": 0.9448248811529717,
+        "exactitud_val": 0.9510647654533386,
+        "macro_f1_val_sin_clase": 0.9410542912702407,
+        "tiempo_s": 0.0858
+      },
+      {
+        "epoca": 39,
+        "perdida_train": 0.1007729867164464,
+        "perdida_val": 0.16308733820915222,
+        "macro_f1_val": 0.944831039901878,
+        "exactitud_val": 0.9501585960388184,
+        "macro_f1_val_sin_clase": 0.9398156798929578,
+        "tiempo_s": 0.0981
+      },
+      {
+        "epoca": 40,
+        "perdida_train": 0.09718970607786892,
+        "perdida_val": 0.16072016954421997,
+        "macro_f1_val": 0.9454485971451491,
+        "exactitud_val": 0.9510647654533386,
+        "macro_f1_val_sin_clase": 0.9404893787037989,
+        "tiempo_s": 0.0943
+      },
+      {
+        "epoca": 41,
+        "perdida_train": 0.09540376644880376,
+        "perdida_val": 0.160313218832016,
+        "macro_f1_val": 0.9441956104142007,
+        "exactitud_val": 0.9497054815292358,
+        "macro_f1_val_sin_clase": 0.9391224840882191,
+        "tiempo_s": 0.0946
+      },
+      {
+        "epoca": 42,
+        "perdida_train": 0.09307864228671885,
+        "perdida_val": 0.15906277298927307,
+        "macro_f1_val": 0.9467015122853742,
+        "exactitud_val": 0.9528772234916687,
+        "macro_f1_val_sin_clase": 0.9431015252328616,
+        "tiempo_s": 0.0898
+      },
+      {
+        "epoca": 43,
+        "perdida_train": 0.09172651566126767,
+        "perdida_val": 0.1587265282869339,
+        "macro_f1_val": 0.9485050269052003,
+        "exactitud_val": 0.953783392906189,
+        "macro_f1_val_sin_clase": 0.9438236657147641,
+        "tiempo_s": 0.086
+      },
+      {
+        "epoca": 44,
+        "perdida_train": 0.09005947992763418,
+        "perdida_val": 0.15495693683624268,
+        "macro_f1_val": 0.9479642549434181,
+        "exactitud_val": 0.9533303380012512,
+        "macro_f1_val_sin_clase": 0.943233732665547,
+        "tiempo_s": 0.0888
+      },
+      {
+        "epoca": 45,
+        "perdida_train": 0.08818732484936077,
+        "perdida_val": 0.1525854915380478,
+        "macro_f1_val": 0.9446338155594337,
+        "exactitud_val": 0.9519709944725037,
+        "macro_f1_val_sin_clase": 0.9420575285218391,
+        "tiempo_s": 0.0955
+      },
+      {
+        "epoca": 46,
+        "perdida_train": 0.0862680526579765,
+        "perdida_val": 0.15121039748191833,
+        "macro_f1_val": 0.9487137294756751,
+        "exactitud_val": 0.9542365074157715,
+        "macro_f1_val_sin_clase": 0.9440513412461911,
+        "tiempo_s": 0.1013
+      },
+      {
+        "epoca": 47,
+        "perdida_train": 0.08479181920143372,
+        "perdida_val": 0.15232522785663605,
+        "macro_f1_val": 0.9453591595027255,
+        "exactitud_val": 0.9506117105484009,
+        "macro_f1_val_sin_clase": 0.9403918103666097,
+        "tiempo_s": 0.0966
+      },
+      {
+        "epoca": 48,
+        "perdida_train": 0.08327561903764857,
+        "perdida_val": 0.14868251979351044,
+        "macro_f1_val": 0.948600057334598,
+        "exactitud_val": 0.953783392906189,
+        "macro_f1_val_sin_clase": 0.9439273352741069,
+        "tiempo_s": 0.0869
+      },
+      {
+        "epoca": 49,
+        "perdida_train": 0.0818082179655047,
+        "perdida_val": 0.1501484364271164,
+        "macro_f1_val": 0.9486371151281658,
+        "exactitud_val": 0.953783392906189,
+        "macro_f1_val_sin_clase": 0.9439677619579991,
+        "tiempo_s": 0.0885
+      },
+      {
+        "epoca": 50,
+        "perdida_train": 0.08008031985338997,
+        "perdida_val": 0.1477256715297699,
+        "macro_f1_val": 0.9488840339006878,
+        "exactitud_val": 0.9542365074157715,
+        "macro_f1_val_sin_clase": 0.9442371278916594,
+        "tiempo_s": 0.0946
+      },
+      {
+        "epoca": 51,
+        "perdida_train": 0.07871004138241477,
+        "perdida_val": 0.1455002725124359,
+        "macro_f1_val": 0.9514313699286241,
+        "exactitud_val": 0.9565020203590393,
+        "macro_f1_val_sin_clase": 0.9470160399221353,
+        "tiempo_s": 0.088
+      },
+      {
+        "epoca": 52,
+        "perdida_train": 0.07731705585265541,
+        "perdida_val": 0.1488756388425827,
+        "macro_f1_val": 0.9487844019171678,
+        "exactitud_val": 0.953783392906189,
+        "macro_f1_val_sin_clase": 0.9441284384550922,
+        "tiempo_s": 0.0886
+      },
+      {
+        "epoca": 53,
+        "perdida_train": 0.07600512449196316,
+        "perdida_val": 0.14520381391048431,
+        "macro_f1_val": 0.9507044871343212,
+        "exactitud_val": 0.955595850944519,
+        "macro_f1_val_sin_clase": 0.9462230768738049,
+        "tiempo_s": 0.0975
+      },
+      {
+        "epoca": 54,
+        "perdida_train": 0.07459536649007849,
+        "perdida_val": 0.15094979107379913,
+        "macro_f1_val": 0.9451341075620289,
+        "exactitud_val": 0.9510647654533386,
+        "macro_f1_val_sin_clase": 0.9413916291710301,
+        "tiempo_s": 0.1271
+      },
+      {
+        "epoca": 55,
+        "perdida_train": 0.07524905190429586,
+        "perdida_val": 0.14446936547756195,
+        "macro_f1_val": 0.9498129670752458,
+        "exactitud_val": 0.9551427364349365,
+        "macro_f1_val_sin_clase": 0.9452505095366317,
+        "tiempo_s": 0.1007
+      },
+      {
+        "epoca": 56,
+        "perdida_train": 0.0726397336326181,
+        "perdida_val": 0.14274854958057404,
+        "macro_f1_val": 0.9486397867866717,
+        "exactitud_val": 0.9542365074157715,
+        "macro_f1_val_sin_clase": 0.9439706764945509,
+        "tiempo_s": 0.1174
+      },
+      {
+        "epoca": 57,
+        "perdida_train": 0.07143655746059621,
+        "perdida_val": 0.1385307013988495,
+        "macro_f1_val": 0.9507127223917432,
+        "exactitud_val": 0.9560489058494568,
+        "macro_f1_val_sin_clase": 0.9462320607909926,
+        "tiempo_s": 0.1005
+      },
+      {
+        "epoca": 58,
+        "perdida_train": 0.06961794305134585,
+        "perdida_val": 0.14433787763118744,
+        "macro_f1_val": 0.9488873537710983,
+        "exactitud_val": 0.9551427364349365,
+        "macro_f1_val_sin_clase": 0.94576465129952,
+        "tiempo_s": 0.0965
+      },
+      {
+        "epoca": 59,
+        "perdida_train": 0.06865004964053312,
+        "perdida_val": 0.13881517946720123,
+        "macro_f1_val": 0.948357474765046,
+        "exactitud_val": 0.954689621925354,
+        "macro_f1_val_sin_clase": 0.9451960704913508,
+        "tiempo_s": 0.1193
+      },
+      {
+        "epoca": 60,
+        "perdida_train": 0.06758206969196784,
+        "perdida_val": 0.13970832526683807,
+        "macro_f1_val": 0.9500986796980945,
+        "exactitud_val": 0.955595850944519,
+        "macro_f1_val_sin_clase": 0.9455621960342849,
+        "tiempo_s": 0.0901
+      },
+      {
+        "epoca": 61,
+        "perdida_train": 0.06703567126377381,
+        "perdida_val": 0.13448898494243622,
+        "macro_f1_val": 0.951718362847806,
+        "exactitud_val": 0.9569551348686218,
+        "macro_f1_val_sin_clase": 0.9473291231066974,
+        "tiempo_s": 0.0885
+      },
+      {
+        "epoca": 62,
+        "perdida_train": 0.06563431849294805,
+        "perdida_val": 0.1340324729681015,
+        "macro_f1_val": 0.9492929847555439,
+        "exactitud_val": 0.954689621925354,
+        "macro_f1_val_sin_clase": 0.9446832560969569,
+        "tiempo_s": 0.1011
+      },
+      {
+        "epoca": 63,
+        "perdida_train": 0.0643270042809573,
+        "perdida_val": 0.13735930621623993,
+        "macro_f1_val": 0.9485510960511055,
+        "exactitud_val": 0.9542365074157715,
+        "macro_f1_val_sin_clase": 0.9438739229648424,
+        "tiempo_s": 0.0918
+      },
+      {
+        "epoca": 64,
+        "perdida_train": 0.06339445941269717,
+        "perdida_val": 0.13716267049312592,
+        "macro_f1_val": 0.9528070083554914,
+        "exactitud_val": 0.9578613638877869,
+        "macro_f1_val_sin_clase": 0.9485167363878088,
+        "tiempo_s": 0.0969
+      },
+      {
+        "epoca": 65,
+        "perdida_train": 0.06266299931999834,
+        "perdida_val": 0.13811901211738586,
+        "macro_f1_val": 0.9466336071511027,
+        "exactitud_val": 0.9533303380012512,
+        "macro_f1_val_sin_clase": 0.9433060186231611,
+        "tiempo_s": 0.0954
+      },
+      {
+        "epoca": 66,
+        "perdida_train": 0.06161687409574973,
+        "perdida_val": 0.13511359691619873,
+        "macro_f1_val": 0.9497007164704431,
+        "exactitud_val": 0.9560489058494568,
+        "macro_f1_val_sin_clase": 0.9466550529166903,
+        "tiempo_s": 0.0935
+      },
+      {
+        "epoca": 67,
+        "perdida_train": 0.06085544358440899,
+        "perdida_val": 0.1377057582139969,
+        "macro_f1_val": 0.9493200697658731,
+        "exactitud_val": 0.955595850944519,
+        "macro_f1_val_sin_clase": 0.9462509398814212,
+        "tiempo_s": 0.0964
+      },
+      {
+        "epoca": 68,
+        "perdida_train": 0.05981183948523221,
+        "perdida_val": 0.13016653060913086,
+        "macro_f1_val": 0.9558872035989506,
+        "exactitud_val": 0.9610331058502197,
+        "macro_f1_val_sin_clase": 0.9518769493806734,
+        "tiempo_s": 0.1016
+      },
+      {
+        "epoca": 69,
+        "perdida_train": 0.05922833003382632,
+        "perdida_val": 0.13334695994853973,
+        "macro_f1_val": 0.9525572630739886,
+        "exactitud_val": 0.9578613638877869,
+        "macro_f1_val_sin_clase": 0.9482442869898058,
+        "tiempo_s": 0.0913
+      },
+      {
+        "epoca": 70,
+        "perdida_train": 0.05802164123179441,
+        "perdida_val": 0.12990346550941467,
+        "macro_f1_val": 0.9521948042194069,
+        "exactitud_val": 0.9578613638877869,
+        "macro_f1_val_sin_clase": 0.9478488773302621,
+        "tiempo_s": 0.0917
+      },
+      {
+        "epoca": 71,
+        "perdida_train": 0.05749254352985857,
+        "perdida_val": 0.12839482724666595,
+        "macro_f1_val": 0.9523137108948322,
+        "exactitud_val": 0.9578613638877869,
+        "macro_f1_val_sin_clase": 0.9479785937034534,
+        "tiempo_s": 0.0948
+      },
+      {
+        "epoca": 72,
+        "perdida_train": 0.05650865808527737,
+        "perdida_val": 0.12899190187454224,
+        "macro_f1_val": 0.9506426683358233,
+        "exactitud_val": 0.9569551348686218,
+        "macro_f1_val_sin_clase": 0.9476893037137454,
+        "tiempo_s": 0.0911
+      },
+      {
+        "epoca": 73,
+        "perdida_train": 0.05557873508429782,
+        "perdida_val": 0.13021333515644073,
+        "macro_f1_val": 0.9498797117643077,
+        "exactitud_val": 0.9560489058494568,
+        "macro_f1_val_sin_clase": 0.9468603362636426,
+        "tiempo_s": 0.0861
+      },
+      {
+        "epoca": 74,
+        "perdida_train": 0.0547569514038091,
+        "perdida_val": 0.1300305873155594,
+        "macro_f1_val": 0.9500025469384564,
+        "exactitud_val": 0.955595850944519,
+        "macro_f1_val_sin_clase": 0.9454573239328616,
+        "tiempo_s": 0.0877
+      },
+      {
+        "epoca": 75,
+        "perdida_train": 0.053993758371966405,
+        "perdida_val": 0.12882770597934723,
+        "macro_f1_val": 0.9514487207371866,
+        "exactitud_val": 0.9578613638877869,
+        "macro_f1_val_sin_clase": 0.9485716948304757,
+        "tiempo_s": 0.101
+      },
+      {
+        "epoca": 76,
+        "perdida_train": 0.05336618407524843,
+        "perdida_val": 0.12681126594543457,
+        "macro_f1_val": 0.9508563879609792,
+        "exactitud_val": 0.9574082493782043,
+        "macro_f1_val_sin_clase": 0.9479197446715483,
+        "tiempo_s": 0.0952
+      },
+      {
+        "epoca": 77,
+        "perdida_train": 0.05257295064110169,
+        "perdida_val": 0.13143478333950043,
+        "macro_f1_val": 0.9479405270341826,
+        "exactitud_val": 0.9542365074157715,
+        "macro_f1_val_sin_clase": 0.9447407035701485,
+        "tiempo_s": 0.107
+      },
+      {
+        "epoca": 78,
+        "perdida_train": 0.05188623999051232,
+        "perdida_val": 0.12755142152309418,
+        "macro_f1_val": 0.9538879069388276,
+        "exactitud_val": 0.9601268768310547,
+        "macro_f1_val_sin_clase": 0.9512346121859281,
+        "tiempo_s": 0.1085
+      }
+    ]
+  },
+  "checkpoint": {
+    "ruta": "C:\\Users\\xbetr\\foliares_salidas\\02_modelo_base\\02_modelo_base_20261104_201229\\mejor_checkpoint.pt",
+    "bytes": 3940491,
+    "sha256": "592eadc3d124a119ce6ffbbd8d661a9d86f2b639c1c1985375c27543307457b3"
+  },
+  "pv_val": {
+    "n": 2207,
+    "exactitud": 0.9610330765745355,
+    "macro_f1": 0.9558872035989506,
+    "recall_por_clase": {
+      "Pepper,_bell___Bacterial_spot": 0.935672514619883,
+      "Pepper,_bell___healthy": 1.0,
+      "Potato___Early_blight": 0.9868421052631579,
+      "Potato___Late_blight": 0.9473684210526315,
+      "Tomato___Bacterial_spot": 0.971875,
+      "Tomato___Early_blight": 0.8486842105263158,
+      "Tomato___Late_blight": 0.9264705882352942,
+      "Tomato___Leaf_Mold": 0.9583333333333334,
+      "Tomato___Septoria_leaf_spot": 0.9078947368421053,
+      "Tomato___Tomato_Yellow_Leaf_Curl_Virus": 0.9975728155339806,
+      "Tomato___Tomato_mosaic_virus": 1.0,
+      "Tomato___healthy": 0.9868421052631579
+    },
+    "f1_por_clase": {
+      "Pepper,_bell___Bacterial_spot": 0.9667673716012084,
+      "Pepper,_bell___healthy": 0.9913043478260869,
+      "Potato___Early_blight": 0.9900990099009901,
+      "Potato___Late_blight": 0.9664429530201343,
+      "Tomato___Bacterial_spot": 0.9673405909797823,
+      "Tomato___Early_blight": 0.8745762711864407,
+      "Tomato___Late_blight": 0.881118881118881,
+      "Tomato___Leaf_Mold": 0.9517241379310345,
+      "Tomato___Septoria_leaf_spot": 0.8903225806451613,
+      "Tomato___Tomato_Yellow_Leaf_Curl_Virus": 0.9975728155339806,
+      "Tomato___Tomato_mosaic_virus": 1.0,
+      "Tomato___healthy": 0.9933774834437086
+    },
+    "soporte_por_clase": {
+      "Pepper,_bell___Bacterial_spot": 171,
+      "Pepper,_bell___healthy": 228,
+      "Potato___Early_blight": 152,
+      "Potato___Late_blight": 152,
+      "Tomato___Bacterial_spot": 320,
+      "Tomato___Early_blight": 152,
+      "Tomato___Late_blight": 136,
+      "Tomato___Leaf_Mold": 144,
+      "Tomato___Septoria_leaf_spot": 152,
+      "Tomato___Tomato_Yellow_Leaf_Curl_Virus": 412,
+      "Tomato___Tomato_mosaic_virus": 36,
+      "Tomato___healthy": 152
+    },
+    "matriz_confusion": {
+      "orden": [
+        "Pepper,_bell___Bacterial_spot",
+        "Pepper,_bell___healthy",
+        "Potato___Early_blight",
+        "Potato___Late_blight",
+        "Tomato___Bacterial_spot",
+        "Tomato___Early_blight",
+        "Tomato___Late_blight",
+        "Tomato___Leaf_Mold",
+        "Tomato___Septoria_leaf_spot",
+        "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+        "Tomato___Tomato_mosaic_virus",
+        "Tomato___healthy"
+      ],
+      "filas_verdadera_columnas_predicha": [
+        [
+          160,
+          2,
+          0,
+          0,
+          0,
+          1,
+          1,
+          7,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          228,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          150,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          144,
+          0,
+          0,
+          8,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          311,
+          2,
+          2,
+          0,
+          5,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          6,
+          129,
+          6,
+          0,
+          9,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          2,
+          0,
+          6,
+          126,
+          1,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0,
+          1,
+          1,
+          0,
+          138,
+          3,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0,
+          5,
+          2,
+          6,
+          0,
+          138,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          411,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          36,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          150
+        ]
+      ]
+    },
+    "macro_f1_sin_Tomato___Tomato_mosaic_virus": 0.9518769493806734,
+    "modo_sin": "sin_imagenes_de_la_clase"
+  },
+  "trivial_pv_val": {
+    "n": 2207,
+    "exactitud": 0.06162211146352515,
+    "macro_f1": 0.009674206857305448,
+    "recall_por_clase": {
+      "Pepper,_bell___Bacterial_spot": 0.0,
+      "Pepper,_bell___healthy": 0.0,
+      "Potato___Early_blight": 0.0,
+      "Potato___Late_blight": 0.0,
+      "Tomato___Bacterial_spot": 0.0,
+      "Tomato___Early_blight": 0.0,
+      "Tomato___Late_blight": 1.0,
+      "Tomato___Leaf_Mold": 0.0,
+      "Tomato___Septoria_leaf_spot": 0.0,
+      "Tomato___Tomato_Yellow_Leaf_Curl_Virus": 0.0,
+      "Tomato___Tomato_mosaic_virus": 0.0,
+      "Tomato___healthy": 0.0
+    },
+    "f1_por_clase": {
+      "Pepper,_bell___Bacterial_spot": 0.0,
+      "Pepper,_bell___healthy": 0.0,
+      "Potato___Early_blight": 0.0,
+      "Potato___Late_blight": 0.0,
+      "Tomato___Bacterial_spot": 0.0,
+      "Tomato___Early_blight": 0.0,
+      "Tomato___Late_blight": 0.11609048228766539,
+      "Tomato___Leaf_Mold": 0.0,
+      "Tomato___Septoria_leaf_spot": 0.0,
+      "Tomato___Tomato_Yellow_Leaf_Curl_Virus": 0.0,
+      "Tomato___Tomato_mosaic_virus": 0.0,
+      "Tomato___healthy": 0.0
+    },
+    "soporte_por_clase": {
+      "Pepper,_bell___Bacterial_spot": 171,
+      "Pepper,_bell___healthy": 228,
+      "Potato___Early_blight": 152,
+      "Potato___Late_blight": 152,
+      "Tomato___Bacterial_spot": 320,
+      "Tomato___Early_blight": 152,
+      "Tomato___Late_blight": 136,
+      "Tomato___Leaf_Mold": 144,
+      "Tomato___Septoria_leaf_spot": 152,
+      "Tomato___Tomato_Yellow_Leaf_Curl_Virus": 412,
+      "Tomato___Tomato_mosaic_virus": 36,
+      "Tomato___healthy": 152
+    },
+    "matriz_confusion": {
+      "orden": [
+        "Pepper,_bell___Bacterial_spot",
+        "Pepper,_bell___healthy",
+        "Potato___Early_blight",
+        "Potato___Late_blight",
+        "Tomato___Bacterial_spot",
+        "Tomato___Early_blight",
+        "Tomato___Late_blight",
+        "Tomato___Leaf_Mold",
+        "Tomato___Septoria_leaf_spot",
+        "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+        "Tomato___Tomato_mosaic_virus",
+        "Tomato___healthy"
+      ],
+      "filas_verdadera_columnas_predicha": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          171,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          228,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          152,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          152,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          320,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          152,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          136,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          144,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          152,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          412,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          36,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          152,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    "macro_f1_sin_Tomato___Tomato_mosaic_virus": 0.010718367025259093,
+    "modo_sin": "sin_imagenes_de_la_clase",
+    "clase": "Tomato___Late_blight"
+  },
+  "orden_clases": [
+    {
+      "pv": "Pepper,_bell___Bacterial_spot",
+      "plantdoc": "Bell_pepper leaf spot"
+    },
+    {
+      "pv": "Pepper,_bell___healthy",
+      "plantdoc": "Bell_pepper leaf"
+    },
+    {
+      "pv": "Potato___Early_blight",
+      "plantdoc": "Potato leaf early blight"
+    },
+    {
+      "pv": "Potato___Late_blight",
+      "plantdoc": "Potato leaf late blight"
+    },
+    {
+      "pv": "Tomato___Bacterial_spot",
+      "plantdoc": "Tomato leaf bacterial spot"
+    },
+    {
+      "pv": "Tomato___Early_blight",
+      "plantdoc": "Tomato Early blight leaf"
+    },
+    {
+      "pv": "Tomato___Late_blight",
+      "plantdoc": "Tomato leaf late blight"
+    },
+    {
+      "pv": "Tomato___Leaf_Mold",
+      "plantdoc": "Tomato mold leaf"
+    },
+    {
+      "pv": "Tomato___Septoria_leaf_spot",
+      "plantdoc": "Tomato Septoria leaf spot"
+    },
+    {
+      "pv": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+      "plantdoc": "Tomato leaf yellow virus"
+    },
+    {
+      "pv": "Tomato___Tomato_mosaic_virus",
+      "plantdoc": "Tomato leaf mosaic virus"
+    },
+    {
+      "pv": "Tomato___healthy",
+      "plantdoc": "Tomato leaf"
+    }
+  ]
+}
