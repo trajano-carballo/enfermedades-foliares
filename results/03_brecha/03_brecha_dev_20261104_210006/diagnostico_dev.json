@@ -1,0 +1,980 @@
+{
+  "fecha": "2026-11-05 08:14:21",
+  "commit": "60e0a2bb86cea28731b32bf304366a97db0f22c1",
+  "cambios_sin_commitear": false,
+  "config": {
+    "evaluacion": {
+      "experimento": "03_brecha",
+      "config_modelo": "configs/02_modelo_base.yaml",
+      "modelo_base": {
+        "run_id": "02_modelo_base_20261104_201229",
+        "checkpoint": "02_modelo_base/02_modelo_base_20261104_201229/mejor_checkpoint.pt",
+        "sha256": "592eadc3d124a119ce6ffbbd8d661a9d86f2b639c1c1985375c27543307457b3"
+      },
+      "tamano": 224,
+      "geometrias_candidatas": [
+        "aplastar",
+        "resize_recorte",
+        "relleno"
+      ],
+      "geometria_base": "aplastar",
+      "geometria": "aplastar",
+      "bootstrap": {
+        "replicas": 2000,
+        "nivel": 0.95,
+        "semilla": 42
+      },
+      "cam": {
+        "semilla": 42,
+        "por_clase_pd_dev": 2,
+        "por_clase_pv_val": 1
+      },
+      "batch": 64
+    },
+    "modelo": {
+      "experimento": "02_modelo_base",
+      "semilla": 42,
+      "determinista": true,
+      "splits": {
+        "plantvillage": "plantvillage_particion.csv",
+        "plantdoc": "plantdoc_particion.csv"
+      },
+      "clases": [
+        {
+          "pv": "Pepper,_bell___Bacterial_spot",
+          "plantdoc": "Bell_pepper leaf spot"
+        },
+        {
+          "pv": "Pepper,_bell___healthy",
+          "plantdoc": "Bell_pepper leaf"
+        },
+        {
+          "pv": "Potato___Early_blight",
+          "plantdoc": "Potato leaf early blight"
+        },
+        {
+          "pv": "Potato___Late_blight",
+          "plantdoc": "Potato leaf late blight"
+        },
+        {
+          "pv": "Tomato___Bacterial_spot",
+          "plantdoc": "Tomato leaf bacterial spot"
+        },
+        {
+          "pv": "Tomato___Early_blight",
+          "plantdoc": "Tomato Early blight leaf"
+        },
+        {
+          "pv": "Tomato___Late_blight",
+          "plantdoc": "Tomato leaf late blight"
+        },
+        {
+          "pv": "Tomato___Leaf_Mold",
+          "plantdoc": "Tomato mold leaf"
+        },
+        {
+          "pv": "Tomato___Septoria_leaf_spot",
+          "plantdoc": "Tomato Septoria leaf spot"
+        },
+        {
+          "pv": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+          "plantdoc": "Tomato leaf yellow virus"
+        },
+        {
+          "pv": "Tomato___Tomato_mosaic_virus",
+          "plantdoc": "Tomato leaf mosaic virus"
+        },
+        {
+          "pv": "Tomato___healthy",
+          "plantdoc": "Tomato leaf"
+        }
+      ],
+      "clase_mosaic": "Tomato___Tomato_mosaic_virus",
+      "preproceso": {
+        "geometria": "aplastar",
+        "tamano": 224
+      },
+      "modelo": {
+        "pesos_imagenet": true
+      },
+      "features": {
+        "batch": 64
+      },
+      "entrenamiento": {
+        "optimizador": "adam",
+        "lr": 0.001,
+        "batch": 256,
+        "max_epocas": 100,
+        "paciencia": 10,
+        "criterio": "macro_f1_val_con_mosaic"
+      },
+      "aumentacion": "ninguna",
+      "ponderacion_clases": false,
+      "umbral_desbalance": 5,
+      "desbalance_aceptado_por_el_equipo": true,
+      "metricas": {
+        "modo_sin_mosaic": "sin_imagenes_de_la_clase",
+        "desempate_trivial": "primera_en_orden"
+      }
+    }
+  },
+  "sha256_splits": {
+    "plantdoc_particion.csv": "dc82e2d5af43a91610a0342023f34a972561fe143e8dfe13c6d4cc02768c8bba",
+    "plantvillage_particion.csv": "1ff04397bed8182b901609f2e0d3e0e8b3ceed3ac4b7739512b64f9b366713dd"
+  },
+  "semillas": {},
+  "python": "3.13.7",
+  "plataforma": "Windows-11-10.0.26200-SP0",
+  "torch": "2.14.1+cpu",
+  "cuda_runtime": null,
+  "cudnn": null,
+  "dispositivo": "cpu",
+  "gpu": null,
+  "hilos_cpu": 6,
+  "fase": "diagnostico_dev",
+  "run_dev": "03_brecha_dev_20261104_210006",
+  "geometria": "aplastar",
+  "modelo_base": {
+    "run_id": "02_modelo_base_20261104_201229",
+    "checkpoint": "02_modelo_base/02_modelo_base_20261104_201229/mejor_checkpoint.pt",
+    "sha256": "592eadc3d124a119ce6ffbbd8d661a9d86f2b639c1c1985375c27543307457b3"
+  },
+  "datos_usados": "PlantDoc-dev (predicciones guardadas y 20 recalculadas) y 20 imágenes de PV-val; ningún test",
+  "mapeo": {
+    "indices": [
+      {
+        "indice": 0,
+        "clase_pv": "Pepper,_bell___Bacterial_spot",
+        "carpeta_pd_config": "Bell_pepper leaf spot",
+        "carpeta_pd_doc": "Bell_pepper leaf spot",
+        "coincide": true
+      },
+      {
+        "indice": 1,
+        "clase_pv": "Pepper,_bell___healthy",
+        "carpeta_pd_config": "Bell_pepper leaf",
+        "carpeta_pd_doc": "Bell_pepper leaf",
+        "coincide": true
+      },
+      {
+        "indice": 2,
+        "clase_pv": "Potato___Early_blight",
+        "carpeta_pd_config": "Potato leaf early blight",
+        "carpeta_pd_doc": "Potato leaf early blight",
+        "coincide": true
+      },
+      {
+        "indice": 3,
+        "clase_pv": "Potato___Late_blight",
+        "carpeta_pd_config": "Potato leaf late blight",
+        "carpeta_pd_doc": "Potato leaf late blight",
+        "coincide": true
+      },
+      {
+        "indice": 4,
+        "clase_pv": "Tomato___Bacterial_spot",
+        "carpeta_pd_config": "Tomato leaf bacterial spot",
+        "carpeta_pd_doc": "Tomato leaf bacterial spot",
+        "coincide": true
+      },
+      {
+        "indice": 5,
+        "clase_pv": "Tomato___Early_blight",
+        "carpeta_pd_config": "Tomato Early blight leaf",
+        "carpeta_pd_doc": "Tomato Early blight leaf",
+        "coincide": true
+      },
+      {
+        "indice": 6,
+        "clase_pv": "Tomato___Late_blight",
+        "carpeta_pd_config": "Tomato leaf late blight",
+        "carpeta_pd_doc": "Tomato leaf late blight",
+        "coincide": true
+      },
+      {
+        "indice": 7,
+        "clase_pv": "Tomato___Leaf_Mold",
+        "carpeta_pd_config": "Tomato mold leaf",
+        "carpeta_pd_doc": "Tomato mold leaf",
+        "coincide": true
+      },
+      {
+        "indice": 8,
+        "clase_pv": "Tomato___Septoria_leaf_spot",
+        "carpeta_pd_config": "Tomato Septoria leaf spot",
+        "carpeta_pd_doc": "Tomato Septoria leaf spot",
+        "coincide": true
+      },
+      {
+        "indice": 9,
+        "clase_pv": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+        "carpeta_pd_config": "Tomato leaf yellow virus",
+        "carpeta_pd_doc": "Tomato leaf yellow virus",
+        "coincide": true
+      },
+      {
+        "indice": 10,
+        "clase_pv": "Tomato___Tomato_mosaic_virus",
+        "carpeta_pd_config": "Tomato leaf mosaic virus",
+        "carpeta_pd_doc": "Tomato leaf mosaic virus",
+        "coincide": true
+      },
+      {
+        "indice": 11,
+        "clase_pv": "Tomato___healthy",
+        "carpeta_pd_config": "Tomato leaf",
+        "carpeta_pd_doc": "Tomato leaf",
+        "coincide": true
+      }
+    ],
+    "todas_coinciden_con_el_doc": true,
+    "clase_del_csv_igual_a_la_carpeta": true,
+    "etiqueta_igual_al_indice_de_la_carpeta": true,
+    "mismo_orden_que_las_predicciones": true,
+    "misma_etiqueta_que_las_predicciones": true,
+    "muestra_3_por_clase": [
+      {
+        "ruta": "raw/plantdoc/test/Bell_pepper leaf spot/00.jpg",
+        "carpeta": "Bell_pepper leaf spot",
+        "etiqueta": 0,
+        "clase_pv": "Pepper,_bell___Bacterial_spot",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Bell_pepper leaf spot/000.jpg",
+        "carpeta": "Bell_pepper leaf spot",
+        "etiqueta": 0,
+        "clase_pv": "Pepper,_bell___Bacterial_spot",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Bell_pepper leaf spot/Bacterial-spot-pepper2.jpg",
+        "carpeta": "Bell_pepper leaf spot",
+        "etiqueta": 0,
+        "clase_pv": "Pepper,_bell___Bacterial_spot",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Bell_pepper leaf/10148582-green-leaf-of-pepper.jpg",
+        "carpeta": "Bell_pepper leaf",
+        "etiqueta": 1,
+        "clase_pv": "Pepper,_bell___healthy",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Bell_pepper leaf/4825902504_5fa80b65b8_z.jpg",
+        "carpeta": "Bell_pepper leaf",
+        "etiqueta": 1,
+        "clase_pv": "Pepper,_bell___healthy",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Bell_pepper leaf/GREEN%20BELL%20PLANT%20YELLOW%20LEAF.JPG.jpg",
+        "carpeta": "Bell_pepper leaf",
+        "etiqueta": 1,
+        "clase_pv": "Pepper,_bell___healthy",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Potato leaf early blight/early-blight-alternaria-alternata-leaf-spotting-on-potato-leaf-X91XJE.jpg",
+        "carpeta": "Potato leaf early blight",
+        "etiqueta": 2,
+        "clase_pv": "Potato___Early_blight",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Potato leaf early blight/early-blight-or-target-spot-alternaria-solani-lesions-on-a-tomato-AXK6AY.jpg",
+        "carpeta": "Potato leaf early blight",
+        "etiqueta": 2,
+        "clase_pv": "Potato___Early_blight",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Potato leaf early blight/potato-blight-phytophthora-infestans-close-up-of-upper-surface-of-BMMRXC.jpg",
+        "carpeta": "Potato leaf early blight",
+        "etiqueta": 2,
+        "clase_pv": "Potato___Early_blight",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Potato leaf late blight/20090710-lateblight.jpg",
+        "carpeta": "Potato leaf late blight",
+        "etiqueta": 3,
+        "clase_pv": "Potato___Late_blight",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Potato leaf late blight/2540_600.jpg",
+        "carpeta": "Potato leaf late blight",
+        "etiqueta": 3,
+        "clase_pv": "Potato___Late_blight",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Potato leaf late blight/B2750109-Late_blight_on_a_potato_plant-SPL.jpg",
+        "carpeta": "Potato leaf late blight",
+        "etiqueta": 3,
+        "clase_pv": "Potato___Late_blight",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Tomato leaf bacterial spot/%2320+Bacterial+Spot+and+Speck.jpg",
+        "carpeta": "Tomato leaf bacterial spot",
+        "etiqueta": 4,
+        "clase_pv": "Tomato___Bacterial_spot",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Tomato leaf bacterial spot/07.17.18-Common_Tomato_Diseases_Canker-258x300.jpg",
+        "carpeta": "Tomato leaf bacterial spot",
+        "etiqueta": 4,
+        "clase_pv": "Tomato___Bacterial_spot",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Tomato leaf bacterial spot/Bacterial_spots563.jpg",
+        "carpeta": "Tomato leaf bacterial spot",
+        "etiqueta": 4,
+        "clase_pv": "Tomato___Bacterial_spot",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Tomato Early blight leaf/039b47d574bc4bb8a14259a1cd96a741.jpg",
+        "carpeta": "Tomato Early blight leaf",
+        "etiqueta": 5,
+        "clase_pv": "Tomato___Early_blight",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Tomato Early blight leaf/100983448.jpg",
+        "carpeta": "Tomato Early blight leaf",
+        "etiqueta": 5,
+        "clase_pv": "Tomato___Early_blight",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Tomato Early blight leaf/Shoemaker_7068.JPG.jpg",
+        "carpeta": "Tomato Early blight leaf",
+        "etiqueta": 5,
+        "clase_pv": "Tomato___Early_blight",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Tomato leaf late blight/110822-206-Tomato-blight.jpg",
+        "carpeta": "Tomato leaf late blight",
+        "etiqueta": 6,
+        "clase_pv": "Tomato___Late_blight",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Tomato leaf late blight/E%29Tomato-late-blight-foliar.jpg",
+        "carpeta": "Tomato leaf late blight",
+        "etiqueta": 6,
+        "clase_pv": "Tomato___Late_blight",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Tomato leaf late blight/IMG_5808.jpg",
+        "carpeta": "Tomato leaf late blight",
+        "etiqueta": 6,
+        "clase_pv": "Tomato___Late_blight",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Tomato mold leaf/BIGSD.jpg",
+        "carpeta": "Tomato mold leaf",
+        "etiqueta": 7,
+        "clase_pv": "Tomato___Leaf_Mold",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Tomato mold leaf/black_leaf_mold_in_zina_tina.jpg",
+        "carpeta": "Tomato mold leaf",
+        "etiqueta": 7,
+        "clase_pv": "Tomato___Leaf_Mold",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Tomato mold leaf/dscn6689.jpg",
+        "carpeta": "Tomato mold leaf",
+        "etiqueta": 7,
+        "clase_pv": "Tomato___Leaf_Mold",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Tomato Septoria leaf spot/2STEM.jpg",
+        "carpeta": "Tomato Septoria leaf spot",
+        "etiqueta": 8,
+        "clase_pv": "Tomato___Septoria_leaf_spot",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Tomato Septoria leaf spot/2septoria-tomato.jpg",
+        "carpeta": "Tomato Septoria leaf spot",
+        "etiqueta": 8,
+        "clase_pv": "Tomato___Septoria_leaf_spot",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Tomato Septoria leaf spot/6134794031202304.jpeg.jpg",
+        "carpeta": "Tomato Septoria leaf spot",
+        "etiqueta": 8,
+        "clase_pv": "Tomato___Septoria_leaf_spot",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Tomato leaf yellow virus/11-40580_5.jpg",
+        "carpeta": "Tomato leaf yellow virus",
+        "etiqueta": 9,
+        "clase_pv": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Tomato leaf yellow virus/17fc47.jpg",
+        "carpeta": "Tomato leaf yellow virus",
+        "etiqueta": 9,
+        "clase_pv": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Tomato leaf yellow virus/glyphosate.jpg",
+        "carpeta": "Tomato leaf yellow virus",
+        "etiqueta": 9,
+        "clase_pv": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Tomato leaf mosaic virus/9511.img.jpg",
+        "carpeta": "Tomato leaf mosaic virus",
+        "etiqueta": 10,
+        "clase_pv": "Tomato___Tomato_mosaic_virus",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Tomato leaf mosaic virus/Tomato-Mosaic-1wdr2jx-300x225.jpg",
+        "carpeta": "Tomato leaf mosaic virus",
+        "etiqueta": 10,
+        "clase_pv": "Tomato___Tomato_mosaic_virus",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Tomato leaf mosaic virus/everystockphoto-21099455-l.jpg",
+        "carpeta": "Tomato leaf mosaic virus",
+        "etiqueta": 10,
+        "clase_pv": "Tomato___Tomato_mosaic_virus",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Tomato leaf/1684.jpg",
+        "carpeta": "Tomato leaf",
+        "etiqueta": 11,
+        "clase_pv": "Tomato___healthy",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Tomato leaf/90e2c0.jpg",
+        "carpeta": "Tomato leaf",
+        "etiqueta": 11,
+        "clase_pv": "Tomato___healthy",
+        "coincide_con_el_doc": true
+      },
+      {
+        "ruta": "raw/plantdoc/test/Tomato leaf/IMG_1246.jpg",
+        "carpeta": "Tomato leaf",
+        "etiqueta": 11,
+        "clase_pv": "Tomato___healthy",
+        "coincide_con_el_doc": true
+      }
+    ],
+    "muestra_coincide_con_el_doc": true
+  },
+  "pd_dev": {
+    "n": 696,
+    "exactitud": 0.1752873563218391,
+    "macro_f1": 0.12395830348256705,
+    "por_clase": [
+      {
+        "indice": 0,
+        "clase": "Pepper,_bell___Bacterial_spot",
+        "verdaderas": 47,
+        "predichas": 20,
+        "recall": 0.0425531914893617,
+        "precision": 0.1,
+        "f1": 0.05970149253731343
+      },
+      {
+        "indice": 1,
+        "clase": "Pepper,_bell___healthy",
+        "verdaderas": 41,
+        "predichas": 27,
+        "recall": 0.17073170731707318,
+        "precision": 0.25925925925925924,
+        "f1": 0.2058823529411765
+      },
+      {
+        "indice": 2,
+        "clase": "Potato___Early_blight",
+        "verdaderas": 67,
+        "predichas": 34,
+        "recall": 0.208955223880597,
+        "precision": 0.4117647058823529,
+        "f1": 0.2772277227722772
+      },
+      {
+        "indice": 3,
+        "clase": "Potato___Late_blight",
+        "verdaderas": 62,
+        "predichas": 8,
+        "recall": 0.04838709677419355,
+        "precision": 0.375,
+        "f1": 0.0857142857142857
+      },
+      {
+        "indice": 4,
+        "clase": "Tomato___Bacterial_spot",
+        "verdaderas": 72,
+        "predichas": 2,
+        "recall": 0.0,
+        "precision": 0.0,
+        "f1": 0.0
+      },
+      {
+        "indice": 5,
+        "clase": "Tomato___Early_blight",
+        "verdaderas": 52,
+        "predichas": 111,
+        "recall": 0.3269230769230769,
+        "precision": 0.15315315315315314,
+        "f1": 0.20858895705521474
+      },
+      {
+        "indice": 6,
+        "clase": "Tomato___Late_blight",
+        "verdaderas": 69,
+        "predichas": 417,
+        "recall": 0.7971014492753623,
+        "precision": 0.13189448441247004,
+        "f1": 0.2263374485596708
+      },
+      {
+        "indice": 7,
+        "clase": "Tomato___Leaf_Mold",
+        "verdaderas": 63,
+        "predichas": 3,
+        "recall": 0.031746031746031744,
+        "precision": 0.6666666666666666,
+        "f1": 0.06060606060606061
+      },
+      {
+        "indice": 8,
+        "clase": "Tomato___Septoria_leaf_spot",
+        "verdaderas": 97,
+        "predichas": 61,
+        "recall": 0.18556701030927836,
+        "precision": 0.29508196721311475,
+        "f1": 0.22784810126582278
+      },
+      {
+        "indice": 9,
+        "clase": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+        "verdaderas": 50,
+        "predichas": 9,
+        "recall": 0.08,
+        "precision": 0.4444444444444444,
+        "f1": 0.13559322033898308
+      },
+      {
+        "indice": 10,
+        "clase": "Tomato___Tomato_mosaic_virus",
+        "verdaderas": 37,
+        "predichas": 0,
+        "recall": 0.0,
+        "precision": 0.0,
+        "f1": 0.0
+      },
+      {
+        "indice": 11,
+        "clase": "Tomato___healthy",
+        "verdaderas": 39,
+        "predichas": 4,
+        "recall": 0.0,
+        "precision": 0.0,
+        "f1": 0.0
+      }
+    ],
+    "matriz_cuentas": {
+      "orden": [
+        "Pepper,_bell___Bacterial_spot",
+        "Pepper,_bell___healthy",
+        "Potato___Early_blight",
+        "Potato___Late_blight",
+        "Tomato___Bacterial_spot",
+        "Tomato___Early_blight",
+        "Tomato___Late_blight",
+        "Tomato___Leaf_Mold",
+        "Tomato___Septoria_leaf_spot",
+        "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+        "Tomato___Tomato_mosaic_virus",
+        "Tomato___healthy"
+      ],
+      "filas_verdadera_columnas_predicha": [
+        [
+          2,
+          4,
+          2,
+          0,
+          0,
+          4,
+          30,
+          0,
+          4,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          7,
+          0,
+          0,
+          0,
+          1,
+          31,
+          0,
+          0,
+          1,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          14,
+          3,
+          1,
+          11,
+          33,
+          0,
+          4,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          4,
+          3,
+          0,
+          3,
+          50,
+          0,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          3,
+          5,
+          1,
+          0,
+          13,
+          31,
+          0,
+          13,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          1,
+          0,
+          0,
+          17,
+          23,
+          0,
+          7,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          1,
+          0,
+          0,
+          8,
+          55,
+          0,
+          2,
+          0,
+          0,
+          1
+        ],
+        [
+          4,
+          2,
+          2,
+          0,
+          0,
+          8,
+          42,
+          2,
+          3,
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          3,
+          4,
+          1,
+          1,
+          22,
+          41,
+          1,
+          18,
+          0,
+          0,
+          2
+        ],
+        [
+          1,
+          0,
+          0,
+          0,
+          0,
+          12,
+          30,
+          0,
+          3,
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0,
+          7,
+          21,
+          0,
+          6,
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          4,
+          0,
+          0,
+          0,
+          5,
+          30,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    "distribucion_predichas": {
+      "Pepper,_bell___Bacterial_spot": 20,
+      "Pepper,_bell___healthy": 27,
+      "Potato___Early_blight": 34,
+      "Potato___Late_blight": 8,
+      "Tomato___Bacterial_spot": 2,
+      "Tomato___Early_blight": 111,
+      "Tomato___Late_blight": 417,
+      "Tomato___Leaf_Mold": 3,
+      "Tomato___Septoria_leaf_spot": 61,
+      "Tomato___Tomato_Yellow_Leaf_Curl_Virus": 9,
+      "Tomato___Tomato_mosaic_virus": 0,
+      "Tomato___healthy": 4
+    },
+    "distribucion_verdaderas": {
+      "Pepper,_bell___Bacterial_spot": 47,
+      "Pepper,_bell___healthy": 41,
+      "Potato___Early_blight": 67,
+      "Potato___Late_blight": 62,
+      "Tomato___Bacterial_spot": 72,
+      "Tomato___Early_blight": 52,
+      "Tomato___Late_blight": 69,
+      "Tomato___Leaf_Mold": 63,
+      "Tomato___Septoria_leaf_spot": 97,
+      "Tomato___Tomato_Yellow_Leaf_Curl_Virus": 50,
+      "Tomato___Tomato_mosaic_virus": 37,
+      "Tomato___healthy": 39
+    },
+    "clase_mas_predicha": {
+      "clase": "Tomato___Late_blight",
+      "n": 417,
+      "proporcion": 0.5991379310344828
+    },
+    "trivial": {
+      "clase": "Tomato___Late_blight",
+      "exactitud": 0.09913793103448276,
+      "macro_f1": 0.015032679738562094,
+      "recall_de_esa_clase": 1.0
+    },
+    "azar_uniforme_exactitud": 0.08333333333333333,
+    "confianza_media": {
+      "clase_predicha": 0.803108907097701,
+      "aciertos": 0.8737346668032786,
+      "errores": 0.7880978571254356
+    }
+  },
+  "permutacion": {
+    "filas_con_la_diagonal_como_maximo": 1,
+    "de": 12,
+    "clases_con_la_diagonal_como_maximo": [
+      "Tomato___Late_blight"
+    ],
+    "columnas_mayoritarias_distintas": 1,
+    "por_fila": [
+      {
+        "clase": "Pepper,_bell___Bacterial_spot",
+        "columna_mayoritaria": "Tomato___Late_blight",
+        "cuentas": 30,
+        "de": 47,
+        "en_la_diagonal": false
+      },
+      {
+        "clase": "Pepper,_bell___healthy",
+        "columna_mayoritaria": "Tomato___Late_blight",
+        "cuentas": 31,
+        "de": 41,
+        "en_la_diagonal": false
+      },
+      {
+        "clase": "Potato___Early_blight",
+        "columna_mayoritaria": "Tomato___Late_blight",
+        "cuentas": 33,
+        "de": 67,
+        "en_la_diagonal": false
+      },
+      {
+        "clase": "Potato___Late_blight",
+        "columna_mayoritaria": "Tomato___Late_blight",
+        "cuentas": 50,
+        "de": 62,
+        "en_la_diagonal": false
+      },
+      {
+        "clase": "Tomato___Bacterial_spot",
+        "columna_mayoritaria": "Tomato___Late_blight",
+        "cuentas": 31,
+        "de": 72,
+        "en_la_diagonal": false
+      },
+      {
+        "clase": "Tomato___Early_blight",
+        "columna_mayoritaria": "Tomato___Late_blight",
+        "cuentas": 23,
+        "de": 52,
+        "en_la_diagonal": false
+      },
+      {
+        "clase": "Tomato___Late_blight",
+        "columna_mayoritaria": "Tomato___Late_blight",
+        "cuentas": 55,
+        "de": 69,
+        "en_la_diagonal": true
+      },
+      {
+        "clase": "Tomato___Leaf_Mold",
+        "columna_mayoritaria": "Tomato___Late_blight",
+        "cuentas": 42,
+        "de": 63,
+        "en_la_diagonal": false
+      },
+      {
+        "clase": "Tomato___Septoria_leaf_spot",
+        "columna_mayoritaria": "Tomato___Late_blight",
+        "cuentas": 41,
+        "de": 97,
+        "en_la_diagonal": false
+      },
+      {
+        "clase": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+        "columna_mayoritaria": "Tomato___Late_blight",
+        "cuentas": 30,
+        "de": 50,
+        "en_la_diagonal": false
+      },
+      {
+        "clase": "Tomato___Tomato_mosaic_virus",
+        "columna_mayoritaria": "Tomato___Late_blight",
+        "cuentas": 21,
+        "de": 37,
+        "en_la_diagonal": false
+      },
+      {
+        "clase": "Tomato___healthy",
+        "columna_mayoritaria": "Tomato___Late_blight",
+        "cuentas": 30,
+        "de": 39,
+        "en_la_diagonal": false
+      }
+    ],
+    "asignacion_optima": {
+      "exactitud": 0.1810344827586207,
+      "exactitud_identidad": 0.1752873563218391,
+      "imagenes_ganadas": 4,
+      "permutacion_distinta_de_la_identidad": {
+        "Pepper,_bell___Bacterial_spot": "Tomato___Bacterial_spot",
+        "Tomato___Bacterial_spot": "Pepper,_bell___Bacterial_spot"
+      }
+    }
+  },
+  "control_preproceso": {
+    "n_pv_val": 20,
+    "indices_pv_val": [
+      188,
+      195,
+      206,
+      282,
+      442,
+      949,
+      961,
+      994,
+      1131,
+      1157,
+      1433,
+      1530,
+      1579,
+      1618,
+      1675,
+      1694,
+      1731,
+      1852,
+      1882,
+      2145
+    ],
+    "max_abs_dif_features": 0.0,
+    "max_abs_dif_logits": 0.0,
+    "predicciones_iguales": true,
+    "aciertos_pv_val": 19,
+    "max_abs_dif_pesos_backbone_vs_imagenet": 0.0,
+    "modelo_en_modo_eval": true,
+    "backbone_requires_grad": true,
+    "n_pd_dev_recalculadas": 20,
+    "max_abs_dif_probabilidades_pd_dev": 2.9762268094479793e-08
+  },
+  "tiempo_s": 2.336,
+  "memoria_pico_gpu_mb": null,
+  "memoria_pico_cpu_mb": 583.8,
+  "cache_features_entrenamiento": "features_plantvillage_val_2c17ae6ed14f233c.pt",
+  "rutas_relativas_a": "la carpeta --salida",
+  "nota_memoria": "memoria_pico_cpu_mb es el máximo del proceso entero"
+}
