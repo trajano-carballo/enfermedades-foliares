@@ -2,6 +2,37 @@
 
 > Se actualiza al cierre de cada sesión de trabajo. Lo más reciente arriba.
 
+## 2026-11-05 — Sesión 9: primera medición de la brecha ID → OOD y CAM (etapa 3)
+
+**Estado:** brecha medida con el protocolo fijado de antemano. El modelo base cae de macro-F1 **0,937** [0,922; 0,950] en PV-test a **0,130** [0,093; 0,168] en PD-test; brecha **0,807** [0,768; 0,845]. No hay bug: en PD-dev se descartó un error de mapeo, de permutación y de preproceso. El código y los tests de la Fase D (CAM) están hechos; falta regenerar la muestra de CAM desde un árbol limpio (ver "Qué quedó a medias"). Suite: **252 pasan, 0 saltados**.
+
+**Hecho (en orden de commits; todos los hace el usuario)**
+- **Fase 0, correcciones de la review de la sesión 8** (`03e047c`): cada partición de PV con un solo rol (train→entrenamiento, val→validación, test→evaluación), clave del caché de features con el sha256 de `preproceso.py` y `mobilenet.py` y la versión de PIL, `ejecutar()` falla si la config pide criterio, aumentación o ponderación no implementados, y los JSON nuevos llevan rutas relativas a `--salida` y una nota sobre la memoria (pico del proceso entero).
+- **Fase A, protocolo** (`eba1721`): `docs/protocolo_evaluacion.md` y decisiones a–e en `decisiones.md` (quién: Equipo) antes de cualquier número de PlantDoc. Lectura de imágenes con EXIF y alfa sobre blanco en `preprocesar`; en PV-val no cambia ningún píxel (las 2.207 son RGB y sin EXIF) y el macro-F1 del base no se movió (0,9558872…). Guarda `guarda_accesos.py` con tests: no se evalúa un test sin la fila commiteada, coherente con la config y con el código sin cambios desde su commit.
+- **Fase B, selección en dev** (`bc8006a`, `4ec00a7`): `bootstrap.py`, `evaluacion.py`, `scripts/evaluar.py`, `configs/03_brecha.yaml`. La regla (a) se aclaró antes de ver números (una geometría califica solo si el límite inferior del IC pareado es > 0). Macro-F1 en PD-dev: `aplastar` 0,1240, `resize_recorte` 0,1359, `relleno` 0,1179; ninguna califica → **`aplastar`**.
+- **Diagnóstico de PD-dev** (`60e0a2b`, `9883606`): `scripts/diagnostico_dev.py`. Mapeo consistente con `mapeo_clases.md`, control de PV-val con diferencia 0 en features y logits, 417 de 696 predichas como Tomato late blight, diagonal como máximo en 1 de 12 filas, confianza media 0,788 en los errores. Conclusión del equipo: caída real.
+- **Fase C, tests** (`09a1e3e` las filas de acceso; run `03_brecha_tests_20261105_081814`, árbol limpio): una sola pasada por test. PV-test macro-F1 0,9371 [0,9222; 0,9500], sin mosaic 0,9514 [0,9409; 0,9603]; PD-test 0,1303 [0,0931; 0,1680]; brecha 0,8068 [0,7682; 0,8454]; trivial 0,0098 (PV-test) y 0,0152 (PD-test). En PD-test 175 de 300 predicciones son Tomato late blight y la diagonal es el máximo en 1 de 12 filas; Potato late → Tomato late: 24 de 27 (1 de 152 en PV-test, 8 de 152 en PV-val). Detalle y recall por clase en `decisiones.md` (hallazgo del 2026-11-05) y en `results/03_brecha/03_brecha_tests_20261105_081814/tests.json`.
+- **Fase D, CAM y figuras** (sin commitear al escribir esto): `explain/cam.py` (CAM = Σ w_ck A_k desde el mismo forward, sin backward, con test), `explain/muestra.py` (muestra fija: 2 por clase de PD-dev, 1 acierto y 1 error cuando hay, semilla 42, más 1 por clase de PV-val; rechaza cualquier test), `eval/figuras.py`, `scripts/figuras_sesion9.py` y `tests/test_cam.py`. Figuras en `docs/figuras_sesion9/`: `brecha_ic.png`, `matrices_pv_pd_test.png`, `cam_grilla_clases_1a6.png` y `cam_grilla_clases_7a12.png`. La muestra tiene 24 imágenes de PD-dev (9 aciertos, 15 errores) y 12 de PV-val (10 aciertos, 2 errores).
+- **Lectura de la grilla de CAM (cualitativa, 36 imágenes, sin conclusión):** en los aciertos de PV-val el mapa de calor cae sobre la hoja y sus lesiones; en varios errores de PD-dev cae sobre fondo, suelo, otras hojas o marcas de agua (se ven "shutterstock.com" y "© HRD" resaltadas). Es consistente con la hipótesis del fondo, pero la muestra es chica y no se midió: no está probada.
+- `accesos_test.md`: nota de la evaluación única. 2 de las 24 imágenes de PD-dev de la grilla vienen de la carpeta `test/` oficial de PlantDoc (están en PD-dev, no en el test congelado de 300).
+
+**Qué quedó a medias**
+- **Regenerar el CAM desde un árbol limpio:** el JSON `results/03_brecha/03_brecha_cam_20261105_082441/cam_muestra.json` dice `cambios_sin_commitear: true` (se generó con el código sin commitear). Tras commitear `src/`, `scripts/` y `tests/` de la Fase D se corre otra vez `scripts/figuras_sesion9.py` (segundos) y se commitea el run nuevo con las figuras; el run provisorio se borra. Hasta entonces, no versionar ese JSON.
+- La hipótesis del fondo (por qué todo colapsa hacia Late blight) no está verificada.
+- La sesión 11 usará las predicciones de PD-dev guardadas fuera del repo (`foliares_salidas/03_brecha/03_brecha_dev_20261104_210006/`).
+
+**Próximos pasos**
+1. **Usuario:** commitear el código de la Fase D; avisar con el árbol limpio para regenerar el CAM y las figuras.
+2. Presentación del 06/11: figuras de `docs/figuras_sesion9/` y los números de arriba. Aclarar en el informe que el test propuesto de PlantDoc viene casi todo de la carpeta *train* oficial y que PD-test tiene solo 300 imágenes (IC ancho: 0,093–0,168).
+3. Decisión del equipo sobre qué intervención sigue (aumentación dirigida y supresión de fondo; la propuesta las contempla). Cualquier regla que dependa de un número se fija antes de calcularlo; PD-test ya se evaluó una vez con el modelo base y no se vuelve a usar para elegir nada.
+
+**Decisiones pendientes:** ninguna de esta sesión. Para la siguiente: la intervención a probar y cuántas semillas por variante (propuesta heredada de la sesión 7, sin decidir).
+
+**Riesgos abiertos**
+- PD-test (300 imágenes, 16–41 por clase) da IC anchos por clase; los recall por clase en PD-test son muy ruidosos.
+- Mosaic en PV-test: recall 0,686 con 35 imágenes (1,000 en PV-val con 36); su partición es por rangos de numeración, sin grupos de hoja.
+- Los resultados de CPU (esta PC, torch 2.14.1+cpu) y de GPU no son comparables bit a bit; esta sesión corrió toda en CPU.
+
 ## 2026-11-04 — Sesión 8: modelo base (etapa 2) — MODELO BASE ENTRENADO (PV-val macro-F1 0,956)
 
 **Estado: modelo base entrenado** (run `02_modelo_base_20261104_201229`, commit `74ff5de`, `cambios_sin_commitear: false`, CPU, torch 2.14.1+cpu, semilla 42 determinista). Solo PV-train y PV-val: PV-test y PlantDoc no se tocaron (sesión 9).
