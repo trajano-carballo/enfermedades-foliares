@@ -126,8 +126,14 @@ def _tests_json():
 
 def test_las_figuras_de_numeros_se_generan(tmp_path):
     t = _tests_json()
-    for f in (FIG.figura_brecha(t, tmp_path / "b.png"), FIG.figura_matrices(t, tmp_path / "m.png")):
+    for f in (FIG.figura_brecha(t, tmp_path / "b.png"), FIG.figura_matrices(t, tmp_path / "m.png", ic_json="results/x/ic_por_clase.json")):
         assert f.is_file() and f.stat().st_size > 5000
+
+
+def test_la_figura_de_matrices_exige_citar_el_json_de_los_ic():
+    assert FIG.leyenda_matrices("results/03_brecha/r/ic_por_clase.json") ==         "Descriptiva, sin IC; IC por clase en results/03_brecha/r/ic_por_clase.json"
+    with pytest.raises(TypeError):
+        FIG.figura_matrices(_tests_json(), "x.png")                                # sin ic_json no se puede dibujar
 
 
 def test_la_grilla_de_cam_se_genera(tmp_path):

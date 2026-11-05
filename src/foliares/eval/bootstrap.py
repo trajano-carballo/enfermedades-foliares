@@ -46,6 +46,21 @@ def bootstrap(y, p, metrica: Metrica, n_replicas: int = 2000, semilla: int = 42,
     return _resumen(metrica(y, p), reps, nivel)
 
 
+def bootstrap_multiple(y, p, metricas: Callable[[np.ndarray, np.ndarray], dict[str, float]], n_replicas: int = 2000,
+                       semilla: int = 42, nivel: float = 0.95) -> dict[str, dict]:
+    """Varias métricas sobre las MISMAS réplicas: `metricas(y, p)` devuelve {nombre: valor}. Con la misma semilla las réplicas
+    son las de `bootstrap`, así que cada métrica da el mismo IC que si se la pidiera sola."""
+    y, p = _np(y), _np(p)
+    idx = indices_estratificados(y, n_replicas, np.random.default_rng(semilla))
+    puntual = metricas(y, p)
+    reps = {k: np.empty(n_replicas) for k in puntual}
+    for r, i in enumerate(idx):
+        valores = metricas(y[i], p[i])
+        for k in reps:
+            reps[k][r] = valores[k]
+    return {k: _resumen(puntual[k], reps[k], nivel) for k in puntual}
+
+
 def bootstrap_pareado(y, p_a, p_b, metrica: Metrica, n_replicas: int = 2000, semilla: int = 42, nivel: float = 0.95) -> dict:
     """IC de metrica(p_a) − metrica(p_b) con las MISMAS réplicas de imágenes. `excluye_0` si el IC no contiene el 0."""
     y, p_a, p_b = _np(y), _np(p_a), _np(p_b)

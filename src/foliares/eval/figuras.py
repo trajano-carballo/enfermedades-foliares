@@ -60,8 +60,13 @@ def figura_brecha(tests: dict, ruta: str | Path) -> Path:
     return Path(ruta)
 
 
-def figura_matrices(tests: dict, ruta: str | Path) -> Path:
-    """Las matrices de confusión normalizadas por fila (recall en la diagonal) de PV-test y PD-test, mismo orden de clases."""
+def leyenda_matrices(ic_json: str) -> str:
+    return f"Descriptiva, sin IC; IC por clase en {ic_json}"
+
+
+def figura_matrices(tests: dict, ruta: str | Path, *, ic_json: str) -> Path:
+    """Las matrices de confusión normalizadas por fila (recall en la diagonal) de PV-test y PD-test, mismo orden de clases.
+    `ic_json` es la ruta (relativa al repo) del JSON con los IC por clase, que se cita en la leyenda de la figura."""
     nombres = [nombre_corto(c) for c in tests["orden_clases"]]
     fig, ejes = plt.subplots(1, 2, figsize=(15, 7), sharey=True)
     for ax, test in zip(ejes, ("PV-test", "PD-test")):
@@ -80,6 +85,7 @@ def figura_matrices(tests: dict, ruta: str | Path) -> Path:
         ax.set_title(f"{test} (n={tests['resultados'][test]['n']}, macro-F1 {tests['resultados'][test]['base_macro_f1_ic']['estimacion']:.3f})")
     ejes[0].set_ylabel("clase verdadera")
     fig.colorbar(im, ax=ejes, fraction=0.02, pad=0.02, label="proporción de la fila")
+    fig.text(0.5, 0.005, leyenda_matrices(ic_json), ha="center", fontsize=9, style="italic")
     fig.savefig(ruta, dpi=150, bbox_inches="tight")
     plt.close(fig)
     return Path(ruta)

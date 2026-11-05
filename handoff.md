@@ -4,11 +4,11 @@
 
 ## 2026-11-05 — Sesión 9: primera medición de la brecha ID → OOD y CAM (etapa 3)
 
-**Estado:** brecha medida con el protocolo fijado de antemano. El modelo base cae de macro-F1 **0,937** [0,922; 0,950] en PV-test a **0,130** [0,093; 0,168] en PD-test; brecha **0,807** [0,768; 0,845]. No hay bug: en PD-dev se descartó un error de mapeo, de permutación y de preproceso. La Fase D (CAM) está hecha: el CAM y las figuras se regeneraron desde un árbol limpio (run `03_brecha_cam_20261105_083504`, `cambios_sin_commitear: false`). Suite: **252 pasan, 0 saltados**.
+**Estado:** brecha medida con el protocolo fijado de antemano. El modelo base cae de macro-F1 **0,937** [0,922; 0,950] en PV-test a **0,130** [0,093; 0,168] en PD-test; brecha **0,807** [0,768; 0,845]. En PD-dev se descartó un error de mapeo, de permutación y de preproceso. La Fase D (CAM) está hecha: el CAM y las figuras se regeneraron desde un árbol limpio (run `03_brecha_cam_20261105_083504`, `cambios_sin_commitear: false`). Suite: **252 pasan, 0 saltados**.
 
 **Hecho (en orden de commits; todos los hace el usuario)**
 - **Fase 0, correcciones de la review de la sesión 8** (`03e047c`): cada partición de PV con un solo rol (train→entrenamiento, val→validación, test→evaluación), clave del caché de features con el sha256 de `preproceso.py` y `mobilenet.py` y la versión de PIL, `ejecutar()` falla si la config pide criterio, aumentación o ponderación no implementados, y los JSON nuevos llevan rutas relativas a `--salida` y una nota sobre la memoria (pico del proceso entero).
-- **Fase A, protocolo** (`eba1721`): `docs/protocolo_evaluacion.md` y decisiones a–e en `decisiones.md` (quién: Equipo) antes de cualquier número de PlantDoc. Lectura de imágenes con EXIF y alfa sobre blanco en `preprocesar`; en PV-val no cambia ningún píxel (las 2.207 son RGB y sin EXIF) y el macro-F1 del base no se movió (0,9558872…). Guarda `guarda_accesos.py` con tests: no se evalúa un test sin la fila commiteada, coherente con la config y con el código sin cambios desde su commit.
+- **Fase A, protocolo** (`eba1721`): `docs/protocolo_evaluacion.md` y decisiones a–e en `decisiones.md` (quién: Equipo) antes de cualquier número de PlantDoc. Lectura de imágenes con EXIF y alfa sobre blanco en `preprocesar`; el control (d) en PV-val (ningún píxel cambia y el macro-F1 del base no se mueve, 0,9558872…) se hizo con código sin commitear; la evidencia versionada es parcial: el control de 20 imágenes de PV-val en `diagnostico_dev.json` y la verificación de cabeceras de PV-val de la review (2.207 RGB, sin EXIF). Guarda `guarda_accesos.py` con tests: no se evalúa un test sin la fila commiteada, coherente con la config y con el código sin cambios desde su commit.
 - **Fase B, selección en dev** (`bc8006a`, `4ec00a7`): `bootstrap.py`, `evaluacion.py`, `scripts/evaluar.py`, `configs/03_brecha.yaml`. La regla (a) se aclaró antes de ver números (una geometría califica solo si el límite inferior del IC pareado es > 0). Macro-F1 en PD-dev: `aplastar` 0,1240, `resize_recorte` 0,1359, `relleno` 0,1179; ninguna califica → **`aplastar`**.
 - **Diagnóstico de PD-dev** (`60e0a2b`, `9883606`): `scripts/diagnostico_dev.py`. Mapeo consistente con `mapeo_clases.md`, control de PV-val con diferencia 0 en features y logits, 417 de 696 predichas como Tomato late blight, diagonal como máximo en 1 de 12 filas, confianza media 0,788 en los errores. Conclusión del equipo: caída real.
 - **Fase C, tests** (`09a1e3e` las filas de acceso; run `03_brecha_tests_20261105_081814`, árbol limpio): una sola pasada por test. PV-test macro-F1 0,9371 [0,9222; 0,9500], sin mosaic 0,9514 [0,9409; 0,9603]; PD-test 0,1303 [0,0931; 0,1680]; brecha 0,8068 [0,7682; 0,8454]; trivial 0,0098 (PV-test) y 0,0152 (PD-test). En PD-test 175 de 300 predicciones son Tomato late blight y la diagonal es el máximo en 1 de 12 filas; Potato late → Tomato late: 24 de 27 (1 de 152 en PV-test, 8 de 152 en PV-val). Detalle y recall por clase en `decisiones.md` (hallazgo del 2026-11-05) y en `results/03_brecha/03_brecha_tests_20261105_081814/tests.json`.
@@ -17,13 +17,17 @@
 - `accesos_test.md`: nota de la evaluación única. 2 de las 24 imágenes de PD-dev de la grilla vienen de la carpeta `test/` oficial de PlantDoc (están en PD-dev, no en el test congelado de 300).
 
 **Qué quedó a medias**
+- Review de la sesión 9 (M1, invariante 6): falta correr `scripts/ic_por_clase.py` desde un árbol limpio y citar sus IC por clase; hasta entonces, los recall por clase de esta entrada y de `decisiones.md` son descriptivos, sin IC.
 - La hipótesis del fondo (por qué todo colapsa hacia Late blight) no está verificada.
 - La sesión 11 usará las predicciones de PD-dev guardadas fuera del repo (`foliares_salidas/03_brecha/03_brecha_dev_20261104_210006/`).
 
 **Próximos pasos**
-1. **Usuario:** commitear el CAM regenerado y las figuras (commit 2b) y hacer el PR de `sesion-9/brecha` a `main`.
+1. **Usuario:** hacer el PR de `sesion-9/brecha` a `main`.
 2. Presentación del 06/11: figuras de `docs/figuras_sesion9/` y los números de arriba. Aclarar en el informe que el test propuesto de PlantDoc viene casi todo de la carpeta *train* oficial y que PD-test tiene solo 300 imágenes (IC ancho: 0,093–0,168).
-3. Decisión del equipo sobre qué intervención sigue (aumentación dirigida y supresión de fondo; la propuesta las contempla). Cualquier regla que dependa de un número se fija antes de calcularlo; PD-test ya se evaluó una vez con el modelo base y no se vuelve a usar para elegir nada.
+3. **Sesión 10 (tarea):** endurecer la guarda de accesos: que rechace una fila ya usada (cada fila autoriza una sola evaluación) y que cubra también `configs/02_modelo_base.yaml` (hoy solo comprueba la config de evaluación, `src/` y `scripts/`). No se implementó en la sesión 9.
+4. Decisión del equipo sobre qué intervención sigue (aumentación dirigida y supresión de fondo; la propuesta las contempla). Cualquier regla que dependa de un número se fija antes de calcularlo; PD-test ya se evaluó una vez con el modelo base y no se vuelve a usar para elegir nada.
+
+**Pendiente del equipo:** confirmar la licencia de redistribución de las imágenes de PlantDoc en las figuras (las grillas de CAM de `docs/figuras_sesion9/` están versionadas en el repo).
 
 **Decisiones pendientes:** ninguna de esta sesión. Para la siguiente: la intervención a probar y cuántas semillas por variante (propuesta heredada de la sesión 7, sin decidir).
 

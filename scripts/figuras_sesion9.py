@@ -2,7 +2,7 @@
 
 Uso:
   python scripts/figuras_sesion9.py --config configs/03_brecha.yaml --salida <dir fuera del repo> \\
-      --run-dev <run_id fase dev> --run-tests <run_id fase tests> [--figuras docs/figuras_sesion9]
+      --run-dev <run_id fase dev> --run-tests <run_id fase tests> --run-ic <run_id de ic_por_clase> [--figuras docs/figuras_sesion9]
 Brecha y matrices salen de `tests.json` (solo números). La grilla de CAM usa la muestra fija del protocolo (decisión c):
 PlantDoc-dev, 2 por clase (1 acierto y 1 error cuando haya), semilla 42 sobre las predicciones guardadas de la geometría elegida,
 más 1 por clase de PV-val. NUNCA imágenes de un test (se verifica antes de dibujar). Escribe `cam_muestra.json` en
@@ -34,6 +34,7 @@ def main() -> int:
     ap.add_argument("--salida", required=True, type=Path, help="carpeta fuera del repo")
     ap.add_argument("--run-dev", required=True)
     ap.add_argument("--run-tests", required=True)
+    ap.add_argument("--run-ic", required=True, help="run_id de scripts/ic_por_clase.py (se cita en la leyenda de las matrices)")
     ap.add_argument("--figuras", type=Path, default=None, help="por defecto, docs/figuras_sesion9 del repo")
     a = ap.parse_args()
     R = cargar_rutas()
@@ -48,8 +49,12 @@ def main() -> int:
     tests = json.loads((salida / cfg["experimento"] / a.run_tests / "tests.json").read_text(encoding="utf-8"))
     if tests["geometria"] != geo:
         raise ValueError(f"tests.json se evaluó con {tests['geometria']!r} y la config dice {geo!r}")
+    ic_json = f"results/{cfg['experimento']}/{a.run_ic}/ic_por_clase.json"
+    if not (salida / cfg["experimento"] / a.run_ic / "ic_por_clase.json").is_file():
+        raise FileNotFoundError(f"No existe el JSON de IC por clase del run {a.run_ic}: correr scripts/ic_por_clase.py antes")
     with Medidor() as med:
-        escritas = [FIG.figura_brecha(tests, figs / "brecha_ic.png"), FIG.figura_matrices(tests, figs / "matrices_pv_pd_test.png")]
+        escritas = [FIG.figura_brecha(tests, figs / "brecha_ic.png"),
+                    FIG.figura_matrices(tests, figs / "matrices_pv_pd_test.png", ic_json=ic_json)]
         pred = pd.read_csv(salida / cfg["experimento"] / a.run_dev / f"predicciones_pd_dev_{geo}.csv")
         ds_pd = DatasetParticion(R.splits, R.data_root, "plantdoc", "dev", "evaluacion", pv, pdn, geometria=geo, tamano=cfg["tamano"])
         ds_pv = DatasetParticion(R.splits, R.data_root, "plantvillage", "val", "validacion", pv, geometria=geo, tamano=cfg["tamano"])
@@ -68,7 +73,7 @@ def main() -> int:
     muestra = [{"ruta": c["ruta"], "origen": c["origen"], "fila_grilla": c["fila_grilla"][1], "tipo": c["tipo"],
                 "clase_real": pv[c["real"]], "clase_predicha": pv[c["pred"]], "probabilidad_predicha": c["prob"],
                 "en_carpeta_test_oficial_de_plantdoc": "/plantdoc/test/" in c["ruta"]} for c in celdas]
-    datos = {**registro, "fase": "cam", "run_id": run_id, "run_dev": a.run_dev, "run_tests": a.run_tests, "geometria": geo,
+    datos = {**registro, "fase": "cam", "run_id": run_id, "run_dev": a.run_dev, "run_tests": a.run_tests, "run_ic": a.run_ic, "geometria": geo,
              "datos_mostrados": "PlantDoc-dev y PlantVillage-val; ningún test", "n_imagenes": len(muestra),
              "n_plantdoc_dev_de_la_carpeta_test_oficial": sum(m["en_carpeta_test_oficial_de_plantdoc"] for m in muestra),
              "muestra": muestra, "figuras": [str(p.relative_to(R.repo)) if R.repo in p.resolve().parents else str(p) for p in escritas],

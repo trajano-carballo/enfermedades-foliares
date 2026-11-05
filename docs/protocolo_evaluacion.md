@@ -47,3 +47,5 @@ estaba). "Excluye el 0" también lo cumple una geometría peor (IC entero debajo
   el árbol limpio. Si algo no se cumple, no evalúa.
 - Orden: protocolo + decisiones + código de la guarda se commitean antes de cualquier número de PlantDoc; las filas de
   acceso se commitean antes de cada evaluación de un test.
+
+**Aclaración 2026-11-05** (el texto de arriba se deja como estaba): los flags del script son `--fila-accesos-pv` (fila de PV-test) y `--fila-accesos-pd` (fila de PD-test), no un único `--fila-accesos N`; la verificación de cada fila es la descrita en esta sección.
