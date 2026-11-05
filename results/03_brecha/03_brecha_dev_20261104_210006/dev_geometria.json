@@ -1,0 +1,910 @@
+{
+  "fecha": "2026-11-04 21:00:06",
+  "commit": "bc8006a9093609b5b69324720b816dc749991c34",
+  "cambios_sin_commitear": false,
+  "config": {
+    "evaluacion": {
+      "experimento": "03_brecha",
+      "config_modelo": "configs/02_modelo_base.yaml",
+      "modelo_base": {
+        "run_id": "02_modelo_base_20261104_201229",
+        "checkpoint": "02_modelo_base/02_modelo_base_20261104_201229/mejor_checkpoint.pt",
+        "sha256": "592eadc3d124a119ce6ffbbd8d661a9d86f2b639c1c1985375c27543307457b3"
+      },
+      "tamano": 224,
+      "geometrias_candidatas": [
+        "aplastar",
+        "resize_recorte",
+        "relleno"
+      ],
+      "geometria_base": "aplastar",
+      "geometria": null,
+      "bootstrap": {
+        "replicas": 2000,
+        "nivel": 0.95,
+        "semilla": 42
+      },
+      "cam": {
+        "semilla": 42,
+        "por_clase_pd_dev": 2,
+        "por_clase_pv_val": 1
+      },
+      "batch": 64
+    },
+    "modelo": {
+      "experimento": "02_modelo_base",
+      "semilla": 42,
+      "determinista": true,
+      "splits": {
+        "plantvillage": "plantvillage_particion.csv",
+        "plantdoc": "plantdoc_particion.csv"
+      },
+      "clases": [
+        {
+          "pv": "Pepper,_bell___Bacterial_spot",
+          "plantdoc": "Bell_pepper leaf spot"
+        },
+        {
+          "pv": "Pepper,_bell___healthy",
+          "plantdoc": "Bell_pepper leaf"
+        },
+        {
+          "pv": "Potato___Early_blight",
+          "plantdoc": "Potato leaf early blight"
+        },
+        {
+          "pv": "Potato___Late_blight",
+          "plantdoc": "Potato leaf late blight"
+        },
+        {
+          "pv": "Tomato___Bacterial_spot",
+          "plantdoc": "Tomato leaf bacterial spot"
+        },
+        {
+          "pv": "Tomato___Early_blight",
+          "plantdoc": "Tomato Early blight leaf"
+        },
+        {
+          "pv": "Tomato___Late_blight",
+          "plantdoc": "Tomato leaf late blight"
+        },
+        {
+          "pv": "Tomato___Leaf_Mold",
+          "plantdoc": "Tomato mold leaf"
+        },
+        {
+          "pv": "Tomato___Septoria_leaf_spot",
+          "plantdoc": "Tomato Septoria leaf spot"
+        },
+        {
+          "pv": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+          "plantdoc": "Tomato leaf yellow virus"
+        },
+        {
+          "pv": "Tomato___Tomato_mosaic_virus",
+          "plantdoc": "Tomato leaf mosaic virus"
+        },
+        {
+          "pv": "Tomato___healthy",
+          "plantdoc": "Tomato leaf"
+        }
+      ],
+      "clase_mosaic": "Tomato___Tomato_mosaic_virus",
+      "preproceso": {
+        "geometria": "aplastar",
+        "tamano": 224
+      },
+      "modelo": {
+        "pesos_imagenet": true
+      },
+      "features": {
+        "batch": 64
+      },
+      "entrenamiento": {
+        "optimizador": "adam",
+        "lr": 0.001,
+        "batch": 256,
+        "max_epocas": 100,
+        "paciencia": 10,
+        "criterio": "macro_f1_val_con_mosaic"
+      },
+      "aumentacion": "ninguna",
+      "ponderacion_clases": false,
+      "umbral_desbalance": 5,
+      "desbalance_aceptado_por_el_equipo": true,
+      "metricas": {
+        "modo_sin_mosaic": "sin_imagenes_de_la_clase",
+        "desempate_trivial": "primera_en_orden"
+      }
+    }
+  },
+  "sha256_splits": {
+    "plantdoc_particion.csv": "dc82e2d5af43a91610a0342023f34a972561fe143e8dfe13c6d4cc02768c8bba",
+    "plantvillage_particion.csv": "1ff04397bed8182b901609f2e0d3e0e8b3ceed3ac4b7739512b64f9b366713dd"
+  },
+  "semillas": {
+    "bootstrap": 42
+  },
+  "python": "3.13.7",
+  "plataforma": "Windows-11-10.0.26200-SP0",
+  "torch": "2.14.1+cpu",
+  "cuda_runtime": null,
+  "cudnn": null,
+  "dispositivo": "cpu",
+  "gpu": null,
+  "hilos_cpu": 6,
+  "fase": "dev",
+  "run_id": "03_brecha_dev_20261104_210006",
+  "modelo_base": {
+    "run_id": "02_modelo_base_20261104_201229",
+    "checkpoint": "02_modelo_base/02_modelo_base_20261104_201229/mejor_checkpoint.pt",
+    "sha256": "592eadc3d124a119ce6ffbbd8d661a9d86f2b639c1c1985375c27543307457b3"
+  },
+  "n_pd_dev": 696,
+  "regla_a": {
+    "macro_f1_por_geometria": {
+      "aplastar": {
+        "estimacion": 0.12395830348256705,
+        "ic_bajo": 0.09922958103521655,
+        "ic_alto": 0.14794151704230232,
+        "nivel": 0.95,
+        "n_replicas": 2000,
+        "media_replicas": 0.12314226259749426
+      },
+      "resize_recorte": {
+        "estimacion": 0.13593547288318783,
+        "ic_bajo": 0.11124602142199935,
+        "ic_alto": 0.15995035096744975,
+        "nivel": 0.95,
+        "n_replicas": 2000,
+        "media_replicas": 0.13524191140221511
+      },
+      "relleno": {
+        "estimacion": 0.11791059231750574,
+        "ic_bajo": 0.09371079905736864,
+        "ic_alto": 0.14219575328593004,
+        "nivel": 0.95,
+        "n_replicas": 2000,
+        "media_replicas": 0.11728108790808268
+      }
+    },
+    "diferencia_contra_aplastar": {
+      "resize_recorte": {
+        "estimacion": 0.011977169400620782,
+        "ic_bajo": -0.010955084091611781,
+        "ic_alto": 0.03538959828146606,
+        "nivel": 0.95,
+        "n_replicas": 2000,
+        "media_replicas": 0.012099648804720848,
+        "excluye_0": false
+      },
+      "relleno": {
+        "estimacion": -0.006047711165061309,
+        "ic_bajo": -0.023237361497992763,
+        "ic_alto": 0.011240233608138436,
+        "nivel": 0.95,
+        "n_replicas": 2000,
+        "media_replicas": -0.005861174689411591,
+        "excluye_0": false
+      }
+    },
+    "califican": [],
+    "geometria_elegida": "aplastar"
+  },
+  "detalle_por_geometria": {
+    "aplastar": {
+      "n": 696,
+      "exactitud": 0.1752873563218391,
+      "macro_f1": 0.12395830348256705,
+      "recall_por_clase": {
+        "Pepper,_bell___Bacterial_spot": 0.0425531914893617,
+        "Pepper,_bell___healthy": 0.17073170731707318,
+        "Potato___Early_blight": 0.208955223880597,
+        "Potato___Late_blight": 0.04838709677419355,
+        "Tomato___Bacterial_spot": 0.0,
+        "Tomato___Early_blight": 0.3269230769230769,
+        "Tomato___Late_blight": 0.7971014492753623,
+        "Tomato___Leaf_Mold": 0.031746031746031744,
+        "Tomato___Septoria_leaf_spot": 0.18556701030927836,
+        "Tomato___Tomato_Yellow_Leaf_Curl_Virus": 0.08,
+        "Tomato___Tomato_mosaic_virus": 0.0,
+        "Tomato___healthy": 0.0
+      },
+      "f1_por_clase": {
+        "Pepper,_bell___Bacterial_spot": 0.05970149253731343,
+        "Pepper,_bell___healthy": 0.2058823529411765,
+        "Potato___Early_blight": 0.2772277227722772,
+        "Potato___Late_blight": 0.0857142857142857,
+        "Tomato___Bacterial_spot": 0.0,
+        "Tomato___Early_blight": 0.20858895705521474,
+        "Tomato___Late_blight": 0.2263374485596708,
+        "Tomato___Leaf_Mold": 0.06060606060606061,
+        "Tomato___Septoria_leaf_spot": 0.22784810126582278,
+        "Tomato___Tomato_Yellow_Leaf_Curl_Virus": 0.13559322033898308,
+        "Tomato___Tomato_mosaic_virus": 0.0,
+        "Tomato___healthy": 0.0
+      },
+      "soporte_por_clase": {
+        "Pepper,_bell___Bacterial_spot": 47,
+        "Pepper,_bell___healthy": 41,
+        "Potato___Early_blight": 67,
+        "Potato___Late_blight": 62,
+        "Tomato___Bacterial_spot": 72,
+        "Tomato___Early_blight": 52,
+        "Tomato___Late_blight": 69,
+        "Tomato___Leaf_Mold": 63,
+        "Tomato___Septoria_leaf_spot": 97,
+        "Tomato___Tomato_Yellow_Leaf_Curl_Virus": 50,
+        "Tomato___Tomato_mosaic_virus": 37,
+        "Tomato___healthy": 39
+      },
+      "matriz_confusion": {
+        "orden": [
+          "Pepper,_bell___Bacterial_spot",
+          "Pepper,_bell___healthy",
+          "Potato___Early_blight",
+          "Potato___Late_blight",
+          "Tomato___Bacterial_spot",
+          "Tomato___Early_blight",
+          "Tomato___Late_blight",
+          "Tomato___Leaf_Mold",
+          "Tomato___Septoria_leaf_spot",
+          "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+          "Tomato___Tomato_mosaic_virus",
+          "Tomato___healthy"
+        ],
+        "filas_verdadera_columnas_predicha": [
+          [
+            2,
+            4,
+            2,
+            0,
+            0,
+            4,
+            30,
+            0,
+            4,
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            7,
+            0,
+            0,
+            0,
+            1,
+            31,
+            0,
+            0,
+            1,
+            0,
+            1
+          ],
+          [
+            1,
+            0,
+            14,
+            3,
+            1,
+            11,
+            33,
+            0,
+            4,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            4,
+            3,
+            0,
+            3,
+            50,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            3,
+            5,
+            1,
+            0,
+            13,
+            31,
+            0,
+            13,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            2,
+            1,
+            0,
+            0,
+            17,
+            23,
+            0,
+            7,
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            2,
+            1,
+            0,
+            0,
+            8,
+            55,
+            0,
+            2,
+            0,
+            0,
+            1
+          ],
+          [
+            4,
+            2,
+            2,
+            0,
+            0,
+            8,
+            42,
+            2,
+            3,
+            0,
+            0,
+            0
+          ],
+          [
+            4,
+            3,
+            4,
+            1,
+            1,
+            22,
+            41,
+            1,
+            18,
+            0,
+            0,
+            2
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            0,
+            12,
+            30,
+            0,
+            3,
+            4,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            1,
+            0,
+            0,
+            7,
+            21,
+            0,
+            6,
+            2,
+            0,
+            0
+          ],
+          [
+            0,
+            4,
+            0,
+            0,
+            0,
+            5,
+            30,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ]
+      }
+    },
+    "resize_recorte": {
+      "n": 696,
+      "exactitud": 0.1896551724137931,
+      "macro_f1": 0.13593547288318783,
+      "recall_por_clase": {
+        "Pepper,_bell___Bacterial_spot": 0.0425531914893617,
+        "Pepper,_bell___healthy": 0.2682926829268293,
+        "Potato___Early_blight": 0.208955223880597,
+        "Potato___Late_blight": 0.03225806451612903,
+        "Tomato___Bacterial_spot": 0.0,
+        "Tomato___Early_blight": 0.3076923076923077,
+        "Tomato___Late_blight": 0.8405797101449275,
+        "Tomato___Leaf_Mold": 0.047619047619047616,
+        "Tomato___Septoria_leaf_spot": 0.2268041237113402,
+        "Tomato___Tomato_Yellow_Leaf_Curl_Virus": 0.08,
+        "Tomato___Tomato_mosaic_virus": 0.0,
+        "Tomato___healthy": 0.0
+      },
+      "f1_por_clase": {
+        "Pepper,_bell___Bacterial_spot": 0.056338028169014086,
+        "Pepper,_bell___healthy": 0.31884057971014496,
+        "Potato___Early_blight": 0.24561403508771934,
+        "Potato___Late_blight": 0.0588235294117647,
+        "Tomato___Bacterial_spot": 0.0,
+        "Tomato___Early_blight": 0.21333333333333332,
+        "Tomato___Late_blight": 0.24217118997912312,
+        "Tomato___Leaf_Mold": 0.08823529411764705,
+        "Tomato___Septoria_leaf_spot": 0.26993865030674846,
+        "Tomato___Tomato_Yellow_Leaf_Curl_Virus": 0.13793103448275865,
+        "Tomato___Tomato_mosaic_virus": 0.0,
+        "Tomato___healthy": 0.0
+      },
+      "soporte_por_clase": {
+        "Pepper,_bell___Bacterial_spot": 47,
+        "Pepper,_bell___healthy": 41,
+        "Potato___Early_blight": 67,
+        "Potato___Late_blight": 62,
+        "Tomato___Bacterial_spot": 72,
+        "Tomato___Early_blight": 52,
+        "Tomato___Late_blight": 69,
+        "Tomato___Leaf_Mold": 63,
+        "Tomato___Septoria_leaf_spot": 97,
+        "Tomato___Tomato_Yellow_Leaf_Curl_Virus": 50,
+        "Tomato___Tomato_mosaic_virus": 37,
+        "Tomato___healthy": 39
+      },
+      "matriz_confusion": {
+        "orden": [
+          "Pepper,_bell___Bacterial_spot",
+          "Pepper,_bell___healthy",
+          "Potato___Early_blight",
+          "Potato___Late_blight",
+          "Tomato___Bacterial_spot",
+          "Tomato___Early_blight",
+          "Tomato___Late_blight",
+          "Tomato___Leaf_Mold",
+          "Tomato___Septoria_leaf_spot",
+          "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+          "Tomato___Tomato_mosaic_virus",
+          "Tomato___healthy"
+        ],
+        "filas_verdadera_columnas_predicha": [
+          [
+            2,
+            4,
+            3,
+            0,
+            0,
+            6,
+            26,
+            0,
+            4,
+            2,
+            0,
+            0
+          ],
+          [
+            0,
+            11,
+            0,
+            0,
+            0,
+            2,
+            26,
+            0,
+            1,
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            14,
+            3,
+            0,
+            11,
+            35,
+            0,
+            4,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            3,
+            2,
+            0,
+            4,
+            50,
+            0,
+            2,
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            3,
+            7,
+            0,
+            0,
+            12,
+            32,
+            0,
+            12,
+            0,
+            0,
+            0
+          ],
+          [
+            5,
+            2,
+            1,
+            0,
+            0,
+            16,
+            24,
+            0,
+            4,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            0,
+            4,
+            58,
+            0,
+            2,
+            0,
+            0,
+            1
+          ],
+          [
+            2,
+            4,
+            5,
+            0,
+            0,
+            6,
+            42,
+            3,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            12,
+            0,
+            1,
+            18,
+            35,
+            1,
+            22,
+            0,
+            0,
+            2
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            0,
+            8,
+            31,
+            1,
+            5,
+            4,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            1,
+            0,
+            0,
+            7,
+            19,
+            0,
+            8,
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            2,
+            0,
+            0,
+            0,
+            4,
+            32,
+            0,
+            1,
+            0,
+            0,
+            0
+          ]
+        ]
+      }
+    },
+    "relleno": {
+      "n": 696,
+      "exactitud": 0.17097701149425287,
+      "macro_f1": 0.11791059231750574,
+      "recall_por_clase": {
+        "Pepper,_bell___Bacterial_spot": 0.0425531914893617,
+        "Pepper,_bell___healthy": 0.12195121951219512,
+        "Potato___Early_blight": 0.19402985074626866,
+        "Potato___Late_blight": 0.04838709677419355,
+        "Tomato___Bacterial_spot": 0.0,
+        "Tomato___Early_blight": 0.36538461538461536,
+        "Tomato___Late_blight": 0.8115942028985508,
+        "Tomato___Leaf_Mold": 0.031746031746031744,
+        "Tomato___Septoria_leaf_spot": 0.14432989690721648,
+        "Tomato___Tomato_Yellow_Leaf_Curl_Virus": 0.1,
+        "Tomato___Tomato_mosaic_virus": 0.0,
+        "Tomato___healthy": 0.0
+      },
+      "f1_por_clase": {
+        "Pepper,_bell___Bacterial_spot": 0.05333333333333332,
+        "Pepper,_bell___healthy": 0.16666666666666666,
+        "Potato___Early_blight": 0.2653061224489796,
+        "Potato___Late_blight": 0.08108108108108107,
+        "Tomato___Bacterial_spot": 0.0,
+        "Tomato___Early_blight": 0.21965317919075147,
+        "Tomato___Late_blight": 0.2362869198312236,
+        "Tomato___Leaf_Mold": 0.06153846153846154,
+        "Tomato___Septoria_leaf_spot": 0.17721518987341772,
+        "Tomato___Tomato_Yellow_Leaf_Curl_Virus": 0.15384615384615383,
+        "Tomato___Tomato_mosaic_virus": 0.0,
+        "Tomato___healthy": 0.0
+      },
+      "soporte_por_clase": {
+        "Pepper,_bell___Bacterial_spot": 47,
+        "Pepper,_bell___healthy": 41,
+        "Potato___Early_blight": 67,
+        "Potato___Late_blight": 62,
+        "Tomato___Bacterial_spot": 72,
+        "Tomato___Early_blight": 52,
+        "Tomato___Late_blight": 69,
+        "Tomato___Leaf_Mold": 63,
+        "Tomato___Septoria_leaf_spot": 97,
+        "Tomato___Tomato_Yellow_Leaf_Curl_Virus": 50,
+        "Tomato___Tomato_mosaic_virus": 37,
+        "Tomato___healthy": 39
+      },
+      "matriz_confusion": {
+        "orden": [
+          "Pepper,_bell___Bacterial_spot",
+          "Pepper,_bell___healthy",
+          "Potato___Early_blight",
+          "Potato___Late_blight",
+          "Tomato___Bacterial_spot",
+          "Tomato___Early_blight",
+          "Tomato___Late_blight",
+          "Tomato___Leaf_Mold",
+          "Tomato___Septoria_leaf_spot",
+          "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+          "Tomato___Tomato_mosaic_virus",
+          "Tomato___healthy"
+        ],
+        "filas_verdadera_columnas_predicha": [
+          [
+            2,
+            4,
+            0,
+            0,
+            0,
+            5,
+            28,
+            0,
+            5,
+            3,
+            0,
+            0
+          ],
+          [
+            1,
+            5,
+            0,
+            1,
+            0,
+            4,
+            29,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          [
+            2,
+            0,
+            13,
+            3,
+            0,
+            12,
+            33,
+            0,
+            4,
+            0,
+            0,
+            0
+          ],
+          [
+            5,
+            0,
+            0,
+            3,
+            0,
+            4,
+            49,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            7,
+            3,
+            2,
+            0,
+            0,
+            14,
+            32,
+            0,
+            14,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            1,
+            0,
+            0,
+            19,
+            22,
+            0,
+            8,
+            1,
+            0,
+            0
+          ],
+          [
+            1,
+            1,
+            1,
+            0,
+            0,
+            7,
+            56,
+            0,
+            2,
+            0,
+            0,
+            1
+          ],
+          [
+            2,
+            2,
+            4,
+            2,
+            0,
+            7,
+            38,
+            2,
+            4,
+            2,
+            0,
+            0
+          ],
+          [
+            6,
+            1,
+            8,
+            2,
+            0,
+            28,
+            37,
+            0,
+            14,
+            1,
+            0,
+            0
+          ],
+          [
+            1,
+            1,
+            1,
+            0,
+            1,
+            8,
+            31,
+            0,
+            2,
+            5,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            1,
+            1,
+            0,
+            7,
+            20,
+            0,
+            6,
+            2,
+            0,
+            0
+          ],
+          [
+            0,
+            2,
+            0,
+            0,
+            0,
+            6,
+            30,
+            0,
+            1,
+            0,
+            0,
+            0
+          ]
+        ]
+      }
+    }
+  },
+  "tiempo_prediccion_s": {
+    "aplastar": 31.691,
+    "resize_recorte": 30.263,
+    "relleno": 34.351
+  },
+  "tiempo_s": 96.491,
+  "memoria_pico_gpu_mb": null,
+  "memoria_pico_cpu_mb": 835.0,
+  "predicciones": {
+    "aplastar": "03_brecha/03_brecha_dev_20261104_210006/predicciones_pd_dev_aplastar.csv",
+    "resize_recorte": "03_brecha/03_brecha_dev_20261104_210006/predicciones_pd_dev_resize_recorte.csv",
+    "relleno": "03_brecha/03_brecha_dev_20261104_210006/predicciones_pd_dev_relleno.csv"
+  },
+  "rutas_relativas_a": "la carpeta --salida",
+  "nota_memoria": "memoria_pico_cpu_mb es el máximo del proceso entero"
+}

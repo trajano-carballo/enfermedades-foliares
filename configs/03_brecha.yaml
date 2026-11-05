@@ -1,0 +1,25 @@
+# Config de scripts/evaluar.py: primera medición de la brecha ID -> OOD (etapa 3, sesión 9). Protocolo: docs/protocolo_evaluacion.md.
+experimento: 03_brecha
+config_modelo: configs/02_modelo_base.yaml      # clases (orden e índice), clase mosaic y definiciones de métricas
+
+modelo_base:                                     # run de la sesión 8 (commit 74ff5de)
+  run_id: 02_modelo_base_20261104_201229
+  checkpoint: 02_modelo_base/02_modelo_base_20261104_201229/mejor_checkpoint.pt   # relativo a --salida
+  sha256: 592eadc3d124a119ce6ffbbd8d661a9d86f2b639c1c1985375c27543307457b3
+
+tamano: 224
+geometrias_candidatas: [aplastar, resize_recorte, relleno]   # (a) se evalúan en PlantDoc-dev
+geometria_base: aplastar                         # (a) solo se reemplaza si el límite inferior del IC pareado de la diferencia es > 0
+geometria: aplastar                              # regla (a) en PD-dev, run 03_brecha_dev_20261104_210006 (commit bc8006a): ninguna califica
+
+bootstrap:                                       # (b)
+  replicas: 2000
+  nivel: 0.95
+  semilla: 42
+
+cam:                                             # (c) muestra fija; nunca imágenes de un test
+  semilla: 42
+  por_clase_pd_dev: 2                            # 1 acierto y 1 error cuando haya
+  por_clase_pv_val: 1
+
+batch: 64                                        # solo inferencia (modo eval, sin gradiente)

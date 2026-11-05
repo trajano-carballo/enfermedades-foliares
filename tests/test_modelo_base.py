@@ -159,3 +159,30 @@ def test_la_salida_tiene_que_estar_fuera_del_repo(tmp_path, pv_sintetico):
 def test_la_prueba_corta_no_copia_nada_al_repo(tmp_path, pv_sintetico):
     d, repo = _ejecutar(tmp_path, pv_sintetico, _cfg(), limite=4)
     assert d["prueba_corta"] and not (repo / "results").exists()
+
+
+def test_la_clave_del_cache_incluye_el_codigo_del_preproceso_y_del_modelo_y_pil():
+    # M2: si cambia preproceso.py, mobilenet.py o la versión de PIL, las features cacheadas no se reutilizan.
+    from foliares.training.features import clave_features
+    clave = clave_features("plantvillage", "train", ["a"], [0], "x", "aplastar", 224, False, "cpu")
+    assert {"sha256_preproceso_py", "sha256_mobilenet_py", "pil"} <= set(clave)
+
+
+@pytest.mark.parametrize("campo,valor", [("criterio", "perdida_val"), ("aumentacion", "flip"), ("ponderacion_clases", True)])
+def test_ejecutar_falla_si_la_config_pide_algo_no_implementado(tmp_path, pv_sintetico, campo, valor):
+    # M3: el código solo implementa macro_f1_val_con_mosaic, sin aumentación y sin ponderación.
+    cfg = _cfg()
+    if campo == "criterio":
+        cfg["entrenamiento"] = {**cfg["entrenamiento"], "criterio": valor}
+    else:
+        cfg[campo] = valor
+    with pytest.raises(ValueError, match="no está implementad"):
+        _ejecutar(tmp_path, pv_sintetico, cfg)
+    assert not (tmp_path / "salida").exists()
+
+
+def test_el_json_usa_rutas_relativas_y_aclara_la_memoria(tmp_path, pv_sintetico):
+    d, _ = _ejecutar(tmp_path, pv_sintetico, _cfg())
+    rutas = [d["checkpoint"]["ruta"]] + [f["archivo"] for f in d["features"].values()]
+    assert all(not Path(r).is_absolute() and str(tmp_path) not in r for r in rutas), rutas
+    assert "proceso" in d["nota_memoria"]

@@ -2,6 +2,40 @@
 
 > Se actualiza al cierre de cada sesión de trabajo. Lo más reciente arriba.
 
+## 2026-11-05 — Sesión 9: primera medición de la brecha ID → OOD y CAM (etapa 3)
+
+**Estado:** brecha medida con el protocolo fijado de antemano. El modelo base cae de macro-F1 **0,937** [0,922; 0,950] en PV-test a **0,130** [0,093; 0,168] en PD-test; brecha **0,807** [0,768; 0,845]. En PD-dev se descartó un error de mapeo, de permutación y de preproceso. La Fase D (CAM) está hecha: el CAM y las figuras se regeneraron desde un árbol limpio (run `03_brecha_cam_20261105_090654` desde `488676b`, `cambios_sin_commitear: false`). Los IC por clase están en `results/03_brecha/03_brecha_ic_20261105_085644/ic_por_clase.json`. Suite: **259 pasan, 0 saltados**.
+
+**Hecho (en orden de commits; todos los hace el usuario)**
+- **Fase 0, correcciones de la review de la sesión 8** (`03e047c`): cada partición de PV con un solo rol (train→entrenamiento, val→validación, test→evaluación), clave del caché de features con el sha256 de `preproceso.py` y `mobilenet.py` y la versión de PIL, `ejecutar()` falla si la config pide criterio, aumentación o ponderación no implementados, y los JSON nuevos llevan rutas relativas a `--salida` y una nota sobre la memoria (pico del proceso entero).
+- **Fase A, protocolo** (`eba1721`): `docs/protocolo_evaluacion.md` y decisiones a–e en `decisiones.md` (quién: Equipo) antes de cualquier número de PlantDoc. Lectura de imágenes con EXIF y alfa sobre blanco en `preprocesar`; el control (d) en PV-val (ningún píxel cambia y el macro-F1 del base no se mueve, 0,9558872…) se hizo con código sin commitear; la evidencia versionada es parcial: el control de 20 imágenes de PV-val en `diagnostico_dev.json` y la verificación de cabeceras de PV-val de la review (2.207 RGB, sin EXIF). Guarda `guarda_accesos.py` con tests: no se evalúa un test sin la fila commiteada, coherente con la config y con el código sin cambios desde su commit.
+- **Fase B, selección en dev** (`bc8006a`, `4ec00a7`): `bootstrap.py`, `evaluacion.py`, `scripts/evaluar.py`, `configs/03_brecha.yaml`. La regla (a) se aclaró antes de ver números (una geometría califica solo si el límite inferior del IC pareado es > 0). Macro-F1 en PD-dev: `aplastar` 0,1240 [0,0992; 0,1479], `resize_recorte` 0,1359 [0,1112; 0,1600], `relleno` 0,1179 [0,0937; 0,1422]; ninguna califica → **`aplastar`**.
+- **Diagnóstico de PD-dev** (`60e0a2b`, `9883606`): `scripts/diagnostico_dev.py`. Mapeo consistente con `mapeo_clases.md`, control de PV-val con diferencia 0 en features y logits, 417 de 696 predichas como Tomato late blight, diagonal como máximo en 1 de 12 filas, confianza media 0,788 en los errores. Conclusión del equipo: caída real.
+- **Fase C, tests** (`09a1e3e` las filas de acceso; run `03_brecha_tests_20261105_081814`, árbol limpio): una sola pasada por test. PV-test macro-F1 0,9371 [0,9222; 0,9500], sin mosaic 0,9514 [0,9409; 0,9603]; PD-test 0,1303 [0,0931; 0,1680]; brecha 0,8068 [0,7682; 0,8454]; trivial 0,0098 (PV-test) y 0,0152 (PD-test). En PD-test 175 de 300 predicciones son Tomato late blight y la diagonal es el máximo en 1 de 12 filas; Potato late → Tomato late: 24 de 27 (1 de 152 en PV-test, 8 de 152 en PV-val). Detalle y recall por clase en `decisiones.md` (hallazgo del 2026-11-05) y en `results/03_brecha/03_brecha_tests_20261105_081814/tests.json`.
+- **Fase D, CAM y figuras** (código en `c936c2a`; CAM y figuras regenerados por última vez desde `488676b` con el árbol limpio, run `03_brecha_cam_20261105_090654`; `results/03_brecha/03_brecha_cam_20261105_090654/cam_muestra.json`, que cita el run de los IC; la figura de matrices lleva la leyenda "Descriptiva, sin IC; IC por clase en <JSON>". Los runs de CAM anteriores se reemplazaron: el de `12af785` se borró de `results/` (queda en el historial de git) y uno intermedio no se versionó): `explain/cam.py` (CAM = Σ w_ck A_k desde el mismo forward, sin backward, con test), `explain/muestra.py` (muestra fija: 2 por clase de PD-dev, 1 acierto y 1 error cuando hay, semilla 42, más 1 por clase de PV-val; rechaza cualquier test), `eval/figuras.py`, `scripts/figuras_sesion9.py` y `tests/test_cam.py`. Figuras en `docs/figuras_sesion9/`: `brecha_ic.png`, `matrices_pv_pd_test.png`, `cam_grilla_clases_1a6.png` y `cam_grilla_clases_7a12.png`. La muestra tiene 24 imágenes de PD-dev (9 aciertos, 15 errores) y 12 de PV-val (10 aciertos, 2 errores).
+- **Lectura de la grilla de CAM (cualitativa, 36 imágenes, sin conclusión):** en los aciertos de PV-val el mapa de calor cae sobre la hoja y sus lesiones; en varios errores de PD-dev cae sobre fondo, suelo, otras hojas o marcas de agua (se ven "shutterstock.com" y "© HRD" resaltadas). Es consistente con la hipótesis del fondo, pero la muestra es chica y no se midió: no está probada.
+- **IC por clase (M1 de la review, invariante 6):** `scripts/ic_por_clase.py` (`3437441`), run `03_brecha_ic_20261105_085644` desde el árbol limpio, `results/03_brecha/03_brecha_ic_20261105_085644/ic_por_clase.json`: exactitud PV-test 0,955 [0,946; 0,962], PD-test 0,187 [0,157; 0,220], PD-dev 0,175 [0,152; 0,198]; recall, precisión y F1 por clase de los tres conjuntos con IC en ese JSON. **Toda exactitud o recall OOD de este handoff se lee con esos IC.** En PD-test el límite superior del recall es ≤ 0,25 en 7 de 12 clases y el IC es [0; 0] en Tomato bacterial spot, YLCV y mosaic (un [0; 0] no prueba recall verdadero cero: el remuestreo no crea aciertos). Ejemplo: Tomato late blight, recall 0,933 [0,833; 1,000] con precisión 0,160 [0,142; 0,179]. No se reevaluó nada.
+- `accesos_test.md`: nota de la evaluación única. 2 de las 24 imágenes de PD-dev de la grilla vienen de la carpeta `test/` oficial de PlantDoc (están en PD-dev, no en el test congelado de 300).
+
+**Qué quedó a medias**
+- La hipótesis del fondo (por qué todo colapsa hacia Late blight) no está verificada.
+- La sesión 11 usará las predicciones de PD-dev guardadas fuera del repo (`foliares_salidas/03_brecha/03_brecha_dev_20261104_210006/`).
+
+**Próximos pasos**
+1. **Usuario:** hacer el PR de `sesion-9/brecha` a `main`.
+2. Presentación del 06/11: figuras de `docs/figuras_sesion9/` y los números de arriba. Aclarar en el informe que el test propuesto de PlantDoc viene casi todo de la carpeta *train* oficial y que PD-test tiene solo 300 imágenes (IC ancho: 0,093–0,168).
+3. **Sesión 10 (tarea):** endurecer la guarda de accesos: que rechace una fila ya usada (cada fila autoriza una sola evaluación) y que cubra también `configs/02_modelo_base.yaml` (hoy solo comprueba la config de evaluación, `src/` y `scripts/`). No se implementó en la sesión 9.
+4. Decisión del equipo sobre qué intervención sigue (aumentación dirigida y supresión de fondo; la propuesta las contempla). Cualquier regla que dependa de un número se fija antes de calcularlo; PD-test ya se evaluó una vez con el modelo base y no se vuelve a usar para elegir nada.
+
+**Pendiente del equipo:** confirmar la licencia de redistribución de las imágenes de PlantDoc en las figuras (las grillas de CAM de `docs/figuras_sesion9/` están versionadas en el repo).
+
+**Decisiones pendientes:** ninguna de esta sesión. Para la siguiente: la intervención a probar y cuántas semillas por variante (propuesta heredada de la sesión 7, sin decidir).
+
+**Riesgos abiertos**
+- PD-test (300 imágenes, 16–41 por clase) da IC anchos por clase (detalle en `results/03_brecha/03_brecha_ic_20261105_085644/ic_por_clase.json`): los recall por clase en PD-test son muy ruidosos.
+- Mosaic en PV-test: recall 0,686 [0,543; 0,829] con 35 imágenes (1,000 en PV-val con 36); su partición es por rangos de numeración, sin grupos de hoja.
+- Los resultados de CPU (esta PC, torch 2.14.1+cpu) y de GPU no son comparables bit a bit; esta sesión corrió toda en CPU.
+
 ## 2026-11-04 — Sesión 8: modelo base (etapa 2) — MODELO BASE ENTRENADO (PV-val macro-F1 0,956)
 
 **Estado: modelo base entrenado** (run `02_modelo_base_20261104_201229`, commit `74ff5de`, `cambios_sin_commitear: false`, CPU, torch 2.14.1+cpu, semilla 42 determinista). Solo PV-train y PV-val: PV-test y PlantDoc no se tocaron (sesión 9).
@@ -10,7 +44,7 @@
 - **Macro-F1 con mosaic 0,9559; sin mosaic 0,9519** (`sin_imagenes_de_la_clase`); exactitud 0,9610. Pérdida train 0,0598 / val 0,1302 en la época elegida.
 - **Trivial** (siempre `Tomato___Late_blight`, desempate `primera_en_orden`): macro-F1 0,0097 (sin mosaic 0,0107), exactitud 0,0616.
 - Recall por clase: Pepper bacterial spot 0,936; Pepper healthy 1,000; Potato early 0,987; Potato late 0,947; Tomato bacterial spot 0,972; **Tomato early blight 0,849** (la más baja: se confunde con Septoria 9, bacterial spot 6 y late blight 6); Tomato late blight 0,926; Leaf Mold 0,958; Septoria 0,908; YLCV 0,998; mosaic 1,000 (36 imágenes); Tomato healthy 0,987. La matriz completa está en el JSON.
-- Tiempos: extracción 344,6 s (train 292,8 s + val 51,5 s; 11.968 y 2.207 features de 576), entrenamiento 9,8 s. Memoria pico CPU 551,9 MB (es el máximo del proceso: incluye la extracción).
+- Tiempos: extracción 344,6 s (train 292,8 s + val 51,5 s; 11.968 y 2.207 features de 576), entrenamiento 9,8 s. Memoria pico CPU 551,9 MB en los dos bloques: es el máximo del **proceso entero** (`ru_maxrss`/`peak_wset`), así que el valor de `memoria_entrenamiento` incluye la extracción. El JSON versionado de este run no se reescribe; los JSON de corridas nuevas lo aclaran en `nota_memoria` (sesión 9) y llevan rutas relativas a `--salida`.
 - Rutas: JSON completo y checkpoint (3.940.491 B, sha256 `592eadc3d124a119…`) en `C:\Users\xbetr\foliares_salidas\02_modelo_base\02_modelo_base_20261104_201229\`; caché de features en `C:\Users\xbetr\foliares_salidas\cache_features\`; JSON chicos (`resultados.json` y los dos `.meta.json` de features, sin pesos) en `results/02_modelo_base/02_modelo_base_20261104_201229/` del repo.
 - Lectura: el macro-F1 in-distribution es alto, como se espera en PlantVillage; mosaic tiene 36 imágenes en val y recall 1,0, y quitarlo baja el macro-F1 0,004. No hay todavía número sobre PlantDoc: la brecha ID→OOD es de la sesión 9.
 
@@ -31,7 +65,7 @@
 - Decisiones del equipo sobre los pendientes (2026-11-04): desbalance aceptado (opción A; `desbalance_aceptado_por_el_equipo: true`, y el JSON registra `control_desbalance.aceptado_por_el_equipo`), `metricas.modo_sin_mosaic: sin_imagenes_de_la_clase` y `metricas.desempate_trivial: primera_en_orden`. Se borró `src/foliares/evaluation/` (vacío, sin imports). Tests: la config real trae las tres decisiones; con el desbalance aceptado el script entrena y lo registra; sin aceptarlo frena.
 
 **Próximos pasos**
-1. **Usuario:** commitear `results/02_modelo_base/02_modelo_base_20261104_201229/` y este handoff.
+1. (Hecho) `results/02_modelo_base/02_modelo_base_20261104_201229/` y este handoff están en `ef70ccc`; PR #6 mergeado (`e49f416`).
 2. Sesión 9: PV-test y PlantDoc (dev para geometría, temperatura y umbral; test una vez), con registro previo en `accesos_test.md`.
 
 **Decisiones pendientes:** ninguna para el modelo base (las tres se resolvieron el 2026-11-04, ver `decisiones.md`).

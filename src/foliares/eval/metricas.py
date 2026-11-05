@@ -1,8 +1,9 @@
 """Métricas de clasificación: matriz de confusión, recall y F1 por clase, macro-F1 con y sin mosaic, clasificador trivial.
 
 Convenciones: la matriz tiene filas = clase verdadera y columnas = clase predicha. Precisión, recall o F1 con denominador 0
-valen 0 (como `zero_division=0` de scikit-learn). Dos definiciones quedan como parámetro explícito, sin default, porque el
-equipo no las fijó todavía (sesión 8): el modo del macro-F1 "sin mosaic" y el desempate del clasificador trivial.
+valen 0 (como `zero_division=0` de scikit-learn). Dos definiciones son parámetros explícitos, sin default, y las fija la
+config: el modo del macro-F1 "sin mosaic" y el desempate del clasificador trivial. Decisión del equipo del 2026-11-04
+(`docs/bitacora/decisiones.md`): `sin_imagenes_de_la_clase` y `primera_en_orden` (`configs/02_modelo_base.yaml`).
 """
 
 from __future__ import annotations

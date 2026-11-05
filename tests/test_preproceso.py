@@ -53,3 +53,30 @@ def test_geometria_desconocida_falla():
 def test_acepta_ruta(tmp_path):
     _imagen(50, 40).save(tmp_path / "a.png")
     assert torch.equal(preprocesar(tmp_path / "a.png", "relleno", 32), preprocesar(_imagen(50, 40), "relleno", 32))
+
+
+def test_aplica_la_orientacion_exif(tmp_path):
+    # Imagen de 40×20 guardada con orientación EXIF 6 (rotar 90°): leída, tiene que quedar de 20×40.
+    im = Image.new("RGB", (40, 20), (0, 0, 0))
+    im.paste((255, 255, 255), (0, 0, 20, 20))                                  # mitad izquierda blanca
+    exif = Image.Exif()
+    exif[0x0112] = 6
+    im.save(tmp_path / "rotada.jpg", exif=exif.tobytes(), quality=100)
+    from foliares.data.preproceso import leer_rgb
+    with Image.open(tmp_path / "rotada.jpg") as abierta:
+        assert leer_rgb(abierta).size == (20, 40)
+
+
+def test_el_alfa_se_compone_sobre_blanco():
+    from foliares.data.preproceso import leer_rgb
+    transparente = Image.new("RGBA", (4, 4), (255, 0, 0, 0))                   # rojo totalmente transparente
+    assert leer_rgb(transparente).getpixel((0, 0)) == (255, 255, 255)
+    medio = Image.new("RGBA", (4, 4), (0, 0, 0, 128))                          # negro al 50 %
+    assert all(abs(c - 127) <= 1 for c in leer_rgb(medio).getpixel((0, 0)))
+
+
+def test_una_imagen_rgb_sin_exif_no_cambia():
+    from foliares.data.preproceso import leer_rgb
+    gen = np.random.default_rng(1)
+    im = Image.fromarray(gen.integers(0, 255, (30, 20, 3), dtype=np.uint8))
+    assert np.array_equal(np.asarray(leer_rgb(im)), np.asarray(im))
