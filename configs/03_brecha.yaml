@@ -9,8 +9,8 @@ modelo_base:                                     # run de la sesión 8 (commit 7
 
 tamano: 224
 geometrias_candidatas: [aplastar, resize_recorte, relleno]   # (a) se evalúan en PlantDoc-dev
-geometria_base: aplastar                         # (a) solo se reemplaza si el IC pareado de la diferencia excluye el 0
-geometria: null                                  # la elegida en PD-dev; se fija ANTES de las filas de acceso a los tests
+geometria_base: aplastar                         # (a) solo se reemplaza si el límite inferior del IC pareado de la diferencia es > 0
+geometria: aplastar                              # regla (a) en PD-dev, run 03_brecha_dev_20261104_210006 (commit bc8006a): ninguna califica
 
 bootstrap:                                       # (b)
   replicas: 2000

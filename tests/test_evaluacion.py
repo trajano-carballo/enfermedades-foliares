@@ -73,9 +73,8 @@ def test_analisis_de_errores_por_especie():
 
 
 def test_los_tests_no_se_evaluan_sin_geometria_fijada(tmp_path):
-    cfg = yaml.safe_load((REPO / "configs" / "03_brecha.yaml").read_text(encoding="utf-8"))
+    cfg = {**yaml.safe_load((REPO / "configs" / "03_brecha.yaml").read_text(encoding="utf-8")), "geometria": None}
     cfg_modelo = yaml.safe_load((REPO / "configs" / "02_modelo_base.yaml").read_text(encoding="utf-8"))
-    assert cfg["geometria"] is None
     with pytest.raises(ValueError, match="Falta fijar `geometria`"):
         E.evaluar_tests(cfg, cfg_modelo, "configs/03_brecha.yaml", tmp_path, tmp_path, tmp_path, tmp_path / "s", "r", {})
 
