@@ -5,6 +5,8 @@ El total se publica en el documento final (mitigación de sobreajuste al test).
 
 | # | Fecha | Test | Modelo / config | Commit | Motivo |
 |---|---|---|---|---|---|
+| 1 | 2026-11-05 | PV-test | modelo base `02_modelo_base_20261104_201229` (checkpoint sha256 `592eadc3…457b3`) y clasificador trivial (clase mayoritaria de PV-train); config `configs/03_brecha.yaml`, geometría `aplastar` | `60e0a2b` | evaluación única del modelo base (etapa 3): macro-F1 con y sin mosaic, recall por clase y matriz, con IC bootstrap |
+| 2 | 2026-11-05 | PD-test | modelo base `02_modelo_base_20261104_201229` (checkpoint sha256 `592eadc3…457b3`) y clasificador trivial (clase mayoritaria de PV-train); config `configs/03_brecha.yaml`, geometría `aplastar` | `60e0a2b` | evaluación única del modelo base (etapa 3): macro-F1, recall por clase y matriz, con IC bootstrap; brecha PV-test − PD-test |
 
 **Nota (2026-09-25, sesión 2):** en esta sesión se inventarió PlantDoc (conteos por clase,
 integridad de archivos, resoluciones) pero **no se evaluó ningún modelo ni se calculó
