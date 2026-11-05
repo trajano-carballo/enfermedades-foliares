@@ -1,6 +1,6 @@
 {
-  "fecha": "2026-11-05 08:35:00",
-  "commit": "12af78597e8efe5de36268b0db899c15bc0716aa",
+  "fecha": "2026-11-05 09:06:49",
+  "commit": "488676b4bbba7e879b55aa4cdcba0c698de9ad5b",
   "cambios_sin_commitear": false,
   "config": {
     "evaluacion": {
@@ -134,9 +134,10 @@
   "gpu": null,
   "hilos_cpu": 6,
   "fase": "cam",
-  "run_id": "03_brecha_cam_20261105_083504",
+  "run_id": "03_brecha_cam_20261105_090654",
   "run_dev": "03_brecha_dev_20261104_210006",
   "run_tests": "03_brecha_tests_20261105_081814",
+  "run_ic": "03_brecha_ic_20261105_085644",
   "geometria": "aplastar",
   "datos_mostrados": "PlantDoc-dev y PlantVillage-val; ningún test",
   "n_imagenes": 36,
@@ -509,8 +510,8 @@
     "docs\\figuras_sesion9\\cam_grilla_clases_1a6.png",
     "docs\\figuras_sesion9\\cam_grilla_clases_7a12.png"
   ],
-  "tiempo_s": 4.518,
+  "tiempo_s": 4.479,
   "memoria_pico_gpu_mb": null,
-  "memoria_pico_cpu_mb": 524.6,
+  "memoria_pico_cpu_mb": 525.8,
   "nota_memoria": "memoria_pico_cpu_mb es el máximo del proceso entero"
 }
