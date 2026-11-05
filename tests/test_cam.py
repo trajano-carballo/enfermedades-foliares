@@ -130,6 +130,15 @@ def test_las_figuras_de_numeros_se_generan(tmp_path):
         assert f.is_file() and f.stat().st_size > 5000
 
 
+def test_la_leyenda_de_las_matrices_va_arriba_y_con_la_ruta_del_json(tmp_path, monkeypatch):
+    capturadas = []
+    cerrar = FIG.plt.close
+    monkeypatch.setattr(FIG.plt, "close", lambda f=None: (capturadas.append(f), cerrar(f))[1])
+    FIG.figura_matrices(_tests_json(), tmp_path / "m.png", ic_json="results/x/ic_por_clase.json")
+    assert capturadas[0]._suptitle.get_text() == "Descriptiva, sin IC; IC por clase en results/x/ic_por_clase.json"
+    assert capturadas[0]._suptitle.get_position()[1] > 0.9                              # arriba, no pegada a las etiquetas del eje x
+
+
 def test_la_figura_de_matrices_exige_citar_el_json_de_los_ic():
     assert FIG.leyenda_matrices("results/03_brecha/r/ic_por_clase.json") ==         "Descriptiva, sin IC; IC por clase en results/03_brecha/r/ic_por_clase.json"
     with pytest.raises(TypeError):

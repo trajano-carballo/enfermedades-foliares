@@ -85,7 +85,7 @@ def figura_matrices(tests: dict, ruta: str | Path, *, ic_json: str) -> Path:
         ax.set_title(f"{test} (n={tests['resultados'][test]['n']}, macro-F1 {tests['resultados'][test]['base_macro_f1_ic']['estimacion']:.3f})")
     ejes[0].set_ylabel("clase verdadera")
     fig.colorbar(im, ax=ejes, fraction=0.02, pad=0.02, label="proporción de la fila")
-    fig.text(0.5, 0.005, leyenda_matrices(ic_json), ha="center", fontsize=9, style="italic")
+    fig.suptitle(leyenda_matrices(ic_json), fontsize=9, style="italic", y=0.995)         # arriba: no choca con las etiquetas del eje x
     fig.savefig(ruta, dpi=150, bbox_inches="tight")
     plt.close(fig)
     return Path(ruta)
