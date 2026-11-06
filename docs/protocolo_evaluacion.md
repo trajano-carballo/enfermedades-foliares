@@ -49,3 +49,5 @@ estaba). "Excluye el 0" también lo cumple una geometría peor (IC entero debajo
   acceso se commitean antes de cada evaluación de un test.
 
 **Aclaración 2026-11-05** (el texto de arriba se deja como estaba): los flags del script son `--fila-accesos-pv` (fila de PV-test) y `--fila-accesos-pd` (fila de PD-test), no un único `--fila-accesos N`; la verificación de cada fila es la descrita en esta sección.
+
+**Aclaración 2026-11-06** (sesión 10; el texto de arriba se deja como estaba): la guarda además (1) rechaza una fila ya usada: cuenta como usada si algún JSON versionado de `results/` la trae en su bloque `accesos`; y (2) exige que desde el commit de la fila no cambie nada en `configs/` (no solo la config de evaluación), `src/` ni `scripts/`.

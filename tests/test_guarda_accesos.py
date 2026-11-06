@@ -101,3 +101,38 @@ def test_lee_la_tabla_real_de_accesos():
 def test_fuera_de_un_repo_git(tmp_path):
     with pytest.raises(AccesoNoRegistrado, match="no es un repositorio git"):
         exigir_fila_accesos(tmp_path, 1, "PD-test", "configs/03_brecha.yaml")
+
+
+def test_una_fila_ya_usada_se_rechaza(repo):
+    r, c1 = repo
+    (r / "results" / "x" / "r1").mkdir(parents=True)
+    (r / "results" / "x" / "r1" / "tests.json").write_text('{"accesos": {"PD-test": {"fila": 1, "commit": "%s"}}}' % c1)
+    _git(r, "add", "results")
+    _git(r, "commit", "-q", "-m", "c3: resultado de la evaluación")
+    with pytest.raises(AccesoNoRegistrado, match="ya se usó"):
+        exigir_fila_accesos(r, 1, "PD-test", "configs/03_brecha.yaml")
+
+
+def test_un_resultado_sin_bloque_accesos_no_gasta_la_fila(repo):
+    r, _ = repo
+    (r / "results").mkdir()
+    (r / "results" / "otro.json").write_text('{"fila": 1, "macro_f1": 0.5}')
+    _git(r, "add", "results")
+    _git(r, "commit", "-q", "-m", "c3")
+    assert exigir_fila_accesos(r, 1, "PD-test", "configs/03_brecha.yaml")["fila"] == 1
+
+
+def test_cambio_en_la_config_del_modelo_despues_de_la_fila(repo):
+    r, _ = repo
+    (r / "configs" / "02_modelo_base.yaml").write_text("lr: 0.1\n")
+    _git(r, "add", "configs")
+    _git(r, "commit", "-q", "-m", "c3: cambia la config del modelo")
+    with pytest.raises(AccesoNoRegistrado, match="cambiaron la config o el código"):
+        exigir_fila_accesos(r, 1, "PD-test", "configs/03_brecha.yaml")
+
+
+def test_las_filas_1_y_2_del_repo_real_ya_estan_gastadas():
+    from pathlib import Path
+    from foliares.eval.guarda_accesos import filas_usadas
+    usadas = filas_usadas(Path(__file__).resolve().parents[1])
+    assert {1, 2} <= set(usadas) and all("03_brecha_tests" in v for k, v in usadas.items() if k in (1, 2))
