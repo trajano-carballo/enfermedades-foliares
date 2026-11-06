@@ -30,3 +30,25 @@ class MobileNetV3SmallGAP(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.fc(torch.flatten(self.gap(self.mapas(x)), 1))
+
+
+def descongelar_parcial(modelo: MobileNetV3SmallGAP, bloques: list[int]) -> MobileNetV3SmallGAP:
+    """Fine-tuning parcial (sesión 10, decisión b): solo `features[i]` para `i` en `bloques` y `fc` tienen gradiente."""
+    for p in modelo.parameters():
+        p.requires_grad_(False)
+    for i in bloques:
+        for p in modelo.features[i].parameters():
+            p.requires_grad_(True)
+    for p in modelo.fc.parameters():
+        p.requires_grad_(True)
+    return modelo
+
+
+def modo_entrenamiento_parcial(modelo: MobileNetV3SmallGAP, bloques: list[int]) -> MobileNetV3SmallGAP:
+    """Modo `train` solo en los bloques entrenables y `fc`; el resto en `eval`, así la BatchNorm de los bloques congelados
+    conserva las estadísticas de ImageNet (decisión b, opción A). Llamar al empezar cada época de entrenamiento."""
+    modelo.eval()
+    for i in bloques:
+        modelo.features[i].train()
+    modelo.fc.train()
+    return modelo
