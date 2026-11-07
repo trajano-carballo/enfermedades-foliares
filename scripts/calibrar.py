@@ -51,9 +51,10 @@ def main() -> int:
     except C.TemperaturaEnBorde as e:
         print(f"Se frena: {e}", file=sys.stderr)
         return 5
-    resumen = {k: round(v["estimacion"], 4) for k, v in despues.items()}
+    r4 = lambda b: {k: None if v["estimacion"] is None else round(v["estimacion"], 4) for k, v in b.items()}  # noqa: E731
+    resumen = r4(despues)
     print(json.dumps({"run_id": run_id, "cambios_sin_commitear": d["cambios_sin_commitear"],
-                      "T": d.get("temperatura_final", d.get("temperatura")), "antes_T_1": {k: round(v["estimacion"], 4) for k, v in d["antes_T_1"].items()},
+                      "T": d.get("temperatura_final", d.get("temperatura")), "antes_T_1": r4(d["antes_T_1"]),
                       "despues": resumen}, indent=2, ensure_ascii=False))
     print("JSON en:", a.salida / cfg["experimento"] / run_id)
     return 0

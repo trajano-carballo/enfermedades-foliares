@@ -74,6 +74,7 @@ def metricas_sistema(y, probs, tau: float, n_bins: int) -> dict[str, float]:
     conf, ok = probs.max(1), probs.argmax(1) == np.asarray(y)
     resp = conf >= tau
     return {"ece": ece(probs, y, n_bins), "cobertura": float(resp.mean()), "abstencion": float(1 - resp.mean()),
+            "n_respondidas": int(resp.sum()),
             "acierto_respondidas": float(ok[resp].mean()) if resp.any() else float("nan"),
             "errores_alta_confianza": float((resp & ~ok).mean()), "exactitud": float(ok.mean())}
 
@@ -122,8 +123,12 @@ def _exigir_modelo_de_la_regla(repo: Path, cfg: dict) -> dict:
 
 def _ic(y, probs, cfg: dict) -> dict:
     bs = cfg["bootstrap"]
+    """IC de las métricas del sistema; acierto sobre lo respondido según §g.7 (réplicas sin respondidas afuera, contadas)."""
     f = lambda yy, pp: metricas_sistema(yy, pp, cfg["tau"], cfg["ece_bins"])  # noqa: E731
-    return B.bootstrap_multiple(y, probs, f, bs["replicas"], bs["semilla"], bs["nivel"])
+    r = B.bootstrap_multiple(y, probs, f, bs["replicas"], bs["semilla"], bs["nivel"], excluir_nan=("acierto_respondidas",))
+    if r["n_respondidas"]["estimacion"] == 0:
+        r["acierto_respondidas"] = {**r["acierto_respondidas"], "estimacion": None, "nota": "no definido (0 respondidas)"}
+    return r
 
 
 def _forward(cfg, cfg_modelo, splits, data_root, salida, particion: str, dir_corrida: Path) -> tuple[dict, str, dict]:

@@ -87,3 +87,7 @@ estaba). "Excluye el 0" también lo cumple una geometría peor (IC entero debajo
 6. **PD-test.** Una sola pasada con el modelo, T y τ ya fijos, bajo una fila nueva de `accesos_test.md` commiteada antes
    (§e). Si las predicciones por imagen de la sesión 10 ya guardaron logits, se pueden usar sin pasar imágenes, pero la fila
    hace falta igual. No se toca PV-test. Nada se ajusta después de ver estos números.
+7. **Acierto sobre lo respondido** (agregado el 2026-11-07, antes de calcular cualquier número de esta etapa). Se reporta junto
+   con el n de respondidas. Su IC se calcula sobre las réplicas bootstrap con al menos 1 respondida, y se informa cuántas
+   réplicas quedaron afuera. Si en los datos reales no hay ninguna respondida, el acierto es "no definido (0 respondidas)": no
+   se fuerza un número.

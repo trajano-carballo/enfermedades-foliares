@@ -207,3 +207,19 @@ def test_las_figuras_de_la_sesion_11_se_generan(monkeypatch, tmp_path):
     d = C.calibrar_dev({**CFG, "bootstrap": {**CFG["bootstrap"], "replicas": 20}}, CFG_MODELO, REPO, R.splits, R.data_root, tmp_path, "r")
     for f in (FIG.figura_fiabilidad(d, tmp_path / "f.png"), FIG.figura_cobertura(d, tmp_path / "c.png")):
         assert f.is_file() and f.stat().st_size > 5000
+
+
+def test_acierto_en_respondidas_ic_sin_las_replicas_vacias_y_no_definido_con_0_respondidas():
+    # 1 sola respondida (p = 0,9) entre 20: muchas réplicas no la incluyen y quedan afuera del IC (§g.7)
+    p = np.array([[0.9, 0.05, 0.05]] + [[0.4, 0.3, 0.3]] * 19)   # solo la primera tiene p máx ≥ τ = 0,5
+    y = np.array([0] * 10 + [1] * 10)
+    cfg = {**CFG, "bootstrap": {**CFG["bootstrap"], "replicas": 300}}
+    r = C._ic(y, p, cfg)
+    a = r["acierto_respondidas"]
+    assert r["n_respondidas"]["estimacion"] == 1 and a["estimacion"] == 1.0
+    assert 0 < a["replicas_excluidas"] < 300 and a["n_replicas"] == 300 - a["replicas_excluidas"] and a["ic_bajo"] == 1.0
+    assert "replicas_excluidas" not in r["cobertura"]
+    r0 = C._ic(y, np.full((20, 3), 1 / 3), cfg)                  # nadie responde
+    assert r0["acierto_respondidas"]["estimacion"] is None and r0["acierto_respondidas"]["nota"] == "no definido (0 respondidas)"
+    assert r0["acierto_respondidas"]["replicas_excluidas"] == 300 and r0["acierto_respondidas"]["ic_bajo"] is None
+    json.dumps(r0)                                              # se puede escribir en el JSON de resultados
