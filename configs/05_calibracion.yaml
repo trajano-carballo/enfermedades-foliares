@@ -1,0 +1,36 @@
+# Calibración por temperatura y abstención (etapa 5, sesión 11; §g del protocolo). La sesión 12 (app) lee de acá el modelo,
+# la temperatura y τ.
+experimento: 05_calibracion
+config_modelo: configs/02_modelo_base.yaml      # clases (orden e índice) y clase mosaic
+
+candidatos:                                      # regla 1: macro-F1 con mosaic en PV-val, de los JSON versionados
+  base:
+    run_id: 02_modelo_base_20261104_201229
+    resultados: results/02_modelo_base/02_modelo_base_20261104_201229/resultados.json
+  variante:
+    run_id: 04_aumentacion_20261106_232146
+    resultados: results/04_aumentacion/04_aumentacion_20261106_232146/resultados.json
+
+modelo_base:                                     # el que elige la regla 1 (el código lo verifica contra `candidatos`)
+  run_id: 04_aumentacion_20261106_232146
+  checkpoint: 04_aumentacion/04_aumentacion_20261106_232146/mejor.pt   # relativo a --salida
+  sha256: 326e6a730321136e3e026bffcf84ed1b9b0adcec7162de2d18d1e13ba7495953
+
+tamano: 224
+geometria: aplastar
+
+temperatura_grilla: {desde: 0.5, hasta: 10.0, paso: 0.05}   # regla 2
+ece_bins: 15                                                 # regla 3
+particiones: {k: 5, semilla: 42}                             # regla 3: ECE fuera de partición en PD-dev
+tau: 0.5                                                     # regla 4: responde si p calibrada ≥ τ
+
+bootstrap:
+  replicas: 2000
+  nivel: 0.95
+  semilla: 42
+
+batch: 64
+
+# Se completan después de la fase dev (y se commitean antes de la fila de PD-test):
+run_dev: null          # run_id de la fase dev (results/05_calibracion/<run_dev>/calibracion_dev.json)
+temperatura: null      # T final (ajustada con todo PD-dev)

@@ -49,13 +49,14 @@ def cargar_modelo_base(salida: Path, cfg: dict, n_clases: int) -> MobileNetV3Sma
 
 @torch.inference_mode()
 def predecir(modelo, dataset, batch: int, dispositivo: torch.device) -> dict:
-    """Probabilidades (softmax), predicción y etiqueta de cada imagen del dataset, en su orden."""
+    """Logits, probabilidades (softmax), predicción y etiqueta de cada imagen del dataset, en su orden."""
     modelo.eval().to(dispositivo)
-    probs = []
+    logits = []
     for x, _ in DataLoader(dataset, batch_size=batch, shuffle=False, num_workers=0):
-        probs.append(torch.softmax(modelo(x.to(dispositivo)), 1).float().cpu())
-    p = torch.cat(probs).numpy()
-    return {"probs": p, "pred": p.argmax(1), "y": dataset.etiquetas.numpy()}
+        logits.append(modelo(x.to(dispositivo)).float().cpu())
+    z = torch.cat(logits)
+    p = torch.softmax(z, 1).numpy()
+    return {"logits": z.numpy(), "probs": p, "pred": p.argmax(1), "y": dataset.etiquetas.numpy()}
 
 
 def tabla_predicciones(dataset, out: dict, nombres: list[str]) -> pd.DataFrame:
