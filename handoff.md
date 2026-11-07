@@ -23,7 +23,7 @@ PD-test: la confianza calibrada no llega a 0,5 porque el modelo acierta ~17–21
 | Acierto sobre lo respondido (antes → después) | 0,210 [0,186; 0,236] → no definido (0 respondidas) | 0,181 [0,141; 0,220] → no definido (0 respondidas) |
 | Errores de alta confianza, fracción del total (antes → después) | 0,744 [0,716; 0,772] → 0,000 [0; 0] | 0,787 [0,743; 0,827] → 0,000 [0; 0] |
 | Exactitud (no cambia con T) | 0,210 [0,185; 0,234] | 0,173 [0,137; 0,210] |
-| NLL (T = 1 → T final; log 12 = 2,48) | 8,89 → 2,34 | — |
+| NLL (T = 1 → T final; log 12 = 2,48): diagnóstico del ajuste (in-sample, sin IC), no métrica de evaluación | 8,89 → 2,34 | — |
 
 JSON: `results/05_calibracion/05_calibracion_dev_20261107_095030/calibracion_dev.json` (desde `6e5196a`) y
 `results/05_calibracion/05_calibracion_test_20261107_095821/calibracion_test.json` (desde `5bff0d7`, fila 5). Figuras de PD-dev
@@ -62,6 +62,8 @@ argmax en PD-dev y PD-test).
 **Riesgos abiertos**
 - T se ajustó con 696 imágenes de PlantDoc-dev: describe este modelo en esta distribución, no fotos nuevas de otra fuente.
 - El IC del ECE calibrado es asimétrico (la estimación cerca del límite inferior): el ECE tiene sesgo positivo en las réplicas.
+- El IC del ECE fuera de partición remuestrea probabilidades ya calibradas; no incluye la variabilidad de ajustar T, puede ser algo optimista.
+- Las figuras de `docs/figuras_sesion11/` salieron del `figuras.py` de `fae65fa` (sin commitear al generarlas) y se pueden regenerar desde ese commit.
 - Filas 1 a 5 de `accesos_test.md` usadas: cualquier otra evaluación de un test necesita una fila nueva.
 
 ## 2026-11-06 — Sesión 10: intervención de la etapa 4 (fine-tuning parcial con aumentación dirigida)
