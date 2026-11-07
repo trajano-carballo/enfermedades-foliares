@@ -2,6 +2,39 @@
 
 > Se actualiza al cierre de cada sesión de trabajo. Lo más reciente arriba.
 
+## 2026-11-06 — Sesión 10: intervención de la etapa 4 (fine-tuning parcial con aumentación dirigida)
+
+**Estado:** la variante está entrenada (Colab), evaluada una vez en los dos tests y comparada con el base. Mejora PV-test (diferencia pareada 0,019 [0,004; 0,033]) pero no PD-test (-0,004 [-0,030; 0,023], incluye el 0). La brecha queda en 0,830 [0,792; 0,867] (base: 0,807 [0,768; 0,845]). La sesión 13 (supresión de fondo, combinación y control) quedó recortada por plazo; la defensa es el 20/11.
+
+**Tabla base vs. variante** (macro-F1, IC 95 % bootstrap estratificado, 2.000 réplicas, semilla 42, `aplastar`; JSON en `results/04_aumentacion/`)
+
+| | Base | Variante | Diferencia pareada (variante − base) |
+|---|---|---|---|
+| PV-test (n = 2.170) | 0,937 [0,922; 0,950] | 0,956 [0,943; 0,967] | 0,019 [0,004; 0,033] |
+| PD-test (n = 300) | 0,130 [0,093; 0,168] | 0,126 [0,087; 0,165] | -0,004 [-0,030; 0,023] |
+| Brecha (PV − PD) | 0,807 [0,768; 0,845] | 0,830 [0,792; 0,867] | (no calculada) |
+
+**Hecho (en orden de commits; todos los hace el usuario)**
+- Fase 0 (`281b9e0`): la guarda rechaza una fila ya usada (registro de uso: el bloque `accesos` de los JSON versionados de `results/`) y exige que no cambie nada en `configs/` desde el commit de la fila. Plazos y recorte de la sesión 13 en `decisiones.md`.
+- Decisiones a–h y BatchNorm de los bloques congelados en modo eval (`691336f`), antes de entrenar.
+- Código (`8e91fad`): `data/aumentacion.py` (solo PV-train; con `ninguna` es el pipeline del base), `descongelar_parcial` y `modo_entrenamiento_parcial`, `training/finetune.py` (forward completo, checkpoint por época, reanudación verificada por test), `scripts/entrenar_finetune.py`, `configs/04_aumentacion.yaml` y `notebooks/04_aumentacion_colab.ipynb` (solo lleva PlantVillage a Colab). La prueba corta en CPU encontró que las transformaciones no se podían serializar para los workers del DataLoader en Windows: corregido con test.
+- Entrenamiento en Colab (run `04_aumentacion_20261106_232146`, desde `8e91fad`, Tesla T4): época 18 de 20, macro-F1 en PV-val 0,966.
+- Evaluación (`0a094ac`): `configs/04_evaluacion.yaml` y `--fase dev_informativo`. PD-dev (informativo): 0,146 [0,121; 0,171] contra 0,124 del base, diferencia pareada +0,022 [−0,003; +0,047].
+- Filas 3 y 4 (`9d0f5a7`) y pasada única (`6fa21ed` lleva su `tests.json`, la nota de accesos y el código de comparación y figuras).
+- Comparación pareada (`04_aumentacion_comparacion_20261106_211523`), IC por clase (`04_aumentacion_ic_20261106_211534`) y CAM sobre la misma muestra de la sesión 9 (`04_aumentacion_cam_20261106_211557`), los tres desde `6fa21ed` con el árbol limpio. Figuras en `docs/figuras_sesion10/`: `base_vs_variante.png`, `matrices_variante_pv_pd_test.png`, `cam_variante_clases_1a6.png` y `cam_variante_clases_7a12.png`.
+
+**Qué quedó a medias:** nada de esta sesión.
+
+**Próximos pasos**
+1. **Usuario:** commitear los resultados y figuras de la comparación y hacer el PR de `sesion-10/aumentacion` a `main`.
+2. Informe y defensa (20/11): tabla base vs. variante, figuras de las sesiones 9 y 10 y las limitaciones (una sola variante: no separa descongelar de aumentar; una semilla; PD-test chico, con IC anchos por clase; sesión 13 recortada).
+
+**Decisiones pendientes:** ninguna de esta sesión. Del equipo: confirmar la licencia de redistribución de las imágenes de PlantDoc en las figuras (heredado de la sesión 9).
+
+**Riesgos abiertos**
+- Una sola semilla y una sola corrida por modelo: la diferencia pareada en PV-test (IC que no incluye el 0) es sobre las mismas imágenes, no sobre la variabilidad del entrenamiento.
+- Las filas 1 a 4 de `accesos_test.md` están gastadas: cualquier otra evaluación de un test necesita una fila nueva.
+
 ## 2026-11-05 — Sesión 9: primera medición de la brecha ID → OOD y CAM (etapa 3)
 
 **Estado:** brecha medida con el protocolo fijado de antemano. El modelo base cae de macro-F1 **0,937** [0,922; 0,950] en PV-test a **0,130** [0,093; 0,168] en PD-test; brecha **0,807** [0,768; 0,845]. En PD-dev se descartó un error de mapeo, de permutación y de preproceso. La Fase D (CAM) está hecha: el CAM y las figuras se regeneraron desde un árbol limpio (run `03_brecha_cam_20261105_090654` desde `488676b`, `cambios_sin_commitear: false`). Los IC por clase están en `results/03_brecha/03_brecha_ic_20261105_085644/ic_por_clase.json`. Suite: **259 pasan, 0 saltados**.
