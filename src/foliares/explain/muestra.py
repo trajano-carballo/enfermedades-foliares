@@ -52,3 +52,15 @@ def elegir_pv_val(filas: pd.DataFrame, n_clases: int, semilla: int) -> pd.DataFr
     filas = filas.reset_index(drop=True).assign(fila=lambda d: d.index)
     return pd.concat([filas[filas.etiqueta == c].iloc[[int(rng(semilla, "cam_pv_val", c).integers(int((filas.etiqueta == c).sum())))]]
                       for c in range(n_clases)], ignore_index=True)
+
+
+def seleccion_desde_muestra(muestra: list[dict], filas: pd.DataFrame, origen: str, slot_de_rotulo: dict[str, int]) -> pd.DataFrame:
+    """La MISMA muestra fija de una sesión anterior (lista `muestra` de su `cam_muestra.json`): las filas de `filas` (Dataset) del
+    `origen` dado, en el mismo orden y en la misma fila de la grilla. Falla si alguna ruta ya no está en el Dataset."""
+    posicion = {r: i for i, r in enumerate(filas.ruta)}
+    elegidas = [m for m in muestra if m["origen"] == origen]
+    faltan = [m["ruta"] for m in elegidas if m["ruta"] not in posicion]
+    if faltan:
+        raise ValueError(f"Rutas de la muestra fija que no están en el Dataset de {origen}: {faltan[:3]}")
+    return pd.DataFrame({"fila": [posicion[m["ruta"]] for m in elegidas], "slot": [slot_de_rotulo[m["fila_grilla"]] for m in elegidas],
+                         "tipo": [m.get("tipo") for m in elegidas]})

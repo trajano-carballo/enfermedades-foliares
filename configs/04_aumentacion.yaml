@@ -1,0 +1,33 @@
+# Config de scripts/entrenar_finetune.py: intervención de la etapa 4 (sesión 10). Decisiones a–h en docs/bitacora/decisiones.md
+# y §f de docs/protocolo_evaluacion.md. Solo PV-train y PV-val: PlantDoc no entrena ni elige (invariante 1).
+experimento: 04_aumentacion
+config_modelo: configs/02_modelo_base.yaml       # clases (orden e índice), clase mosaic y definiciones de métricas
+semilla: 42
+determinista: true                               # (f)
+
+modelo_base:                                     # (b) se parte de estos pesos (sesión 8)
+  run_id: 02_modelo_base_20261104_201229
+  sha256: 592eadc3d124a119ce6ffbbd8d661a9d86f2b639c1c1985375c27543307457b3
+
+preproceso:                                      # (c, h) PV-val, PlantDoc y tests: aplastar 224
+  geometria: aplastar
+  tamano: 224
+
+aumentacion:                                     # (c) solo PV-train
+  tipo: dirigida                                 # dirigida | ninguna (ninguna = el pipeline de train del base)
+  escala_recorte: [0.6, 1.0]                     # RandomResizedCrop(224, scale=(0.6, 1.0))
+  rotacion_grados: 20                            # RandomRotation(20)
+  brillo: 0.3                                    # ColorJitter(brightness, contrast, saturation)
+  contraste: 0.3
+  saturacion: 0.3
+
+finetune:                                        # (b, d)
+  bloques_entrenables: [11, 12]                  # features[11], features[12] (+ fc siempre); el resto congelado y en eval
+  optimizador: adam
+  lr: 1.0e-4
+  batch: 64
+  max_epocas: 20
+  paciencia: 5
+  criterio: macro_f1_val_con_mosaic              # estrictamente mayor: ante empate, la primera época
+  workers: 2                                     # lectura y aumentación en paralelo; el azar de cada worker sale del generador de
+                                                 # la época: reproducible con el mismo número de workers, distinto con otro

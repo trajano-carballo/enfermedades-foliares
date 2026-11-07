@@ -68,7 +68,8 @@ def figura_matrices(tests: dict, ruta: str | Path, *, ic_json: str) -> Path:
     """Las matrices de confusión normalizadas por fila (recall en la diagonal) de PV-test y PD-test, mismo orden de clases.
     `ic_json` es la ruta (relativa al repo) del JSON con los IC por clase, que se cita en la leyenda de la figura."""
     nombres = [nombre_corto(c) for c in tests["orden_clases"]]
-    fig, ejes = plt.subplots(1, 2, figsize=(15, 7), sharey=True)
+    # sharey=False: con el eje compartido, las etiquetas del segundo panel pisaban las del primero y PV-test mostraba el n de PD-test
+    fig, ejes = plt.subplots(1, 2, figsize=(17, 7), sharey=False)
     for ax, test in zip(ejes, ("PV-test", "PD-test")):
         b = tests["resultados"][test]["base"]
         m = np.asarray(b["matriz_normalizada_por_fila"])
@@ -84,6 +85,7 @@ def figura_matrices(tests: dict, ruta: str | Path, *, ic_json: str) -> Path:
         ax.set_xlabel("clase predicha")
         ax.set_title(f"{test} (n={tests['resultados'][test]['n']}, macro-F1 {tests['resultados'][test]['base_macro_f1_ic']['estimacion']:.3f})")
     ejes[0].set_ylabel("clase verdadera")
+    fig.subplots_adjust(wspace=0.55)        # sin eje compartido, las etiquetas de PD-test necesitan espacio para no tapar a PV-test
     fig.colorbar(im, ax=ejes, fraction=0.02, pad=0.02, label="proporción de la fila")
     fig.suptitle(leyenda_matrices(ic_json), fontsize=9, style="italic", y=0.995)         # arriba: no choca con las etiquetas del eje x
     fig.savefig(ruta, dpi=150, bbox_inches="tight")
@@ -139,3 +141,36 @@ def construir_celdas(modelo, dataset, seleccion, origen: str, rotulos_slot: dict
                        "prob": float(out["probs"][i].max()), "origen": origen, "ruta": f.ruta, "columna": int(f.etiqueta),
                        "fila_grilla": (int(s.slot), rotulos_slot[int(s.slot)]), "tipo": s.get("tipo")})
     return celdas
+
+
+def figura_comparacion(base: dict, variante: dict, ruta: str | Path, nombres_modelos=("modelo base", "variante (etapa 4)")) -> Path:
+    """Macro-F1 con IC en PV-test y PD-test y la brecha con IC, para dos modelos lado a lado (desde sus `tests.json`)."""
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(11, 4), gridspec_kw={"width_ratios": [1.6, 1]})
+    colores = ("#1f77b4", "#ff7f0e")
+    tests = ("PV-test", "PD-test")
+    for k, (t, nombre, color) in enumerate(zip((base, variante), nombres_modelos, colores)):
+        for yi, test in enumerate(tests):
+            v = t["resultados"][test]["base_macro_f1_ic"]
+            y = (len(tests) - 1 - yi) + (0.15 if k == 0 else -0.15)
+            a1.errorbar(v["estimacion"], y, xerr=[[v["estimacion"] - v["ic_bajo"]], [v["ic_alto"] - v["estimacion"]]], fmt="o", capsize=4,
+                        color=color, label=nombre if yi == 0 else None)
+            a1.text(max(v["estimacion"], 0.25), y + 0.08, f"{v['estimacion']:.3f} [{v['ic_bajo']:.3f}; {v['ic_alto']:.3f}]", ha="center", fontsize=7)
+        b = t["brecha_macro_f1_pv_test_menos_pd_test"]
+        a2.errorbar([k], [b["estimacion"]], yerr=[[b["estimacion"] - b["ic_bajo"]], [b["ic_alto"] - b["estimacion"]]], fmt="s", capsize=5, color=color)
+        a2.text(k, b["ic_alto"] + 0.02, f"{b['estimacion']:.3f}\n[{b['ic_bajo']:.3f}; {b['ic_alto']:.3f}]", ha="center", fontsize=7)
+    a1.set_yticks(range(len(tests))[::-1], list(tests))
+    a1.set_xlim(0, 1)
+    a1.set_ylim(-0.6, len(tests) - 0.4)
+    a1.set_xlabel("macro-F1 (IC 95 % bootstrap, 2.000 réplicas estratificadas)")
+    a1.set_title("macro-F1 por dominio")
+    a1.legend(fontsize=8, loc="center")
+    a2.set_xticks([0, 1], list(nombres_modelos), fontsize=8)
+    a2.set_xlim(-0.6, 1.6)
+    a2.set_ylim(0, 1)
+    a2.set_ylabel("macro-F1(PV-test) − macro-F1(PD-test)")
+    a2.set_title("Brecha ID → OOD", fontsize=10)
+    fig.suptitle("Descriptiva: IC de cada modelo; la diferencia pareada variante − base está en comparacion_base.json", fontsize=8, style="italic")
+    fig.tight_layout()
+    fig.savefig(ruta, dpi=150)
+    plt.close(fig)
+    return Path(ruta)

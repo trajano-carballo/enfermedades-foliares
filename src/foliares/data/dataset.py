@@ -11,6 +11,7 @@
 
 from __future__ import annotations
 
+from functools import partial
 from pathlib import Path
 from typing import Callable
 
@@ -80,7 +81,7 @@ class DatasetParticion(Dataset):
         self.filas = filas_particion(splits_dir, dataset, particion, rol, clases_pv, clases_pd)
         self.data_root = Path(data_root)
         self.dataset, self.particion, self.rol = dataset, particion, rol
-        self._pre = preproceso or (lambda ruta: preprocesar(ruta, geometria, tamano))
+        self._pre = preproceso or partial(preprocesar, geometria=geometria, tamano=tamano)   # serializable (workers)
 
     def __len__(self) -> int:
         return len(self.filas)

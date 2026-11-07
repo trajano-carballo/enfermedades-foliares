@@ -3,6 +3,8 @@
 Uso:
   python scripts/evaluar.py --config configs/03_brecha.yaml --salida <dir fuera del repo> --fase dev
       PlantDoc-dev con cada geometría candidata y la regla (a). No toca ningún test.
+  python scripts/evaluar.py --config configs/04_evaluacion.yaml --salida <dir> --fase dev_informativo
+      Etapa 4: la variante en PlantDoc-dev con la geometría fija, macro-F1 con IC y diferencia pareada contra el base.
   python scripts/evaluar.py --config configs/03_brecha.yaml --salida <dir> --fase tests --fila-accesos-pv N --fila-accesos-pd M
       Una pasada por PV-test y PD-test con la geometría de la config. Exige las filas N (PV-test) y M (PD-test) de
       docs/bitacora/accesos_test.md commiteadas y coherentes (guarda, decisión e); si no, no evalúa (código 4).
@@ -27,7 +29,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--config", required=True, type=Path)
     ap.add_argument("--salida", required=True, type=Path, help="carpeta fuera del repo (la de la sesión 8)")
-    ap.add_argument("--fase", required=True, choices=["dev", "tests"])
+    ap.add_argument("--fase", required=True, choices=["dev", "dev_informativo", "tests"])
     ap.add_argument("--run-id", default=None)
     ap.add_argument("--fila-accesos-pv", type=int, default=None, help="fila de accesos_test.md para PV-test (fase tests)")
     ap.add_argument("--fila-accesos-pd", type=int, default=None, help="fila de accesos_test.md para PD-test (fase tests)")
@@ -39,7 +41,12 @@ def main() -> int:
     cfg_modelo = yaml.safe_load((R.repo / cfg["config_modelo"]).read_text(encoding="utf-8"))
     run_id = a.run_id or nuevo_run_id(f"{cfg['experimento']}_{a.fase}")
     try:
-        if a.fase == "dev":
+        if a.fase == "dev_informativo":
+            d = evaluacion.evaluar_dev_informativo(cfg, cfg_modelo, R.repo, R.splits, R.data_root, a.salida, run_id)
+            c = d["comparacion_con_base"]
+            print(json.dumps({"run_id": run_id, "cambios_sin_commitear": d["cambios_sin_commitear"], "variante": c["variante"],
+                              "base": c["base"], "diferencia_variante_menos_base": c["diferencia_variante_menos_base"]}, indent=2))
+        elif a.fase == "dev":
             d = evaluacion.evaluar_dev(cfg, cfg_modelo, R.repo, R.splits, R.data_root, a.salida, run_id)
             resumen = {g: round(r["estimacion"], 4) for g, r in d["regla_a"]["macro_f1_por_geometria"].items()}
             print(json.dumps({"run_id": run_id, "macro_f1_pd_dev": resumen, "califican": d["regla_a"]["califican"],

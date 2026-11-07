@@ -1,0 +1,594 @@
+{
+  "fecha": "2026-11-06 23:22:50",
+  "commit": "8e91fad0a14bf4f431571b4e46af0c0d1f60367a",
+  "cambios_sin_commitear": false,
+  "config": {
+    "finetune": {
+      "experimento": "04_aumentacion",
+      "config_modelo": "configs/02_modelo_base.yaml",
+      "semilla": 42,
+      "determinista": true,
+      "modelo_base": {
+        "run_id": "02_modelo_base_20261104_201229",
+        "sha256": "592eadc3d124a119ce6ffbbd8d661a9d86f2b639c1c1985375c27543307457b3"
+      },
+      "preproceso": {
+        "geometria": "aplastar",
+        "tamano": 224
+      },
+      "aumentacion": {
+        "tipo": "dirigida",
+        "escala_recorte": [
+          0.6,
+          1.0
+        ],
+        "rotacion_grados": 20,
+        "brillo": 0.3,
+        "contraste": 0.3,
+        "saturacion": 0.3
+      },
+      "finetune": {
+        "bloques_entrenables": [
+          11,
+          12
+        ],
+        "optimizador": "adam",
+        "lr": 0.0001,
+        "batch": 64,
+        "max_epocas": 20,
+        "paciencia": 5,
+        "criterio": "macro_f1_val_con_mosaic",
+        "workers": 2
+      }
+    },
+    "modelo": {
+      "experimento": "02_modelo_base",
+      "semilla": 42,
+      "determinista": true,
+      "splits": {
+        "plantvillage": "plantvillage_particion.csv",
+        "plantdoc": "plantdoc_particion.csv"
+      },
+      "clases": [
+        {
+          "pv": "Pepper,_bell___Bacterial_spot",
+          "plantdoc": "Bell_pepper leaf spot"
+        },
+        {
+          "pv": "Pepper,_bell___healthy",
+          "plantdoc": "Bell_pepper leaf"
+        },
+        {
+          "pv": "Potato___Early_blight",
+          "plantdoc": "Potato leaf early blight"
+        },
+        {
+          "pv": "Potato___Late_blight",
+          "plantdoc": "Potato leaf late blight"
+        },
+        {
+          "pv": "Tomato___Bacterial_spot",
+          "plantdoc": "Tomato leaf bacterial spot"
+        },
+        {
+          "pv": "Tomato___Early_blight",
+          "plantdoc": "Tomato Early blight leaf"
+        },
+        {
+          "pv": "Tomato___Late_blight",
+          "plantdoc": "Tomato leaf late blight"
+        },
+        {
+          "pv": "Tomato___Leaf_Mold",
+          "plantdoc": "Tomato mold leaf"
+        },
+        {
+          "pv": "Tomato___Septoria_leaf_spot",
+          "plantdoc": "Tomato Septoria leaf spot"
+        },
+        {
+          "pv": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+          "plantdoc": "Tomato leaf yellow virus"
+        },
+        {
+          "pv": "Tomato___Tomato_mosaic_virus",
+          "plantdoc": "Tomato leaf mosaic virus"
+        },
+        {
+          "pv": "Tomato___healthy",
+          "plantdoc": "Tomato leaf"
+        }
+      ],
+      "clase_mosaic": "Tomato___Tomato_mosaic_virus",
+      "preproceso": {
+        "geometria": "aplastar",
+        "tamano": 224
+      },
+      "modelo": {
+        "pesos_imagenet": true
+      },
+      "features": {
+        "batch": 64
+      },
+      "entrenamiento": {
+        "optimizador": "adam",
+        "lr": 0.001,
+        "batch": 256,
+        "max_epocas": 100,
+        "paciencia": 10,
+        "criterio": "macro_f1_val_con_mosaic"
+      },
+      "aumentacion": "ninguna",
+      "ponderacion_clases": false,
+      "umbral_desbalance": 5,
+      "desbalance_aceptado_por_el_equipo": true,
+      "metricas": {
+        "modo_sin_mosaic": "sin_imagenes_de_la_clase",
+        "desempate_trivial": "primera_en_orden"
+      }
+    }
+  },
+  "sha256_splits": {
+    "plantdoc_particion.csv": "dc82e2d5af43a91610a0342023f34a972561fe143e8dfe13c6d4cc02768c8bba",
+    "plantvillage_particion.csv": "1ff04397bed8182b901609f2e0d3e0e8b3ceed3ac4b7739512b64f9b366713dd"
+  },
+  "semillas": {
+    "semilla": 42,
+    "python": true,
+    "numpy": true,
+    "torch": true,
+    "cuda": true,
+    "determinista": true
+  },
+  "python": "3.13.16",
+  "plataforma": "Linux-6.6.159+-x86_64-with-glibc2.39",
+  "torch": "2.14.1+cu130",
+  "cuda_runtime": "13.0",
+  "cudnn": 92800,
+  "dispositivo": "cuda",
+  "gpu": "Tesla T4",
+  "hilos_cpu": 1,
+  "run_id": "04_aumentacion_20261106_232146",
+  "prueba_corta": false,
+  "modelo_base": {
+    "run_id": "02_modelo_base_20261104_201229",
+    "sha256": "592eadc3d124a119ce6ffbbd8d661a9d86f2b639c1c1985375c27543307457b3"
+  },
+  "n_train": 11968,
+  "n_val": 2207,
+  "parametros_entrenables": 357468,
+  "parametros_totales": 933932,
+  "epoca_elegida": 18,
+  "epocas_corridas": 20,
+  "detenido_por": "max_epocas",
+  "reanudaciones_desde_epoca": [],
+  "curva": [
+    {
+      "epoca": 1,
+      "perdida_train": 0.2880989005141717,
+      "perdida_val": 0.1667403569170723,
+      "macro_f1_val": 0.9275950044879702,
+      "macro_f1_val_sin_mosaic": 0.9339997451557077,
+      "exactitud_val": 0.9438151121139526,
+      "tiempo_s": 71.47
+    },
+    {
+      "epoca": 2,
+      "perdida_train": 0.15345661831212873,
+      "perdida_val": 0.15462527986857272,
+      "macro_f1_val": 0.929972565410286,
+      "macro_f1_val_sin_mosaic": 0.9316616708963764,
+      "exactitud_val": 0.9424558281898499,
+      "tiempo_s": 70.1
+    },
+    {
+      "epoca": 3,
+      "perdida_train": 0.11816127861247343,
+      "perdida_val": 0.1366596126048663,
+      "macro_f1_val": 0.9406203402965233,
+      "macro_f1_val_sin_mosaic": 0.9400068784096043,
+      "exactitud_val": 0.9497054815292358,
+      "tiempo_s": 67.74
+    },
+    {
+      "epoca": 4,
+      "perdida_train": 0.10128062373814098,
+      "perdida_val": 0.1189726515490381,
+      "macro_f1_val": 0.9493065901993122,
+      "macro_f1_val_sin_mosaic": 0.9506012861206193,
+      "exactitud_val": 0.9592206478118896,
+      "tiempo_s": 73.31
+    },
+    {
+      "epoca": 5,
+      "perdida_train": 0.08747325745475962,
+      "perdida_val": 0.11528232485717597,
+      "macro_f1_val": 0.9512616655111038,
+      "macro_f1_val_sin_mosaic": 0.9527340955516647,
+      "exactitud_val": 0.9605799913406372,
+      "tiempo_s": 73.44
+    },
+    {
+      "epoca": 6,
+      "perdida_train": 0.07776960998494677,
+      "perdida_val": 0.11680485643733396,
+      "macro_f1_val": 0.9502254452552213,
+      "macro_f1_val_sin_mosaic": 0.9493368493693324,
+      "exactitud_val": 0.9583144783973694,
+      "tiempo_s": 71.36
+    },
+    {
+      "epoca": 7,
+      "perdida_train": 0.07225343186587574,
+      "perdida_val": 0.1152055677537957,
+      "macro_f1_val": 0.954850777341135,
+      "macro_f1_val_sin_mosaic": 0.9532033050109678,
+      "exactitud_val": 0.96193927526474,
+      "tiempo_s": 69.68
+    },
+    {
+      "epoca": 8,
+      "perdida_train": 0.06304783517504758,
+      "perdida_val": 0.10965500404702953,
+      "macro_f1_val": 0.9552531419250498,
+      "macro_f1_val_sin_mosaic": 0.9559699347316333,
+      "exactitud_val": 0.9637516736984253,
+      "tiempo_s": 74.03
+    },
+    {
+      "epoca": 9,
+      "perdida_train": 0.056437881454267605,
+      "perdida_val": 0.10281365251022602,
+      "macro_f1_val": 0.9588717094966901,
+      "macro_f1_val_sin_mosaic": 0.9575897764533916,
+      "exactitud_val": 0.9655641317367554,
+      "tiempo_s": 71.62
+    },
+    {
+      "epoca": 10,
+      "perdida_train": 0.05359917078266807,
+      "perdida_val": 0.0988574569102159,
+      "macro_f1_val": 0.9555239565491096,
+      "macro_f1_val_sin_mosaic": 0.9562653688669712,
+      "exactitud_val": 0.9637516736984253,
+      "tiempo_s": 70.08
+    },
+    {
+      "epoca": 11,
+      "perdida_train": 0.05028944896822945,
+      "perdida_val": 0.09280649104375455,
+      "macro_f1_val": 0.9632317285054416,
+      "macro_f1_val_sin_mosaic": 0.9611344883820259,
+      "exactitud_val": 0.9682827591896057,
+      "tiempo_s": 71.5
+    },
+    {
+      "epoca": 12,
+      "perdida_train": 0.04405044312563969,
+      "perdida_val": 0.0965433656548179,
+      "macro_f1_val": 0.9620431253609377,
+      "macro_f1_val_sin_mosaic": 0.9598378304062035,
+      "exactitud_val": 0.9673765301704407,
+      "tiempo_s": 71.59
+    },
+    {
+      "epoca": 13,
+      "perdida_train": 0.04152406874999284,
+      "perdida_val": 0.09479742155228474,
+      "macro_f1_val": 0.9621790035738499,
+      "macro_f1_val_sin_mosaic": 0.9623770948078362,
+      "exactitud_val": 0.969188928604126,
+      "tiempo_s": 69.42
+    },
+    {
+      "epoca": 14,
+      "perdida_train": 0.04000950430365489,
+      "perdida_val": 0.09570813114536689,
+      "macro_f1_val": 0.962672959161133,
+      "macro_f1_val_sin_mosaic": 0.9617365942691475,
+      "exactitud_val": 0.969188928604126,
+      "tiempo_s": 71.01
+    },
+    {
+      "epoca": 15,
+      "perdida_train": 0.03743836957772068,
+      "perdida_val": 0.09605239245974753,
+      "macro_f1_val": 0.9634424543004654,
+      "macro_f1_val_sin_mosaic": 0.9613643710675064,
+      "exactitud_val": 0.969188928604126,
+      "tiempo_s": 72.85
+    },
+    {
+      "epoca": 16,
+      "perdida_train": 0.03391489391040834,
+      "perdida_val": 0.09116087151724232,
+      "macro_f1_val": 0.9648601017880947,
+      "macro_f1_val_sin_mosaic": 0.9629108955994656,
+      "exactitud_val": 0.970095157623291,
+      "tiempo_s": 70.27
+    },
+    {
+      "epoca": 17,
+      "perdida_train": 0.03376452410145399,
+      "perdida_val": 0.08334386215039276,
+      "macro_f1_val": 0.9658328994484945,
+      "macro_f1_val_sin_mosaic": 0.96518380185536,
+      "exactitud_val": 0.9719075560569763,
+      "tiempo_s": 70.47
+    },
+    {
+      "epoca": 18,
+      "perdida_train": 0.030170438699125446,
+      "perdida_val": 0.09051307046040724,
+      "macro_f1_val": 0.96583838354839,
+      "macro_f1_val_sin_mosaic": 0.9627327820527891,
+      "exactitud_val": 0.9705482721328735,
+      "tiempo_s": 69.9
+    },
+    {
+      "epoca": 19,
+      "perdida_train": 0.031129441242714856,
+      "perdida_val": 0.09565789364936614,
+      "macro_f1_val": 0.9653369002398396,
+      "macro_f1_val_sin_mosaic": 0.9621857093525523,
+      "exactitud_val": 0.9696420431137085,
+      "tiempo_s": 69.19
+    },
+    {
+      "epoca": 20,
+      "perdida_train": 0.028096055466915796,
+      "perdida_val": 0.08916909108550289,
+      "macro_f1_val": 0.9640486960109079,
+      "macro_f1_val_sin_mosaic": 0.9632373981052655,
+      "exactitud_val": 0.9696420431137085,
+      "tiempo_s": 71.79
+    }
+  ],
+  "pv_val": {
+    "n": 2207,
+    "exactitud": 0.970548255550521,
+    "macro_f1": 0.96583838354839,
+    "recall_por_clase": {
+      "Pepper,_bell___Bacterial_spot": 0.9473684210526315,
+      "Pepper,_bell___healthy": 1.0,
+      "Potato___Early_blight": 0.9539473684210527,
+      "Potato___Late_blight": 0.9473684210526315,
+      "Tomato___Bacterial_spot": 0.975,
+      "Tomato___Early_blight": 0.9473684210526315,
+      "Tomato___Late_blight": 0.9485294117647058,
+      "Tomato___Leaf_Mold": 0.9861111111111112,
+      "Tomato___Septoria_leaf_spot": 0.9078947368421053,
+      "Tomato___Tomato_Yellow_Leaf_Curl_Virus": 1.0,
+      "Tomato___Tomato_mosaic_virus": 1.0,
+      "Tomato___healthy": 0.9868421052631579
+    },
+    "f1_por_clase": {
+      "Pepper,_bell___Bacterial_spot": 0.972972972972973,
+      "Pepper,_bell___healthy": 0.9956331877729258,
+      "Potato___Early_blight": 0.9764309764309764,
+      "Potato___Late_blight": 0.9504950495049505,
+      "Tomato___Bacterial_spot": 0.9811320754716981,
+      "Tomato___Early_blight": 0.9260450160771704,
+      "Tomato___Late_blight": 0.9116607773851589,
+      "Tomato___Leaf_Mold": 0.953020134228188,
+      "Tomato___Septoria_leaf_spot": 0.9292929292929293,
+      "Tomato___Tomato_Yellow_Leaf_Curl_Virus": 1.0,
+      "Tomato___Tomato_mosaic_virus": 1.0,
+      "Tomato___healthy": 0.9933774834437086
+    },
+    "soporte_por_clase": {
+      "Pepper,_bell___Bacterial_spot": 171,
+      "Pepper,_bell___healthy": 228,
+      "Potato___Early_blight": 152,
+      "Potato___Late_blight": 152,
+      "Tomato___Bacterial_spot": 320,
+      "Tomato___Early_blight": 152,
+      "Tomato___Late_blight": 136,
+      "Tomato___Leaf_Mold": 144,
+      "Tomato___Septoria_leaf_spot": 152,
+      "Tomato___Tomato_Yellow_Leaf_Curl_Virus": 412,
+      "Tomato___Tomato_mosaic_virus": 36,
+      "Tomato___healthy": 152
+    },
+    "matriz_confusion": {
+      "orden": [
+        "Pepper,_bell___Bacterial_spot",
+        "Pepper,_bell___healthy",
+        "Potato___Early_blight",
+        "Potato___Late_blight",
+        "Tomato___Bacterial_spot",
+        "Tomato___Early_blight",
+        "Tomato___Late_blight",
+        "Tomato___Leaf_Mold",
+        "Tomato___Septoria_leaf_spot",
+        "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+        "Tomato___Tomato_mosaic_virus",
+        "Tomato___healthy"
+      ],
+      "filas_verdadera_columnas_predicha": [
+        [
+          162,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          7,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          228,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          145,
+          6,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          144,
+          0,
+          0,
+          8,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          312,
+          3,
+          0,
+          1,
+          4,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          144,
+          5,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          0,
+          6,
+          129,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          142,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          3,
+          5,
+          4,
+          2,
+          138,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          412,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          36,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          150
+        ]
+      ]
+    },
+    "macro_f1_sin_Tomato___Tomato_mosaic_virus": 0.9627327820527891,
+    "modo_sin": "sin_imagenes_de_la_clase"
+  },
+  "checkpoint_mejor": {
+    "ruta": "04_aumentacion/04_aumentacion_20261106_232146/mejor.pt",
+    "sha256": "326e6a730321136e3e026bffcf84ed1b9b0adcec7162de2d18d1e13ba7495953",
+    "relativa_a": "--ckpt-dir"
+  },
+  "tiempo_s": 1424.176,
+  "memoria_pico_gpu_mb": 273.2,
+  "memoria_pico_cpu_mb": 1652.3,
+  "nota_memoria": "memoria_pico_cpu_mb es el máximo del proceso entero; el tiempo es el de esta ejecución (si hubo reanudaciones, no incluye las ejecuciones anteriores)",
+  "workers": 2,
+  "hilos_cpu_torch": 1,
+  "cpu_count": 2
+}

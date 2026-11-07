@@ -1,0 +1,1231 @@
+{
+  "fecha": "2026-11-06 21:15:33",
+  "commit": "6fa21eda4ae1bd82385f5365645b12d2994568fb",
+  "cambios_sin_commitear": false,
+  "config": {
+    "evaluacion": {
+      "experimento": "04_aumentacion",
+      "config_modelo": "configs/02_modelo_base.yaml",
+      "modelo_base": {
+        "run_id": "04_aumentacion_20261106_232146",
+        "checkpoint": "04_aumentacion/04_aumentacion_20261106_232146/mejor.pt",
+        "sha256": "326e6a730321136e3e026bffcf84ed1b9b0adcec7162de2d18d1e13ba7495953"
+      },
+      "referencia_base": {
+        "run_dev": "03_brecha_dev_20261104_210006",
+        "run_tests": "03_brecha_tests_20261105_081814"
+      },
+      "tamano": 224,
+      "geometria": "aplastar",
+      "bootstrap": {
+        "replicas": 2000,
+        "nivel": 0.95,
+        "semilla": 42
+      },
+      "cam": {
+        "muestra_sesion9": "results/03_brecha/03_brecha_cam_20261105_090654/cam_muestra.json"
+      },
+      "batch": 64
+    },
+    "modelo": {
+      "experimento": "02_modelo_base",
+      "semilla": 42,
+      "determinista": true,
+      "splits": {
+        "plantvillage": "plantvillage_particion.csv",
+        "plantdoc": "plantdoc_particion.csv"
+      },
+      "clases": [
+        {
+          "pv": "Pepper,_bell___Bacterial_spot",
+          "plantdoc": "Bell_pepper leaf spot"
+        },
+        {
+          "pv": "Pepper,_bell___healthy",
+          "plantdoc": "Bell_pepper leaf"
+        },
+        {
+          "pv": "Potato___Early_blight",
+          "plantdoc": "Potato leaf early blight"
+        },
+        {
+          "pv": "Potato___Late_blight",
+          "plantdoc": "Potato leaf late blight"
+        },
+        {
+          "pv": "Tomato___Bacterial_spot",
+          "plantdoc": "Tomato leaf bacterial spot"
+        },
+        {
+          "pv": "Tomato___Early_blight",
+          "plantdoc": "Tomato Early blight leaf"
+        },
+        {
+          "pv": "Tomato___Late_blight",
+          "plantdoc": "Tomato leaf late blight"
+        },
+        {
+          "pv": "Tomato___Leaf_Mold",
+          "plantdoc": "Tomato mold leaf"
+        },
+        {
+          "pv": "Tomato___Septoria_leaf_spot",
+          "plantdoc": "Tomato Septoria leaf spot"
+        },
+        {
+          "pv": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+          "plantdoc": "Tomato leaf yellow virus"
+        },
+        {
+          "pv": "Tomato___Tomato_mosaic_virus",
+          "plantdoc": "Tomato leaf mosaic virus"
+        },
+        {
+          "pv": "Tomato___healthy",
+          "plantdoc": "Tomato leaf"
+        }
+      ],
+      "clase_mosaic": "Tomato___Tomato_mosaic_virus",
+      "preproceso": {
+        "geometria": "aplastar",
+        "tamano": 224
+      },
+      "modelo": {
+        "pesos_imagenet": true
+      },
+      "features": {
+        "batch": 64
+      },
+      "entrenamiento": {
+        "optimizador": "adam",
+        "lr": 0.001,
+        "batch": 256,
+        "max_epocas": 100,
+        "paciencia": 10,
+        "criterio": "macro_f1_val_con_mosaic"
+      },
+      "aumentacion": "ninguna",
+      "ponderacion_clases": false,
+      "umbral_desbalance": 5,
+      "desbalance_aceptado_por_el_equipo": true,
+      "metricas": {
+        "modo_sin_mosaic": "sin_imagenes_de_la_clase",
+        "desempate_trivial": "primera_en_orden"
+      }
+    }
+  },
+  "sha256_splits": {
+    "plantdoc_particion.csv": "dc82e2d5af43a91610a0342023f34a972561fe143e8dfe13c6d4cc02768c8bba",
+    "plantvillage_particion.csv": "1ff04397bed8182b901609f2e0d3e0e8b3ceed3ac4b7739512b64f9b366713dd"
+  },
+  "semillas": {
+    "bootstrap": 42
+  },
+  "python": "3.13.7",
+  "plataforma": "Windows-11-10.0.26200-SP0",
+  "torch": "2.14.1+cpu",
+  "cuda_runtime": null,
+  "cudnn": null,
+  "dispositivo": "cpu",
+  "gpu": null,
+  "hilos_cpu": 6,
+  "fase": "ic_por_clase",
+  "run_id": "04_aumentacion_ic_20261106_211534",
+  "run_dev": "04_aumentacion_dev_informativo_20261106_210332",
+  "run_tests": "04_aumentacion_tests_20261106_210645",
+  "geometria": "aplastar",
+  "modelo_base": {
+    "run_id": "04_aumentacion_20261106_232146",
+    "checkpoint": "04_aumentacion/04_aumentacion_20261106_232146/mejor.pt",
+    "sha256": "326e6a730321136e3e026bffcf84ed1b9b0adcec7162de2d18d1e13ba7495953"
+  },
+  "bootstrap": {
+    "replicas": 2000,
+    "nivel": 0.95,
+    "semilla": 42
+  },
+  "origen": "predicciones por imagen ya guardadas de los runs indicados; no se reevaluó el modelo ni se leyó ninguna imagen",
+  "convenciones": "remuestreo con reposición estratificado por clase verdadera, mismas réplicas para todas las métricas, IC por percentiles; precisión, recall o F1 con denominador 0 valen 0",
+  "orden_clases": [
+    "Pepper,_bell___Bacterial_spot",
+    "Pepper,_bell___healthy",
+    "Potato___Early_blight",
+    "Potato___Late_blight",
+    "Tomato___Bacterial_spot",
+    "Tomato___Early_blight",
+    "Tomato___Late_blight",
+    "Tomato___Leaf_Mold",
+    "Tomato___Septoria_leaf_spot",
+    "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+    "Tomato___Tomato_mosaic_virus",
+    "Tomato___healthy"
+  ],
+  "consistencia_con_la_evaluacion": {
+    "pv_test": {
+      "n_igual": true,
+      "macro_f1_igual_al_json_de_la_evaluacion": true,
+      "detalle": {
+        "estimacion": true,
+        "ic_bajo": true,
+        "ic_alto": true
+      }
+    },
+    "pd_test": {
+      "n_igual": true,
+      "macro_f1_igual_al_json_de_la_evaluacion": true,
+      "detalle": {
+        "estimacion": true,
+        "ic_bajo": true,
+        "ic_alto": true
+      }
+    },
+    "pd_dev": {
+      "n_igual": true,
+      "macro_f1_igual_al_json_de_la_evaluacion": true,
+      "detalle": {
+        "estimacion": true,
+        "ic_bajo": true,
+        "ic_alto": true
+      }
+    }
+  },
+  "pv_test": {
+    "n": 2170,
+    "exactitud": {
+      "estimacion": 0.9672811059907834,
+      "ic_bajo": 0.9594470046082949,
+      "ic_alto": 0.9741935483870968,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.9671801843317972
+    },
+    "macro_f1": {
+      "estimacion": 0.9559797969781338,
+      "ic_bajo": 0.9434130343634635,
+      "ic_alto": 0.9666329023322513,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.9556743457764639
+    },
+    "por_clase": {
+      "Pepper,_bell___Bacterial_spot": {
+        "soporte": 131,
+        "recall": {
+          "estimacion": 0.9923664122137404,
+          "ic_bajo": 0.9770992366412213,
+          "ic_alto": 1.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.9924732824427481
+        },
+        "precision": {
+          "estimacion": 0.9629629629629629,
+          "ic_bajo": 0.9290780141843972,
+          "ic_alto": 0.9923076923076923,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.962398892200832
+        },
+        "f1": {
+          "estimacion": 0.9774436090225563,
+          "ic_bajo": 0.9587937248251006,
+          "ic_alto": 0.9924242424242424,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.977126860513121
+        }
+      },
+      "Pepper,_bell___healthy": {
+        "soporte": 233,
+        "recall": {
+          "estimacion": 0.9613733905579399,
+          "ic_bajo": 0.9356223175965666,
+          "ic_alto": 0.9828326180257511,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.9607854077253217
+        },
+        "precision": {
+          "estimacion": 1.0,
+          "ic_bajo": 1.0,
+          "ic_alto": 1.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 1.0
+        },
+        "f1": {
+          "estimacion": 0.9803063457330417,
+          "ic_bajo": 0.9667405764966741,
+          "ic_alto": 0.9913419913419913,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.9799567894999657
+        }
+      },
+      "Potato___Early_blight": {
+        "soporte": 152,
+        "recall": {
+          "estimacion": 0.9539473684210527,
+          "ic_bajo": 0.9210526315789473,
+          "ic_alto": 0.9868421052631579,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.9543157894736841
+        },
+        "precision": {
+          "estimacion": 1.0,
+          "ic_bajo": 1.0,
+          "ic_alto": 1.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 1.0
+        },
+        "f1": {
+          "estimacion": 0.9764309764309764,
+          "ic_bajo": 0.958904109589041,
+          "ic_alto": 0.9933774834437086,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.976544865628634
+        }
+      },
+      "Potato___Late_blight": {
+        "soporte": 152,
+        "recall": {
+          "estimacion": 0.9802631578947368,
+          "ic_bajo": 0.9539473684210527,
+          "ic_alto": 1.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.9803355263157892
+        },
+        "precision": {
+          "estimacion": 0.9675324675324676,
+          "ic_bajo": 0.9415584415584416,
+          "ic_alto": 0.9933333333333333,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.9676948443270744
+        },
+        "f1": {
+          "estimacion": 0.9738562091503268,
+          "ic_bajo": 0.9548313782991202,
+          "ic_alto": 0.9901639344262295,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.9738959519575017
+        }
+      },
+      "Tomato___Bacterial_spot": {
+        "soporte": 319,
+        "recall": {
+          "estimacion": 0.9780564263322884,
+          "ic_bajo": 0.9592476489028213,
+          "ic_alto": 0.9937304075235109,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.9777805642633229
+        },
+        "precision": {
+          "estimacion": 0.9842271293375394,
+          "ic_bajo": 0.9690402476780186,
+          "ic_alto": 0.9967948717948718,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.9841222384924024
+        },
+        "f1": {
+          "estimacion": 0.9811320754716981,
+          "ic_bajo": 0.9698890649762282,
+          "ic_alto": 0.9905956112852664,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.9809131647526012
+        }
+      },
+      "Tomato___Early_blight": {
+        "soporte": 152,
+        "recall": {
+          "estimacion": 0.9078947368421053,
+          "ic_bajo": 0.8618421052631579,
+          "ic_alto": 0.9539473684210527,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.9075526315789474
+        },
+        "precision": {
+          "estimacion": 0.8961038961038961,
+          "ic_bajo": 0.8499918300653595,
+          "ic_alto": 0.9391891891891891,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.8962876450669957
+        },
+        "f1": {
+          "estimacion": 0.9019607843137255,
+          "ic_bajo": 0.8664495114006514,
+          "ic_alto": 0.9337857267340536,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.9016193819025689
+        }
+      },
+      "Tomato___Late_blight": {
+        "soporte": 136,
+        "recall": {
+          "estimacion": 0.9338235294117647,
+          "ic_bajo": 0.8897058823529411,
+          "ic_alto": 0.9705882352941176,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.9332536764705882
+        },
+        "precision": {
+          "estimacion": 0.8943661971830986,
+          "ic_bajo": 0.8486740018148821,
+          "ic_alto": 0.941616418068338,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.8952343271360625
+        },
+        "f1": {
+          "estimacion": 0.9136690647482013,
+          "ic_bajo": 0.88,
+          "ic_alto": 0.9454545454545454,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.9135858791281244
+        }
+      },
+      "Tomato___Leaf_Mold": {
+        "soporte": 144,
+        "recall": {
+          "estimacion": 0.9930555555555556,
+          "ic_bajo": 0.9791666666666666,
+          "ic_alto": 1.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.9928819444444443
+        },
+        "precision": {
+          "estimacion": 0.9470198675496688,
+          "ic_bajo": 0.910828025477707,
+          "ic_alto": 0.9795918367346939,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.9474289848879309
+        },
+        "f1": {
+          "estimacion": 0.9694915254237287,
+          "ic_bajo": 0.9498327759197326,
+          "ic_alto": 0.9863013698630138,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.969534492865467
+        }
+      },
+      "Tomato___Septoria_leaf_spot": {
+        "soporte": 152,
+        "recall": {
+          "estimacion": 0.9605263157894737,
+          "ic_bajo": 0.9276315789473685,
+          "ic_alto": 0.9868421052631579,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.9607894736842105
+        },
+        "precision": {
+          "estimacion": 0.9240506329113924,
+          "ic_bajo": 0.8855421686746988,
+          "ic_alto": 0.9607843137254902,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.9238096572343039
+        },
+        "f1": {
+          "estimacion": 0.9419354838709677,
+          "ic_bajo": 0.9148176780674082,
+          "ic_alto": 0.9646358752041749,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.9417881949651353
+        }
+      },
+      "Tomato___Tomato_Yellow_Leaf_Curl_Virus": {
+        "soporte": 412,
+        "recall": {
+          "estimacion": 0.9878640776699029,
+          "ic_bajo": 0.9757281553398058,
+          "ic_alto": 0.9975728155339806,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.9879781553398059
+        },
+        "precision": {
+          "estimacion": 0.9878640776699029,
+          "ic_bajo": 0.9761322241381278,
+          "ic_alto": 0.9975490196078431,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.9879770313659053
+        },
+        "f1": {
+          "estimacion": 0.9878640776699029,
+          "ic_bajo": 0.9794933655006033,
+          "ic_alto": 0.9951338199513382,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.9879637491301161
+        }
+      },
+      "Tomato___Tomato_mosaic_virus": {
+        "soporte": 35,
+        "recall": {
+          "estimacion": 0.7714285714285715,
+          "ic_bajo": 0.6285714285714286,
+          "ic_alto": 0.9142857142857143,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.7702285714285715
+        },
+        "precision": {
+          "estimacion": 1.0,
+          "ic_bajo": 1.0,
+          "ic_alto": 1.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 1.0
+        },
+        "f1": {
+          "estimacion": 0.870967741935484,
+          "ic_bajo": 0.7719298245614035,
+          "ic_alto": 0.955223880597015,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.8683596698885981
+        }
+      },
+      "Tomato___healthy": {
+        "soporte": 152,
+        "recall": {
+          "estimacion": 0.993421052631579,
+          "ic_bajo": 0.9802631578947368,
+          "ic_alto": 1.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.9936480263157894
+        },
+        "precision": {
+          "estimacion": 1.0,
+          "ic_bajo": 1.0,
+          "ic_alto": 1.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 1.0
+        },
+        "f1": {
+          "estimacion": 0.9966996699669968,
+          "ic_bajo": 0.9900332225913622,
+          "ic_alto": 1.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.9968031490857329
+        }
+      }
+    }
+  },
+  "pd_test": {
+    "n": 300,
+    "exactitud": {
+      "estimacion": 0.17333333333333334,
+      "ic_bajo": 0.13666666666666666,
+      "ic_alto": 0.21,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.17325666666666667
+    },
+    "macro_f1": {
+      "estimacion": 0.12647657237073354,
+      "ic_bajo": 0.0870282684031945,
+      "ic_alto": 0.16503537831890097,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.12468450559667807
+    },
+    "por_clase": {
+      "Pepper,_bell___Bacterial_spot": {
+        "soporte": 20,
+        "recall": {
+          "estimacion": 0.1,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.25,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.103025
+        },
+        "precision": {
+          "estimacion": 0.2,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.5,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.20685809925583531
+        },
+        "f1": {
+          "estimacion": 0.13333333333333333,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.3125,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.134554866504082
+        }
+      },
+      "Pepper,_bell___healthy": {
+        "soporte": 17,
+        "recall": {
+          "estimacion": 0.23529411764705882,
+          "ic_bajo": 0.058823529411764705,
+          "ic_alto": 0.47058823529411764,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.23376470588235293
+        },
+        "precision": {
+          "estimacion": 0.19047619047619047,
+          "ic_bajo": 0.047619047619047616,
+          "ic_alto": 0.36363636363636365,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.19035010285137424
+        },
+        "f1": {
+          "estimacion": 0.21052631578947367,
+          "ic_bajo": 0.05263157894736842,
+          "ic_alto": 0.3888888888888889,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.20764646139127937
+        }
+      },
+      "Potato___Early_blight": {
+        "soporte": 29,
+        "recall": {
+          "estimacion": 0.06896551724137931,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.1724137931034483,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.06832758620689655
+        },
+        "precision": {
+          "estimacion": 0.25,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.6,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.2468162613122172
+        },
+        "f1": {
+          "estimacion": 0.1081081081081081,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.2565217391304342,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.10478684477815318
+        }
+      },
+      "Potato___Late_blight": {
+        "soporte": 27,
+        "recall": {
+          "estimacion": 0.07407407407407407,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.18518518518518517,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.07190740740740739
+        },
+        "precision": {
+          "estimacion": 0.25,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.6,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.24425496963047272
+        },
+        "f1": {
+          "estimacion": 0.11428571428571428,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.2564102564102564,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.10896392095845316
+        }
+      },
+      "Tomato___Bacterial_spot": {
+        "soporte": 31,
+        "recall": {
+          "estimacion": 0.0,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.0
+        },
+        "precision": {
+          "estimacion": 0.0,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.0
+        },
+        "f1": {
+          "estimacion": 0.0,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.0
+        }
+      },
+      "Tomato___Early_blight": {
+        "soporte": 23,
+        "recall": {
+          "estimacion": 0.4782608695652174,
+          "ic_bajo": 0.2608695652173913,
+          "ic_alto": 0.6956521739130435,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.4766739130434782
+        },
+        "precision": {
+          "estimacion": 0.1375,
+          "ic_bajo": 0.08045977011494253,
+          "ic_alto": 0.1927710843373494,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.13718041003092185
+        },
+        "f1": {
+          "estimacion": 0.21359223300970873,
+          "ic_bajo": 0.12631104788999528,
+          "ic_alto": 0.2990887850467288,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.2127576309826838
+        }
+      },
+      "Tomato___Late_blight": {
+        "soporte": 30,
+        "recall": {
+          "estimacion": 0.6,
+          "ic_bajo": 0.43333333333333335,
+          "ic_alto": 0.7666666666666667,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.5981333333333332
+        },
+        "precision": {
+          "estimacion": 0.140625,
+          "ic_bajo": 0.09998226950354613,
+          "ic_alto": 0.17601176470588228,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.14039371428833458
+        },
+        "f1": {
+          "estimacion": 0.22784810126582278,
+          "ic_bajo": 0.1625,
+          "ic_alto": 0.28571428571428575,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.22727757854655511
+        }
+      },
+      "Tomato___Leaf_Mold": {
+        "soporte": 27,
+        "recall": {
+          "estimacion": 0.037037037037037035,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.1111111111111111,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.036148148148148145
+        },
+        "precision": {
+          "estimacion": 1.0,
+          "ic_bajo": 0.0,
+          "ic_alto": 1.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.63
+        },
+        "f1": {
+          "estimacion": 0.07142857142857142,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.19999999999999998,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.06757805994756078
+        }
+      },
+      "Tomato___Septoria_leaf_spot": {
+        "soporte": 41,
+        "recall": {
+          "estimacion": 0.24390243902439024,
+          "ic_bajo": 0.12195121951219512,
+          "ic_alto": 0.3902439024390244,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.24726829268292688
+        },
+        "precision": {
+          "estimacion": 0.2564102564102564,
+          "ic_bajo": 0.13513513513513514,
+          "ic_alto": 0.38095238095238093,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.2582019549254014
+        },
+        "f1": {
+          "estimacion": 0.25,
+          "ic_bajo": 0.1282051282051282,
+          "ic_alto": 0.3703703703703704,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.2513225719860422
+        }
+      },
+      "Tomato___Tomato_Yellow_Leaf_Curl_Virus": {
+        "soporte": 22,
+        "recall": {
+          "estimacion": 0.045454545454545456,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.13636363636363635,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.045954545454545456
+        },
+        "precision": {
+          "estimacion": 0.5,
+          "ic_bajo": 0.0,
+          "ic_alto": 1.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.45466785714285707
+        },
+        "f1": {
+          "estimacion": 0.08333333333333334,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.24000000000000002,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.0814826247132844
+        }
+      },
+      "Tomato___Tomato_mosaic_virus": {
+        "soporte": 16,
+        "recall": {
+          "estimacion": 0.0,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.0
+        },
+        "precision": {
+          "estimacion": 0.0,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.0
+        },
+        "f1": {
+          "estimacion": 0.0,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.0
+        }
+      },
+      "Tomato___healthy": {
+        "soporte": 17,
+        "recall": {
+          "estimacion": 0.058823529411764705,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.17647058823529413,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.058058823529411774
+        },
+        "precision": {
+          "estimacion": 0.5,
+          "ic_bajo": 0.0,
+          "ic_alto": 1.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.44542261904761904
+        },
+        "f1": {
+          "estimacion": 0.10526315789473684,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.3,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.09984350735204282
+        }
+      }
+    }
+  },
+  "pd_dev": {
+    "n": 696,
+    "exactitud": {
+      "estimacion": 0.20977011494252873,
+      "ic_bajo": 0.1853448275862069,
+      "ic_alto": 0.23419540229885058,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.20996336206896551
+    },
+    "macro_f1": {
+      "estimacion": 0.1460863928794395,
+      "ic_bajo": 0.1211287061599273,
+      "ic_alto": 0.1709869693093558,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.14544679877129427
+    },
+    "por_clase": {
+      "Pepper,_bell___Bacterial_spot": {
+        "soporte": 47,
+        "recall": {
+          "estimacion": 0.0851063829787234,
+          "ic_bajo": 0.02127659574468085,
+          "ic_alto": 0.1702127659574468,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.08508510638297873
+        },
+        "precision": {
+          "estimacion": 0.21052631578947367,
+          "ic_bajo": 0.05,
+          "ic_alto": 0.4,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.2091680380784377
+        },
+        "f1": {
+          "estimacion": 0.12121212121212122,
+          "ic_bajo": 0.029850746268656716,
+          "ic_alto": 0.22956759325255374,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.11972839651355309
+        }
+      },
+      "Pepper,_bell___healthy": {
+        "soporte": 41,
+        "recall": {
+          "estimacion": 0.3902439024390244,
+          "ic_bajo": 0.24390243902439024,
+          "ic_alto": 0.5609756097560976,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.38959756097560977
+        },
+        "precision": {
+          "estimacion": 0.25,
+          "ic_bajo": 0.16393442622950818,
+          "ic_alto": 0.34375,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.24986318521300563
+        },
+        "f1": {
+          "estimacion": 0.3047619047619048,
+          "ic_bajo": 0.19801980198019803,
+          "ic_alto": 0.41077251552795,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.3035366024250644
+        }
+      },
+      "Potato___Early_blight": {
+        "soporte": 67,
+        "recall": {
+          "estimacion": 0.14925373134328357,
+          "ic_bajo": 0.05970149253731343,
+          "ic_alto": 0.23880597014925373,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.14997014925373134
+        },
+        "precision": {
+          "estimacion": 0.43478260869565216,
+          "ic_bajo": 0.23995238095238103,
+          "ic_alto": 0.6364545454545449,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.4377440035731373
+        },
+        "f1": {
+          "estimacion": 0.2222222222222222,
+          "ic_bajo": 0.10126582278481013,
+          "ic_alto": 0.3370786516853933,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.22169267261260797
+        }
+      },
+      "Potato___Late_blight": {
+        "soporte": 62,
+        "recall": {
+          "estimacion": 0.0967741935483871,
+          "ic_bajo": 0.03225806451612903,
+          "ic_alto": 0.1774193548387097,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.096508064516129
+        },
+        "precision": {
+          "estimacion": 0.3,
+          "ic_bajo": 0.1,
+          "ic_alto": 0.5,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.3025180579187023
+        },
+        "f1": {
+          "estimacion": 0.14634146341463414,
+          "ic_bajo": 0.04878048780487805,
+          "ic_alto": 0.2528735632183908,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.14508453857277942
+        }
+      },
+      "Tomato___Bacterial_spot": {
+        "soporte": 72,
+        "recall": {
+          "estimacion": 0.0,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.0
+        },
+        "precision": {
+          "estimacion": 0.0,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.0
+        },
+        "f1": {
+          "estimacion": 0.0,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.0
+        }
+      },
+      "Tomato___Early_blight": {
+        "soporte": 52,
+        "recall": {
+          "estimacion": 0.5,
+          "ic_bajo": 0.36538461538461536,
+          "ic_alto": 0.6346153846153846,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.5008846153846154
+        },
+        "precision": {
+          "estimacion": 0.13978494623655913,
+          "ic_bajo": 0.10555485762144054,
+          "ic_alto": 0.1761808499502799,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.14014190269961482
+        },
+        "f1": {
+          "estimacion": 0.21848739495798317,
+          "ic_bajo": 0.1652892561983471,
+          "ic_alto": 0.27488447867298577,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.21886339377796543
+        }
+      },
+      "Tomato___Late_blight": {
+        "soporte": 69,
+        "recall": {
+          "estimacion": 0.7681159420289855,
+          "ic_bajo": 0.6666666666666666,
+          "ic_alto": 0.8695652173913043,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.7685869565217391
+        },
+        "precision": {
+          "estimacion": 0.18275862068965518,
+          "ic_bajo": 0.15878378378378377,
+          "ic_alto": 0.20802980943516386,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.1831600830579727
+        },
+        "f1": {
+          "estimacion": 0.29526462395543174,
+          "ic_bajo": 0.258948341538393,
+          "ic_alto": 0.3333554376657824,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.2957408170460974
+        }
+      },
+      "Tomato___Leaf_Mold": {
+        "soporte": 63,
+        "recall": {
+          "estimacion": 0.031746031746031744,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.07936507936507936,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.0306031746031746
+        },
+        "precision": {
+          "estimacion": 0.4,
+          "ic_bajo": 0.0,
+          "ic_alto": 1.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.3870548798423798
+        },
+        "f1": {
+          "estimacion": 0.058823529411764705,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.14089537223340012,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.05602808302414663
+        }
+      },
+      "Tomato___Septoria_leaf_spot": {
+        "soporte": 97,
+        "recall": {
+          "estimacion": 0.27835051546391754,
+          "ic_bajo": 0.1958762886597938,
+          "ic_alto": 0.3711340206185567,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.27961340206185564
+        },
+        "precision": {
+          "estimacion": 0.32926829268292684,
+          "ic_bajo": 0.24417895632444697,
+          "ic_alto": 0.4193647949024293,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.3301748275926858
+        },
+        "f1": {
+          "estimacion": 0.3016759776536313,
+          "ic_bajo": 0.21950826121164438,
+          "ic_alto": 0.3910614525139665,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.3020302657413919
+        }
+      },
+      "Tomato___Tomato_Yellow_Leaf_Curl_Virus": {
+        "soporte": 50,
+        "recall": {
+          "estimacion": 0.02,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.06,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.020149999999999998
+        },
+        "precision": {
+          "estimacion": 0.3333333333333333,
+          "ic_bajo": 0.0,
+          "ic_alto": 1.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.3184551587301587
+        },
+        "f1": {
+          "estimacion": 0.03773584905660377,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.11320754716981131,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.03733856807936568
+        }
+      },
+      "Tomato___Tomato_mosaic_virus": {
+        "soporte": 37,
+        "recall": {
+          "estimacion": 0.0,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.0
+        },
+        "precision": {
+          "estimacion": 0.0,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.0
+        },
+        "f1": {
+          "estimacion": 0.0,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.0
+        }
+      },
+      "Tomato___healthy": {
+        "soporte": 39,
+        "recall": {
+          "estimacion": 0.02564102564102564,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.07692307692307693,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.02548717948717949
+        },
+        "precision": {
+          "estimacion": 0.25,
+          "ic_bajo": 0.0,
+          "ic_alto": 1.0,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.24625063131313132
+        },
+        "f1": {
+          "estimacion": 0.04651162790697674,
+          "ic_bajo": 0.0,
+          "ic_alto": 0.13953488372093026,
+          "nivel": 0.95,
+          "n_replicas": 2000,
+          "media_replicas": 0.0453182474625591
+        }
+      }
+    }
+  },
+  "tiempo_s": 0.903,
+  "memoria_pico_gpu_mb": null,
+  "memoria_pico_cpu_mb": 372.6,
+  "nota_memoria": "memoria_pico_cpu_mb es el máximo del proceso entero"
+}

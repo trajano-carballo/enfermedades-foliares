@@ -49,3 +49,18 @@ estaba). "Excluye el 0" también lo cumple una geometría peor (IC entero debajo
   acceso se commitean antes de cada evaluación de un test.
 
 **Aclaración 2026-11-05** (el texto de arriba se deja como estaba): los flags del script son `--fila-accesos-pv` (fila de PV-test) y `--fila-accesos-pd` (fila de PD-test), no un único `--fila-accesos N`; la verificación de cada fila es la descrita en esta sección.
+
+**Aclaración 2026-11-06** (sesión 10; el texto de arriba se deja como estaba): la guarda además (1) rechaza una fila ya usada: cuenta como usada si algún JSON versionado de `results/` la trae en su bloque `accesos`; y (2) exige que desde el commit de la fila no cambie nada en `configs/` (no solo la config de evaluación), `src/` ni `scripts/`.
+
+## f. Intervención de la etapa 4 (sesión 10, registrada el 2026-11-06 antes de entrenar)
+- Una sola variante: fine-tuning parcial + aumentación dirigida, desde los pesos del modelo base. No separa el efecto de
+  descongelar del de aumentar (limitación).
+- Entrenables: `features[11]`, `features[12]` y `fc`; el resto congelado y en modo `eval` durante el entrenamiento (BatchNorm con las
+  estadísticas de ImageNet fijas); solo los bloques entrenables actualizan su BatchNorm. Adam, LR 1e-4, batch 64, máximo 20 épocas,
+  paciencia 5, semilla 42 determinista.
+- Aumentación solo en PV-train (`RandomResizedCrop(224, scale=(0.6, 1.0))`, `RandomHorizontalFlip`, `RandomRotation(20)`,
+  `ColorJitter(0.3, 0.3, 0.3)`). PV-val, PD-dev y los tests: `aplastar` 224 (§a, invariante 3).
+- Selección del checkpoint: mejor macro-F1 en PV-val con mosaic. PlantDoc no entrena ni elige (invariante 1).
+- PD-dev: solo informativo (macro-F1 con IC y diferencia pareada contra el base) y CAM sobre la misma muestra fija de §c.
+- PV-test y PD-test: una pasada, con filas de acceso nuevas commiteadas antes (§e). Se reportan con IC el macro-F1 de cada test
+  y la brecha (§b), en una tabla base vs. variante. No se concluye sobre diferencias dentro del IC.
