@@ -5,7 +5,8 @@ Uso:
       Regla 1 (modelo), T por grilla en PlantDoc-dev, ECE y métricas del sistema fuera de partición, con IC. No toca ningún test.
   python scripts/calibrar.py --config configs/05_calibracion.yaml --salida <dir> --fase test --fila-accesos N
       Una pasada por PD-test con modelo, T y τ de la config. Exige la fila N de docs/bitacora/accesos_test.md commiteada y
-      coherente (guarda); si no, no evalúa (código 4). Si el óptimo de T cae en un borde de la grilla, sale con código 5.
+      coherente (guarda); si no, no evalúa (código 4). Si el óptimo de T con todo PD-dev cae en el borde superior, escribe el hallazgo "T no acotada" y termina (§g.2);
+      un borde no previsto (inferior, o en una partición) sale con código 5.
 `--salida` es la carpeta de las sesiones 8–10 (el checkpoint se busca relativo a ella). El JSON se copia a
 results/05_calibracion/<run_id>/.
 """
@@ -40,6 +41,11 @@ def main() -> int:
     try:
         if a.fase == "dev":
             d = C.calibrar_dev(cfg, cfg_modelo, R.repo, R.splits, R.data_root, a.salida, run_id)
+            if d["temperatura_final"] is None:      # regla 2 modificada: la etapa cierra con el hallazgo
+                print(json.dumps({"run_id": run_id, "cambios_sin_commitear": d["cambios_sin_commitear"], "hallazgo": d["hallazgo"],
+                                  "temperatura_borde": d["temperatura_borde"], "nll_pd_dev": d["nll_pd_dev"]}, indent=2, ensure_ascii=False))
+                print("JSON en:", a.salida / cfg["experimento"] / run_id)
+                return 0
             despues = d["despues_fuera_de_particion"]
         else:
             config_rel = a.config.resolve().relative_to(R.repo.resolve()).as_posix()

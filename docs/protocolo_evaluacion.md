@@ -91,3 +91,11 @@ estaba). "Excluye el 0" también lo cumple una geometría peor (IC entero debajo
    con el n de respondidas. Su IC se calcula sobre las réplicas bootstrap con al menos 1 respondida, y se informa cuántas
    réplicas quedaron afuera. Si en los datos reales no hay ninguna respondida, el acierto es "no definido (0 respondidas)": no
    se fuerza un número.
+8. **Modificación de la regla 2** (2026-11-07, decisión del equipo; el texto del ítem 2 se deja como estaba). En el run
+   `05_calibracion_dev_20261107_093701` (no usado), el óptimo de la NLL cayó en T = 10, borde de la grilla original. Desde
+   ahora: grilla **logarítmica** de T entre 0,5 y 1.000 con **200 valores** (`np.geomspace(0.5, 1000, 200)`, extremos
+   incluidos; `configs/05_calibracion.yaml`). Si el óptimo del ajuste con todo PD-dev cae en el borde superior, **no se
+   frena**: se registra "T no acotada: la NLL decrece hacia la distribución uniforme", se reporta en PD-dev la NLL en T = 1,
+   en el T del borde y log(12), y la etapa cierra con ese hallazgo: no hay T final, ni métricas calibradas, ni fila ni
+   evaluación de PD-test. Si el óptimo queda adentro, siguen los ítems 3 a 7 sin cambios. Un borde que esta regla no prevé
+   (el inferior, o el ajuste de una de las 5 particiones del ítem 3) frena la corrida y se consulta al equipo.

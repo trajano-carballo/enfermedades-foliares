@@ -2,6 +2,12 @@
 
 > Se actualiza al cierre de cada sesión de trabajo. Lo más reciente arriba.
 
+## 2026-11-07 — Sesión 11: calibración por temperatura y abstención (etapa 5) — EN CURSO
+
+**Pendiente para la sesión 12 (app Gradio), anotado por decisión del equipo:** con T alta, τ = 0,5 haría que la app se
+abstenga también con fotos de PlantVillage (con T grande, la probabilidad máxima se acerca a 1/12 en cualquier imagen).
+Hay que decidir qué T y qué τ usa la app en función de lo que cierre esta sesión.
+
 ## 2026-11-06 — Sesión 10: intervención de la etapa 4 (fine-tuning parcial con aumentación dirigida)
 
 **Estado:** la variante está entrenada (Colab), evaluada una vez en los dos tests y comparada con el base. Mejora PV-test (diferencia pareada 0,019 [0,004; 0,033]) pero no PD-test (-0,004 [-0,030; 0,023], incluye el 0). La brecha queda en 0,830 [0,792; 0,867] (base: 0,807 [0,768; 0,845]). La sesión 13 (supresión de fondo, combinación y control) quedó recortada por plazo; la defensa es el 20/11. Suite: 287 pasan, 0 saltados.

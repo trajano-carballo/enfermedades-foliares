@@ -25,6 +25,9 @@ def main() -> int:
     R = cargar_rutas()
     cfg = yaml.safe_load(a.config.read_text(encoding="utf-8"))
     dev = json.loads((R.repo / "results" / cfg["experimento"] / a.run_dev / "calibracion_dev.json").read_text(encoding="utf-8"))
+    if dev["temperatura_final"] is None:
+        print(f"Sin figuras: {dev['hallazgo']} (§g.2)")
+        return 0
     figs = a.figuras or (R.repo / "docs" / "figuras_sesion11")
     figs.mkdir(parents=True, exist_ok=True)
     print(FIG.figura_fiabilidad(dev, figs / "fiabilidad_pd_dev.png"))

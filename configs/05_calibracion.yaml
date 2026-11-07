@@ -19,7 +19,7 @@ modelo_base:                                     # el que elige la regla 1 (el c
 tamano: 224
 geometria: aplastar
 
-temperatura_grilla: {desde: 0.5, hasta: 10.0, paso: 0.05}   # regla 2
+temperatura_grilla: {desde: 0.5, hasta: 1000.0, n: 200}     # regla 2 (modificada): np.geomspace, extremos incluidos
 ece_bins: 15                                                 # regla 3
 particiones: {k: 5, semilla: 42}                             # regla 3: ECE fuera de partición en PD-dev
 tau: 0.5                                                     # regla 4: responde si p calibrada ≥ τ

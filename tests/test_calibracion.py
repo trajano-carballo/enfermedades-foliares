@@ -66,9 +66,10 @@ def test_metricas_del_sistema_a_mano():
 def test_la_temperatura_corrige_la_sobreconfianza_y_frena_en_el_borde():
     z, y = _datos()
     g = C.grilla_temperatura(CFG["temperatura_grilla"])
-    assert g[0] == 0.5 and g[-1] == 10.0 and len(g) == 191
+    assert g[0] == pytest.approx(0.5) and g[-1] == pytest.approx(1000) and len(g) == 200
+    assert np.allclose(np.diff(np.log(g)), np.log(2000) / 199)          # logarítmica
     T = C.ajustar_temperatura(z, y, g)
-    assert 1 < T < 10 and C.nll(z, y, T) < C.nll(z, y, 1.0)
+    assert 1 < T < 1000 and C.nll(z, y, T) < C.nll(z, y, 1.0)
     with pytest.raises(C.TemperaturaEnBorde):
         C.ajustar_temperatura(z, y, g[g <= 1.0])     # el óptimo verdadero está fuera: cae en el borde superior
 
@@ -132,7 +133,7 @@ def test_la_fase_dev_solo_lee_plantdoc_dev_y_registra_todo(monkeypatch, tmp_path
     R = cargar_rutas()
     d = C.calibrar_dev(cfg, CFG_MODELO, REPO, R.splits, R.data_root, tmp_path, "r")
     assert _DSFalso.leidos == [("plantdoc", "dev")]
-    assert 1 < d["temperatura_final"] < 10 and len(d["temperatura_por_particion"]) == 5
+    assert 1 < d["temperatura_final"] < 1000 and len(d["temperatura_por_particion"]) == 5 and "hallazgo" not in d
     assert d["despues_fuera_de_particion"]["ece"]["estimacion"] < d["antes_T_1"]["ece"]["estimacion"]
     for clave in ("commit", "cambios_sin_commitear", "config", "sha256_splits", "semillas", "torch", "dispositivo", "tiempo_s",
                   "memoria_pico_cpu_mb", "regla_modelo"):
@@ -223,3 +224,34 @@ def test_acierto_en_respondidas_ic_sin_las_replicas_vacias_y_no_definido_con_0_r
     assert r0["acierto_respondidas"]["estimacion"] is None and r0["acierto_respondidas"]["nota"] == "no definido (0 respondidas)"
     assert r0["acierto_respondidas"]["replicas_excluidas"] == 300 and r0["acierto_respondidas"]["ic_bajo"] is None
     json.dumps(r0)                                              # se puede escribir en el JSON de resultados
+
+
+def test_T_no_acotada_cierra_la_etapa_con_el_hallazgo(monkeypatch, tmp_path):
+    """§g.2 modificada: si el óptimo con todo PD-dev cae en el borde superior, no hay T final ni métricas calibradas."""
+    _falsos(monkeypatch)
+    y = np.repeat(np.arange(12), 20)
+    z = np.random.default_rng(0).normal(0, 1, (len(y), 12)).astype(np.float32)
+    z[np.arange(len(y)), (y + 1) % 12] += 8                   # siempre mal y muy seguro: la NLL baja hasta la uniforme
+    monkeypatch.setattr(C, "predecir", lambda m, ds, b, d: {"logits": z, "y": y})
+    llamadas = []
+    monkeypatch.setattr(C, "calibrar_fuera_de_particion", lambda *a: llamadas.append(a))
+    R = cargar_rutas()
+    d = C.calibrar_dev(CFG, CFG_MODELO, REPO, R.splits, R.data_root, tmp_path, "r")
+    assert d["temperatura_final"] is None and d["hallazgo"] == "T no acotada: la NLL decrece hacia la distribución uniforme"
+    assert d["temperatura_borde"] == pytest.approx(1000) and llamadas == []
+    n = d["nll_pd_dev"]
+    assert n["uniforme_log_k"] == pytest.approx(np.log(12)) and n["T_1"] > n["T_borde"] > n["uniforme_log_k"]
+    assert not {"antes_T_1", "despues_fuera_de_particion", "tau"} & set(d)
+    assert json.loads((tmp_path / "05_calibracion" / "r" / "calibracion_dev.json").read_text(encoding="utf-8"))["temperatura_final"] is None
+
+
+def test_un_borde_no_previsto_frena(monkeypatch, tmp_path):
+    """El borde inferior (subconfianza extrema) no lo cubre la regla 2 modificada: se frena."""
+    _falsos(monkeypatch)
+    y = np.repeat(np.arange(12), 20)
+    z = np.zeros((len(y), 12), dtype=np.float32)
+    z[np.arange(len(y)), y] = 0.01                            # siempre bien pero casi uniforme: pide T < 0,5
+    monkeypatch.setattr(C, "predecir", lambda m, ds, b, d: {"logits": z, "y": y})
+    R = cargar_rutas()
+    with pytest.raises(C.TemperaturaEnBorde):
+        C.calibrar_dev(CFG, CFG_MODELO, REPO, R.splits, R.data_root, tmp_path, "r")

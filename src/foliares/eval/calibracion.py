@@ -2,7 +2,9 @@
 
 - Regla 1: se calibra el modelo de mayor macro-F1 (con mosaic) en PV-val, leído de los JSON versionados; mayor estricto,
   empate → el base. No usa PlantDoc ni ningún test.
-- Regla 2: un único T que minimiza la NLL en PD-dev, por grilla; si el óptimo cae en un borde, `TemperaturaEnBorde`.
+- Regla 2 (modificada el 2026-11-07): un único T que minimiza la NLL en PD-dev, en una grilla logarítmica. Si el óptimo del
+  ajuste con todo PD-dev cae en el borde superior, la etapa cierra con el hallazgo "T no acotada" (sin T final ni métricas
+  calibradas ni PD-test). Un borde en otro caso (borde inferior, o el ajuste de una partición) no está previsto: se frena.
 - Regla 3: ECE de 15 bins de igual ancho sobre la confianza máxima; en PD-dev, fuera de partición (5 particiones
   estratificadas: cada imagen se calibra con una T ajustada SIN ella). La T final se ajusta con todo PD-dev.
 - Reglas 4–5: τ fijo; responde si p ≥ τ. Métricas del sistema con IC bootstrap (`foliares.eval.bootstrap`).
@@ -43,15 +45,24 @@ def nll(z, y, T: float) -> float:
     return float(np.mean(lse - z[np.arange(len(z)), np.asarray(y)]))
 
 
+HALLAZGO_NO_ACOTADA = "T no acotada: la NLL decrece hacia la distribución uniforme"
+
+
 def grilla_temperatura(g: dict) -> np.ndarray:
-    return np.round(np.arange(g["desde"], g["hasta"] + g["paso"] / 2, g["paso"]), 10)
+    return np.geomspace(g["desde"], g["hasta"], g["n"])
+
+
+def optimo_en_grilla(z, y, grilla) -> tuple[float, int]:
+    """T de menor NLL y su posición en la grilla."""
+    i = int(np.argmin([nll(z, y, T) for T in grilla]))
+    return float(grilla[i]), i
 
 
 def ajustar_temperatura(z, y, grilla) -> float:
-    i = int(np.argmin([nll(z, y, T) for T in grilla]))
+    T, i = optimo_en_grilla(z, y, grilla)
     if i in (0, len(grilla) - 1):
-        raise TemperaturaEnBorde(f"El óptimo de la NLL cae en el borde de la grilla (T = {grilla[i]}); la regla 2 manda frenar")
-    return float(grilla[i])
+        raise TemperaturaEnBorde(f"El óptimo de la NLL cae en el borde de la grilla (T = {T}); caso no previsto por la regla 2")
+    return T
 
 
 def bins_fiabilidad(probs, y, n_bins: int) -> list[dict]:
@@ -158,23 +169,31 @@ def calibrar_dev(cfg: dict, cfg_modelo: dict, repo: Path, splits: Path, data_roo
         out, archivo, t_fwd = _forward(cfg, cfg_modelo, splits, data_root, salida, "dev", dir_corrida)
         z, y = out["logits"], out["y"]
         grilla = grilla_temperatura(cfg["temperatura_grilla"])
-        T = ajustar_temperatura(z, y, grilla)
-        assert (softmax_t(z, T).argmax(1) == z.argmax(1)).all()   # T no cambia el argmax: el macro-F1 no se mueve
-        part = particiones_estratificadas(y, cfg["particiones"]["k"], cfg["particiones"]["semilla"])
-        p_oof, ts = calibrar_fuera_de_particion(z, y, part, grilla)
-        p1 = softmax_t(z, 1.0)
-        antes, despues = _ic(y, p1, cfg), _ic(y, p_oof, cfg)
-    taus = np.round(np.arange(0, 1.0001, 0.01), 2)
+        T, i = optimo_en_grilla(z, y, grilla)
+        no_acotada = i == len(grilla) - 1                        # regla 2 modificada: la etapa cierra con el hallazgo
+        if not no_acotada:
+            T = ajustar_temperatura(z, y, grilla)                # borde inferior: frena (caso no previsto)
+            assert (softmax_t(z, T).argmax(1) == z.argmax(1)).all()   # T no cambia el argmax: el macro-F1 no se mueve
+            part = particiones_estratificadas(y, cfg["particiones"]["k"], cfg["particiones"]["semilla"])
+            p_oof, ts = calibrar_fuera_de_particion(z, y, part, grilla)
+            p1 = softmax_t(z, 1.0)
+            antes, despues = _ic(y, p1, cfg), _ic(y, p_oof, cfg)
     datos = {**registro, "fase": "dev", "run_id": run_id, "regla_modelo": regla, "modelo_base": cfg["modelo_base"],
-             "geometria": cfg["geometria"], "n_pd_dev": int(len(y)),
-             "temperatura_final": T, "nll_pd_dev": {"T_1": nll(z, y, 1.0), "T_final": nll(z, y, T)},
-             "temperatura_por_particion": ts, "imagenes_por_particion": np.bincount(part).tolist(), "tau": cfg["tau"],
-             "antes_T_1": antes, "despues_fuera_de_particion": despues,
-             "fiabilidad": {"antes_T_1": bins_fiabilidad(p1, y, cfg["ece_bins"]),
-                            "despues_fuera_de_particion": bins_fiabilidad(p_oof, y, cfg["ece_bins"])},
-             "curva_cobertura": {"antes_T_1": curva_cobertura(p1, y, taus), "despues_fuera_de_particion": curva_cobertura(p_oof, y, taus)},
+             "geometria": cfg["geometria"], "n_pd_dev": int(len(y)), "grilla_temperatura": cfg["temperatura_grilla"],
              "logits": archivo, "tiempo_forward": t_fwd, **med.resumen(), "rutas_relativas_a": "la carpeta --salida",
              "nota_memoria": "memoria_pico_cpu_mb es el máximo del proceso entero"}
+    if no_acotada:
+        datos.update({"temperatura_final": None, "hallazgo": HALLAZGO_NO_ACOTADA, "temperatura_borde": T,
+                      "nll_pd_dev": {"T_1": nll(z, y, 1.0), "T_borde": nll(z, y, T), "uniforme_log_k": float(np.log(z.shape[1]))}})
+    else:
+        taus = np.round(np.arange(0, 1.0001, 0.01), 2)
+        datos.update({"temperatura_final": T, "nll_pd_dev": {"T_1": nll(z, y, 1.0), "T_final": nll(z, y, T)},
+                      "temperatura_por_particion": ts, "imagenes_por_particion": np.bincount(part).tolist(), "tau": cfg["tau"],
+                      "antes_T_1": antes, "despues_fuera_de_particion": despues,
+                      "fiabilidad": {"antes_T_1": bins_fiabilidad(p1, y, cfg["ece_bins"]),
+                                     "despues_fuera_de_particion": bins_fiabilidad(p_oof, y, cfg["ece_bins"])},
+                      "curva_cobertura": {"antes_T_1": curva_cobertura(p1, y, taus),
+                                          "despues_fuera_de_particion": curva_cobertura(p_oof, y, taus)}})
     escribir_json(dir_corrida / "calibracion_dev.json", datos)
     _copiar_al_repo(repo, cfg, run_id, dir_corrida / "calibracion_dev.json")
     return datos
