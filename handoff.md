@@ -2,11 +2,67 @@
 
 > Se actualiza al cierre de cada sesión de trabajo. Lo más reciente arriba.
 
-## 2026-11-07 — Sesión 11: calibración por temperatura y abstención (etapa 5) — EN CURSO
+## 2026-11-07 — Sesión 11: calibración por temperatura y abstención (etapa 5)
 
-**Pendiente para la sesión 12 (app Gradio), anotado por decisión del equipo:** con T alta, τ = 0,5 haría que la app se
-abstenga también con fotos de PlantVillage (con T grande, la probabilidad máxima se acerca a 1/12 en cualquier imagen).
-Hay que decidir qué T y qué τ usa la app en función de lo que cierre esta sesión.
+**Estado:** etapa 5 cerrada con las reglas del §g del protocolo (fijadas antes de cada número). Se calibró la variante de la
+etapa 4 (regla 1). T = 14,97 (óptimo adentro de la grilla logarítmica). La calibración funciona: el ECE baja de 0,63–0,68 a
+0,02–0,04 en los dos conjuntos de PlantDoc. Pero con τ = 0,5 el sistema calibrado **no responde ninguna imagen** de PD-dev ni de
+PD-test: la confianza calibrada no llega a 0,5 porque el modelo acierta ~17–21 % fuera de distribución. Sin calibrar, el 74 %
+(PD-dev) y el 79 % (PD-test) del total eran errores con p ≥ 0,5. Suite: **309 pasan, 0 saltados**.
+
+**Tabla de la etapa 5** (IC 95 % bootstrap estratificado, 2.000 réplicas, semilla 42; geometría `aplastar`)
+
+| | PD-dev (n = 696, fuera de partición) | PD-test (n = 300, pasada única, fila 5) |
+|---|---|---|
+| Modelo (regla 1) | variante `04_aumentacion_20261106_232146` (PV-val 0,96584 contra 0,95589 del base) | ídem |
+| T | 14,97 (todo PD-dev; por partición 13,87–15,56, ninguna en el borde) | 14,97 (fija) |
+| ECE antes (T = 1) | 0,628 [0,601; 0,655] | 0,677 [0,635; 0,717] |
+| ECE después | 0,040 [0,020; 0,066] | 0,021 [0,015; 0,067] |
+| Cobertura con τ = 0,5 (antes → después) | 0,943 [0,925; 0,958] → 0,000 [0; 0] | 0,960 [0,937; 0,980] → 0,000 [0; 0] |
+| Respondidas (antes → después) | 656 → 0 | 288 → 0 |
+| Acierto sobre lo respondido (antes → después) | 0,210 [0,186; 0,236] → no definido (0 respondidas) | 0,181 [0,141; 0,220] → no definido (0 respondidas) |
+| Errores de alta confianza, fracción del total (antes → después) | 0,744 [0,716; 0,772] → 0,000 [0; 0] | 0,787 [0,743; 0,827] → 0,000 [0; 0] |
+| Exactitud (no cambia con T) | 0,210 [0,185; 0,234] | 0,173 [0,137; 0,210] |
+| NLL (T = 1 → T final; log 12 = 2,48) | 8,89 → 2,34 | — |
+
+JSON: `results/05_calibracion/05_calibracion_dev_20261107_095030/calibracion_dev.json` (desde `6e5196a`) y
+`results/05_calibracion/05_calibracion_test_20261107_095821/calibracion_test.json` (desde `5bff0d7`, fila 5). Figuras de PD-dev
+en `docs/figuras_sesion11/` (`fiabilidad_pd_dev.png`, `cobertura_pd_dev.png`). Logits por imagen fuera del repo
+(`foliares_salidas/05_calibracion/<run_id>/logits_pd_*.csv`). Los logits reproducen las predicciones de la sesión 10 (mismo
+argmax en PD-dev y PD-test).
+
+**Dónde lee la sesión 12:** `configs/05_calibracion.yaml` → `modelo_base` (run, checkpoint y sha256), `temperatura`
+(14.973042339479479), `tau` (0.5) y `run_dev`.
+
+**Hecho (en orden de commits; todos los hace el usuario)**
+- Reglas §g.1–6 antes de calcular (`94b6f45`). Código y tests (`741eca6`): `eval/calibracion.py`, `scripts/calibrar.py`,
+  `scripts/figuras_sesion11.py`, `configs/05_calibracion.yaml`; `predecir` devuelve también los logits.
+- §g.7, acierto sobre lo respondido con n e IC sobre réplicas definidas (`3ce9711`; `bootstrap_multiple(..., excluir_nan=)`).
+- Primer intento de la fase dev (run `05_calibracion_dev_20261107_093701`, no usado): el óptimo cayó en T = 10, borde de la grilla
+  original; se frenó. §g.8 (grilla logarítmica 0,5–1.000 con 200 valores; cierre por "T no acotada") en `833365e`; §g.9
+  (partición en el borde no frena; borde inferior global sí) en `6e5196a`.
+- Fase dev (`fae65fa`, con T y `run_dev` fijados en la config), fila 5 (`5bff0d7`), pasada única de PD-test (`397deb5`).
+
+**Qué quedó a medias:** nada de la etapa 5. Las figuras son solo de PD-dev (no se pidieron de PD-test).
+
+**Próximos pasos**
+1. **Sesión 12 (app Gradio):** decidir qué T y qué τ usa la app (ver decisiones pendientes).
+2. Informe y defensa (20/11): tabla de la etapa 5 y las dos figuras. El mensaje: la calibración corrige la sobreconfianza
+   (ECE y errores de alta confianza) pero, con este modelo fuera de distribución y τ = 0,5, deja al sistema sin responder.
+
+**Decisiones pendientes**
+- **Para la sesión 12, anotado por decisión del equipo:** con T alta, τ = 0,5 haría que la app se abstenga también con fotos de
+  PlantVillage. **No medido**: no se calculó nada sobre PV en esta etapa. Opciones (las decide el equipo):
+  (a) T = 14,97 y τ = 0,5 tal cual: la app se abstiene en PlantDoc y probablemente también en PV; sin cómputo.
+  (b) T = 1 en la app (sin calibrar) con τ = 0,5: responde casi siempre, con los errores de alta confianza de la tabla.
+  (c) Medir antes en PV-val (no es test) la cobertura con T = 14,97 y τ = 0,5, con la regla de uso fijada de antemano: una
+  corrida corta en CPU, sin tocar ningún test.
+- Del equipo (heredado): licencia de redistribución de las imágenes de PlantDoc en las figuras.
+
+**Riesgos abiertos**
+- T se ajustó con 696 imágenes de PlantDoc-dev: describe este modelo en esta distribución, no fotos nuevas de otra fuente.
+- El IC del ECE calibrado es asimétrico (la estimación cerca del límite inferior): el ECE tiene sesgo positivo en las réplicas.
+- Filas 1 a 5 de `accesos_test.md` usadas: cualquier otra evaluación de un test necesita una fila nueva.
 
 ## 2026-11-06 — Sesión 10: intervención de la etapa 4 (fine-tuning parcial con aumentación dirigida)
 
