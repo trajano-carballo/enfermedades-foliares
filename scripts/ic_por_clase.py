@@ -41,15 +41,17 @@ def main() -> int:
     nombres = [c["pv"] for c in cm["clases"]]
     exp = salida / cfg["experimento"]
     tests = json.loads((exp / a.run_tests / "tests.json").read_text(encoding="utf-8"))
-    dev = json.loads((exp / a.run_dev / "dev_geometria.json").read_text(encoding="utf-8"))
+    nombre_dev = next(n for n in ("dev_geometria.json", "dev_informativo.json") if (exp / a.run_dev / n).is_file())
+    dev = json.loads((exp / a.run_dev / nombre_dev).read_text(encoding="utf-8"))
+    dev = dev.get("regla_a", dev)                 # sesión 9: dentro de regla_a; etapa 4: arriba (dev_informativo.json)
     if tests["geometria"] != geo:
         raise ValueError(f"tests.json se evaluó con {tests['geometria']!r} y la config dice {geo!r}")
     fuentes = {"pv_test": (exp / a.run_tests / "predicciones_pv_test.csv", tests["resultados"]["PV-test"]["base_macro_f1_ic"],
                            tests["resultados"]["PV-test"]["n"]),
                "pd_test": (exp / a.run_tests / "predicciones_pd_test.csv", tests["resultados"]["PD-test"]["base_macro_f1_ic"],
                            tests["resultados"]["PD-test"]["n"]),
-               "pd_dev": (exp / a.run_dev / f"predicciones_pd_dev_{geo}.csv", dev["regla_a"]["macro_f1_por_geometria"][geo],
-                          dev["n_pd_dev"])}
+               "pd_dev": (exp / a.run_dev / f"predicciones_pd_dev_{geo}.csv", dev["macro_f1_por_geometria"][geo],
+                          json.loads((exp / a.run_dev / nombre_dev).read_text(encoding="utf-8"))["n_pd_dev"])}
     resultados, consistencia = {}, {}
     with Medidor() as med:
         for nombre, (ruta, ref, n_ref) in fuentes.items():

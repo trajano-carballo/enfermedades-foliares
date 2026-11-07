@@ -94,3 +94,19 @@ def test_el_script_exige_las_filas_de_acceso_para_los_tests(tmp_path):
                        env={**os.environ, "DATA_ROOT": str(tmp_path)})
     assert r.returncode == 2 and "exige --fila-accesos-pv y --fila-accesos-pd" in r.stderr
     assert list(tmp_path.iterdir()) == []
+
+
+def test_comparar_con_base_es_pareada_y_solo_informa():
+    base = _con_aciertos(0.5, 1)
+    r = E.comparar_con_base(Y, Y.copy(), base, ["a", "b", "c"], BS)
+    d = r["diferencia_variante_menos_base"]
+    assert r["variante"]["estimacion"] == 1.0 and d["estimacion"] == pytest.approx(1.0 - r["base"]["estimacion"])
+    assert d["ic_bajo"] > 0 and "geometria_elegida" not in r
+    igual = E.comparar_con_base(Y, base, base.copy(), ["a", "b", "c"], BS)["diferencia_variante_menos_base"]
+    assert igual["estimacion"] == igual["ic_bajo"] == igual["ic_alto"] == 0.0
+
+
+def test_la_config_de_la_variante_evalua_con_aplastar_y_apunta_al_checkpoint_de_colab():
+    cfg = yaml.safe_load((REPO / "configs" / "04_evaluacion.yaml").read_text(encoding="utf-8"))
+    assert cfg["geometria"] == "aplastar" and "geometrias_candidatas" not in cfg and cfg["bootstrap"]["replicas"] == 2000
+    assert cfg["modelo_base"]["sha256"].startswith("326e6a73") and cfg["referencia_base"]["run_tests"] == "03_brecha_tests_20261105_081814"

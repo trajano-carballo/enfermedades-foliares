@@ -1,0 +1,26 @@
+# Config de la evaluación de la variante de la etapa 4 (sesión 10; §f del protocolo). Misma geometría y mismo bootstrap que la
+# evaluación del base (configs/03_brecha.yaml), sobre el checkpoint elegido por PV-val en Colab.
+experimento: 04_aumentacion
+config_modelo: configs/02_modelo_base.yaml      # clases (orden e índice), clase mosaic y definiciones de métricas
+
+modelo_base:                                     # el modelo que se evalúa (nombre de la clave compartido con 03_brecha.yaml)
+  run_id: 04_aumentacion_20261106_232146         # entrenado en Colab desde 8e91fad, época 18 de 20
+  checkpoint: 04_aumentacion/04_aumentacion_20261106_232146/mejor.pt   # relativo a --salida
+  sha256: 326e6a730321136e3e026bffcf84ed1b9b0adcec7162de2d18d1e13ba7495953
+
+referencia_base:                                 # el modelo base (sesión 9) contra el que se compara, sin reevaluarlo
+  run_dev: 03_brecha_dev_20261104_210006         # predicciones de PD-dev del base (aplastar), fuera del repo
+  run_tests: 03_brecha_tests_20261105_081814     # predicciones de PV-test y PD-test del base, fuera del repo
+
+tamano: 224
+geometria: aplastar                              # (h) fija: PD-dev no elige nada en esta etapa
+
+bootstrap:
+  replicas: 2000
+  nivel: 0.95
+  semilla: 42
+
+cam:                                             # la MISMA muestra fija de la sesión 9 (se toma de su cam_muestra.json)
+  muestra_sesion9: results/03_brecha/03_brecha_cam_20261105_090654/cam_muestra.json
+
+batch: 64

@@ -197,3 +197,49 @@ def evaluar_tests(cfg: dict, cfg_modelo: dict, config_rel: str, repo: Path, spli
     escribir_json(dir_corrida / "tests.json", datos)
     _copiar_al_repo(repo, cfg, run_id, dir_corrida / "tests.json")
     return datos
+
+
+def comparar_con_base(y, p_variante, p_base, nombres: list[str], bs: dict) -> dict:
+    """Macro-F1 de la variante y del base con IC, y la diferencia pareada variante − base (mismas réplicas de imágenes).
+    Solo informa: no elige nada (§f del protocolo)."""
+    mf1 = lambda yy, pp: metricas.macro_f1(yy, pp, len(nombres))  # noqa: E731
+    return {"variante": B.bootstrap(y, p_variante, mf1, bs["replicas"], bs["semilla"], bs["nivel"]),
+            "base": B.bootstrap(y, p_base, mf1, bs["replicas"], bs["semilla"], bs["nivel"]),
+            "diferencia_variante_menos_base": B.bootstrap_pareado(y, p_variante, p_base, mf1, bs["replicas"], bs["semilla"], bs["nivel"])}
+
+
+def _predicciones_base(salida: Path, cfg: dict, run: str, archivo: str, ds) -> np.ndarray:
+    """Predicciones guardadas del modelo base para las mismas imágenes que `ds` (mismo orden y etiquetas, verificado)."""
+    pred = pd.read_csv(Path(salida) / "03_brecha" / run / archivo)
+    if list(pred.ruta) != list(ds.filas.ruta) or not (pred.etiqueta.to_numpy() == ds.filas.etiqueta.to_numpy()).all():
+        raise ValueError(f"Las predicciones del base ({archivo}) no corresponden a las mismas imágenes")
+    return pred.pred.to_numpy()
+
+
+def evaluar_dev_informativo(cfg: dict, cfg_modelo: dict, repo: Path, splits: Path, data_root: Path, salida: Path, run_id: str) -> dict:
+    """Etapa 4: la variante en PlantDoc-dev con la geometría fija de la config, macro-F1 con IC y diferencia pareada contra las
+    predicciones guardadas del base. No toca ningún test y no elige nada."""
+    registro = registro_base(repo, splits, {"evaluacion": cfg, "modelo": cfg_modelo}, {"bootstrap": cfg["bootstrap"]["semilla"]})
+    salida = exigir_fuera_del_repo(salida, repo)
+    nombres, nombres_pd, _ = _nombres(cfg_modelo)
+    geo = cfg["geometria"]
+    modelo = cargar_modelo_base(salida, cfg, len(nombres))
+    dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    ds = DatasetParticion(splits, data_root, "plantdoc", "dev", "evaluacion", nombres, nombres_pd, geometria=geo, tamano=cfg["tamano"])
+    p_base = _predicciones_base(salida, cfg, cfg["referencia_base"]["run_dev"], f"predicciones_pd_dev_{geo}.csv", ds)
+    dir_corrida = salida / cfg["experimento"] / run_id
+    dir_corrida.mkdir(parents=True, exist_ok=True)
+    with Medidor() as med:
+        out = predecir(modelo, ds, cfg["batch"], dev)
+    ruta = dir_corrida / f"predicciones_pd_dev_{geo}.csv"
+    tabla_predicciones(ds, out, nombres).to_csv(ruta, index=False, lineterminator="\n")
+    comp = comparar_con_base(out["y"], out["pred"], p_base, nombres, cfg["bootstrap"])
+    datos = {**registro, "fase": "dev_informativo", "run_id": run_id, "modelo_evaluado": cfg["modelo_base"],
+             "referencia_base": cfg["referencia_base"], "geometria": geo, "n_pd_dev": int(len(out["y"])),
+             "macro_f1_por_geometria": {geo: comp["variante"]}, "comparacion_con_base": comp,
+             "variante": metricas.resumen(out["y"], out["pred"], nombres), "predicciones": _relativa(ruta, salida),
+             "solo_informativo": "PD-dev no elige nada en la etapa 4 (§f del protocolo)", **med.resumen(),
+             "rutas_relativas_a": "la carpeta --salida", "nota_memoria": "memoria_pico_cpu_mb es el máximo del proceso entero"}
+    escribir_json(dir_corrida / "dev_informativo.json", datos)
+    _copiar_al_repo(repo, cfg, run_id, dir_corrida / "dev_informativo.json")
+    return datos
