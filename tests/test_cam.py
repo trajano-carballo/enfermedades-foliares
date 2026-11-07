@@ -165,3 +165,17 @@ def test_el_json_de_tests_real_tiene_lo_que_usan_las_figuras():
         pytest.skip("todavía no hay tests.json")
     t = json.loads(ruta.read_text(encoding="utf-8"))
     assert {"resultados", "orden_clases", "brecha_macro_f1_pv_test_menos_pd_test", "geometria"} <= set(t)
+
+
+def test_cada_panel_de_las_matrices_muestra_su_propio_n(tmp_path, monkeypatch):
+    # Regresión (review de la sesión 10): con sharey=True el panel de PV-test mostraba el n de PD-test.
+    t = _tests_json()
+    t["resultados"]["PV-test"]["base"] = {**t["resultados"]["PV-test"]["base"], "soporte_por_clase": dict(zip(t["orden_clases"], [131, 233, 152]))}
+    t["resultados"]["PD-test"]["base"] = {**t["resultados"]["PD-test"]["base"], "soporte_por_clase": dict(zip(t["orden_clases"], [20, 17, 29]))}
+    capturadas = []
+    cerrar = FIG.plt.close
+    monkeypatch.setattr(FIG.plt, "close", lambda f=None: (capturadas.append(f), cerrar(f))[1])
+    FIG.figura_matrices(t, tmp_path / "m.png", ic_json="results/x/ic_por_clase.json")
+    ejes = [a for a in capturadas[0].axes if a.get_title()]                    # los dos paneles (sin la barra de color)
+    pv, pd_ = ([e.get_text() for e in a.get_yticklabels()] for a in ejes)
+    assert [x.split("(n=")[1] for x in pv] == ["131)", "233)", "152)"] and [x.split("(n=")[1] for x in pd_] == ["20)", "17)", "29)"]

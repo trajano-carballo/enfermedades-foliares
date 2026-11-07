@@ -68,7 +68,8 @@ def figura_matrices(tests: dict, ruta: str | Path, *, ic_json: str) -> Path:
     """Las matrices de confusión normalizadas por fila (recall en la diagonal) de PV-test y PD-test, mismo orden de clases.
     `ic_json` es la ruta (relativa al repo) del JSON con los IC por clase, que se cita en la leyenda de la figura."""
     nombres = [nombre_corto(c) for c in tests["orden_clases"]]
-    fig, ejes = plt.subplots(1, 2, figsize=(15, 7), sharey=True)
+    # sharey=False: con el eje compartido, las etiquetas del segundo panel pisaban las del primero y PV-test mostraba el n de PD-test
+    fig, ejes = plt.subplots(1, 2, figsize=(17, 7), sharey=False)
     for ax, test in zip(ejes, ("PV-test", "PD-test")):
         b = tests["resultados"][test]["base"]
         m = np.asarray(b["matriz_normalizada_por_fila"])

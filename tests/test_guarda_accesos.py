@@ -131,8 +131,9 @@ def test_cambio_en_la_config_del_modelo_despues_de_la_fila(repo):
         exigir_fila_accesos(r, 1, "PD-test", "configs/03_brecha.yaml")
 
 
-def test_las_filas_1_y_2_del_repo_real_ya_estan_gastadas():
+def test_las_filas_1_a_4_del_repo_real_ya_estan_gastadas():
     from pathlib import Path
     from foliares.eval.guarda_accesos import filas_usadas
     usadas = filas_usadas(Path(__file__).resolve().parents[1])
-    assert {1, 2} <= set(usadas) and all("03_brecha_tests" in v for k, v in usadas.items() if k in (1, 2))
+    assert {1, 2, 3, 4} <= set(usadas)
+    assert all("03_brecha_tests" in usadas[k] for k in (1, 2)) and all("04_aumentacion_tests" in usadas[k] for k in (3, 4))
