@@ -211,7 +211,9 @@ def figura_cobertura(dev: dict, ruta: str | Path) -> Path:
         p = next(p for p in dev["curva_cobertura"][clave] if abs(p["tau"] - dev["tau"]) < 1e-9)
         if p["acierto_respondidas"] is not None:
             ax.plot(p["cobertura"], p["acierto_respondidas"], "o", color=color, ms=7)
-            ax.annotate(f"τ = {dev['tau']}", (p["cobertura"], p["acierto_respondidas"]), textcoords="offset points", xytext=(6, 6), fontsize=8, color=color)
+            ax.annotate(f"τ = {dev['tau']}", (p["cobertura"], p["acierto_respondidas"]), textcoords="offset points", xytext=(-30, 8), fontsize=8, color=color)
+        else:                                            # §g.7: sin respondidas el acierto no está definido; se dice en la figura
+            ax.annotate(f"{nombre}, τ = {dev['tau']}: 0 respondidas\n(acierto no definido)", (0, 0.9), fontsize=8, color=color)
     ax.set_xlim(0, 1.02)
     ax.set_ylim(0, 1)
     ax.set_xlabel("cobertura (fracción respondida)")

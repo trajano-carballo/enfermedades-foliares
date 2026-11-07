@@ -32,5 +32,5 @@ bootstrap:
 batch: 64
 
 # Se completan después de la fase dev (y se commitean antes de la fila de PD-test):
-run_dev: null          # run_id de la fase dev (results/05_calibracion/<run_dev>/calibracion_dev.json)
-temperatura: null      # T final (ajustada con todo PD-dev)
+run_dev: 05_calibracion_dev_20261107_095030   # fase dev (results/05_calibracion/<run_dev>/calibracion_dev.json), desde 6e5196a
+temperatura: 14.973042339479479               # T final (ajustada con todo PD-dev; óptimo adentro de la grilla)
