@@ -4,7 +4,8 @@
   empate → el base. No usa PlantDoc ni ningún test.
 - Regla 2 (modificada el 2026-11-07): un único T que minimiza la NLL en PD-dev, en una grilla logarítmica. Si el óptimo del
   ajuste con todo PD-dev cae en el borde superior, la etapa cierra con el hallazgo "T no acotada" (sin T final ni métricas
-  calibradas ni PD-test). Un borde en otro caso (borde inferior, o el ajuste de una partición) no está previsto: se frena.
+  calibradas ni PD-test). Borde inferior en el ajuste global: se frena. Una partición con óptimo en un borde (y el global
+  adentro) usa su T de borde tal cual y queda registrada (§g.8).
 - Regla 3: ECE de 15 bins de igual ancho sobre la confianza máxima; en PD-dev, fuera de partición (5 particiones
   estratificadas: cada imagen se calibra con una T ajustada SIN ella). La T final se ajusta con todo PD-dev.
 - Reglas 4–5: τ fijo; responde si p ≥ τ. Métricas del sistema con IC bootstrap (`foliares.eval.bootstrap`).
@@ -58,13 +59,6 @@ def optimo_en_grilla(z, y, grilla) -> tuple[float, int]:
     return float(grilla[i]), i
 
 
-def ajustar_temperatura(z, y, grilla) -> float:
-    T, i = optimo_en_grilla(z, y, grilla)
-    if i in (0, len(grilla) - 1):
-        raise TemperaturaEnBorde(f"El óptimo de la NLL cae en el borde de la grilla (T = {T}); caso no previsto por la regla 2")
-    return T
-
-
 def bins_fiabilidad(probs, y, n_bins: int) -> list[dict]:
     """Bins de igual ancho (k/n, (k+1)/n] sobre la confianza máxima: n, confianza media y acierto de cada uno."""
     conf, ok = probs.max(1), probs.argmax(1) == np.asarray(y)
@@ -105,16 +99,19 @@ def particiones_estratificadas(y, k: int, semilla: int) -> np.ndarray:
     return f
 
 
-def calibrar_fuera_de_particion(z, y, particiones, grilla) -> tuple[np.ndarray, list[float]]:
-    """Probabilidades de cada imagen calibradas con la T ajustada en las OTRAS particiones; y la T de cada partición."""
+def calibrar_fuera_de_particion(z, y, particiones, grilla) -> tuple[np.ndarray, list[float], list[dict]]:
+    """Probabilidades de cada imagen calibradas con la T ajustada en las OTRAS particiones; la T de cada partición; y las
+    particiones cuyo óptimo cayó en un borde de la grilla (§g.8: usan esa T tal cual, sin frenar)."""
     z, y = np.asarray(z), np.asarray(y)
-    probs, ts = np.empty(z.shape), []
+    probs, ts, bordes = np.empty(z.shape), [], []
     for k in np.unique(particiones):
         m = particiones == k
-        T = ajustar_temperatura(z[~m], y[~m], grilla)
+        T, i = optimo_en_grilla(z[~m], y[~m], grilla)
+        if i in (0, len(grilla) - 1):
+            bordes.append({"particion": int(k), "T": T, "borde": "inferior" if i == 0 else "superior"})
         probs[m] = softmax_t(z[m], T)
         ts.append(T)
-    return probs, ts
+    return probs, ts, bordes
 
 
 def regla_modelo(repo: str | Path, candidatos: dict) -> dict:
@@ -172,10 +169,11 @@ def calibrar_dev(cfg: dict, cfg_modelo: dict, repo: Path, splits: Path, data_roo
         T, i = optimo_en_grilla(z, y, grilla)
         no_acotada = i == len(grilla) - 1                        # regla 2 modificada: la etapa cierra con el hallazgo
         if not no_acotada:
-            T = ajustar_temperatura(z, y, grilla)                # borde inferior: frena (caso no previsto)
+            if i == 0:                                           # borde inferior en el ajuste global: frena (§g.8)
+                raise TemperaturaEnBorde(f"El óptimo de la NLL cae en el borde inferior de la grilla (T = {T})")
             assert (softmax_t(z, T).argmax(1) == z.argmax(1)).all()   # T no cambia el argmax: el macro-F1 no se mueve
             part = particiones_estratificadas(y, cfg["particiones"]["k"], cfg["particiones"]["semilla"])
-            p_oof, ts = calibrar_fuera_de_particion(z, y, part, grilla)
+            p_oof, ts, bordes = calibrar_fuera_de_particion(z, y, part, grilla)
             p1 = softmax_t(z, 1.0)
             antes, despues = _ic(y, p1, cfg), _ic(y, p_oof, cfg)
     datos = {**registro, "fase": "dev", "run_id": run_id, "regla_modelo": regla, "modelo_base": cfg["modelo_base"],
@@ -189,6 +187,9 @@ def calibrar_dev(cfg: dict, cfg_modelo: dict, repo: Path, splits: Path, data_roo
         taus = np.round(np.arange(0, 1.0001, 0.01), 2)
         datos.update({"temperatura_final": T, "nll_pd_dev": {"T_1": nll(z, y, 1.0), "T_final": nll(z, y, T)},
                       "temperatura_por_particion": ts, "imagenes_por_particion": np.bincount(part).tolist(), "tau": cfg["tau"],
+                      "particiones_en_borde": bordes,
+                      "nota_ece": (f"ECE fuera de partición con la T de borde en las particiones {[b['particion'] for b in bordes]} (§g.8)"
+                                   if bordes else None),
                       "antes_T_1": antes, "despues_fuera_de_particion": despues,
                       "fiabilidad": {"antes_T_1": bins_fiabilidad(p1, y, cfg["ece_bins"]),
                                      "despues_fuera_de_particion": bins_fiabilidad(p_oof, y, cfg["ece_bins"])},

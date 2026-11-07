@@ -63,15 +63,14 @@ def test_metricas_del_sistema_a_mano():
     assert np.isnan(C.metricas_sistema(y, p, 0.99, 15)["acierto_respondidas"])
 
 
-def test_la_temperatura_corrige_la_sobreconfianza_y_frena_en_el_borde():
+def test_la_temperatura_corrige_la_sobreconfianza_y_detecta_el_borde():
     z, y = _datos()
     g = C.grilla_temperatura(CFG["temperatura_grilla"])
     assert g[0] == pytest.approx(0.5) and g[-1] == pytest.approx(1000) and len(g) == 200
     assert np.allclose(np.diff(np.log(g)), np.log(2000) / 199)          # logarítmica
-    T = C.ajustar_temperatura(z, y, g)
-    assert 1 < T < 1000 and C.nll(z, y, T) < C.nll(z, y, 1.0)
-    with pytest.raises(C.TemperaturaEnBorde):
-        C.ajustar_temperatura(z, y, g[g <= 1.0])     # el óptimo verdadero está fuera: cae en el borde superior
+    T, i = C.optimo_en_grilla(z, y, g)
+    assert 0 < i < 199 and 1 < T < 1000 and C.nll(z, y, T) < C.nll(z, y, 1.0)
+    assert C.optimo_en_grilla(z, y, g[g <= 1.0])[1] == len(g[g <= 1.0]) - 1    # el óptimo verdadero está fuera: borde superior
 
 
 def test_las_particiones_son_disjuntas_cubren_todo_y_estan_estratificadas():
@@ -88,15 +87,29 @@ def test_ninguna_imagen_se_calibra_con_una_T_ajustada_con_ella(monkeypatch):
     z, y = _datos()
     z[:, 0] = np.arange(len(z))                               # identifica cada imagen por su fila
     vistas = []
-    real = C.ajustar_temperatura
-    monkeypatch.setattr(C, "ajustar_temperatura", lambda zz, yy, g: vistas.append(set(zz[:, 0].astype(int))) or 1.5)
+    monkeypatch.setattr(C, "optimo_en_grilla", lambda zz, yy, g: (vistas.append(set(zz[:, 0].astype(int))), (1.5, 7))[1])
     f = C.particiones_estratificadas(y, 5, 42)
-    p, ts = C.calibrar_fuera_de_particion(z, y, f, C.grilla_temperatura(CFG["temperatura_grilla"]))
-    assert len(vistas) == 5 and ts == [1.5] * 5
+    p, ts, bordes = C.calibrar_fuera_de_particion(z, y, f, C.grilla_temperatura(CFG["temperatura_grilla"]))
+    assert len(vistas) == 5 and ts == [1.5] * 5 and bordes == []
     for k, ajuste in enumerate(vistas):
         assert ajuste.isdisjoint(np.flatnonzero(f == k)) and ajuste | set(np.flatnonzero(f == k)) == set(range(len(y)))
-    monkeypatch.setattr(C, "ajustar_temperatura", real)
     np.testing.assert_allclose(p, C.softmax_t(z, 1.5))
+
+
+def test_una_particion_en_el_borde_usa_su_T_y_queda_registrada(monkeypatch, tmp_path):
+    """§g.8: con el óptimo global adentro, una partición con óptimo en un borde no frena: usa esa T y el JSON lo registra."""
+    _falsos(monkeypatch)
+    real, n = C.optimo_en_grilla, []
+
+    def espia(zz, yy, g):
+        n.append(1)
+        return (float(g[-1]), len(g) - 1) if len(n) == 4 else real(zz, yy, g)   # la 1.ª es el ajuste global; la 4.ª, la partición 2
+    monkeypatch.setattr(C, "optimo_en_grilla", espia)
+    R = cargar_rutas()
+    d = C.calibrar_dev({**CFG, "bootstrap": {**CFG["bootstrap"], "replicas": 20}}, CFG_MODELO, REPO, R.splits, R.data_root, tmp_path, "r")
+    assert d["particiones_en_borde"] == [{"particion": 2, "T": pytest.approx(1000), "borde": "superior"}]
+    assert d["temperatura_por_particion"][2] == pytest.approx(1000) and "particiones [2]" in d["nota_ece"]
+    assert 1 < d["temperatura_final"] < 1000
 
 
 def test_regla_1_en_el_repo_elige_la_variante_y_empate_da_el_base(tmp_path):
@@ -134,6 +147,7 @@ def test_la_fase_dev_solo_lee_plantdoc_dev_y_registra_todo(monkeypatch, tmp_path
     d = C.calibrar_dev(cfg, CFG_MODELO, REPO, R.splits, R.data_root, tmp_path, "r")
     assert _DSFalso.leidos == [("plantdoc", "dev")]
     assert 1 < d["temperatura_final"] < 1000 and len(d["temperatura_por_particion"]) == 5 and "hallazgo" not in d
+    assert d["particiones_en_borde"] == [] and d["nota_ece"] is None
     assert d["despues_fuera_de_particion"]["ece"]["estimacion"] < d["antes_T_1"]["ece"]["estimacion"]
     for clave in ("commit", "cambios_sin_commitear", "config", "sha256_splits", "semillas", "torch", "dispositivo", "tiempo_s",
                   "memoria_pico_cpu_mb", "regla_modelo"):

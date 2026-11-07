@@ -99,3 +99,8 @@ estaba). "Excluye el 0" también lo cumple una geometría peor (IC entero debajo
    en el T del borde y log(12), y la etapa cierra con ese hallazgo: no hay T final, ni métricas calibradas, ni fila ni
    evaluación de PD-test. Si el óptimo queda adentro, siguen los ítems 3 a 7 sin cambios. Un borde que esta regla no prevé
    (el inferior, o el ajuste de una de las 5 particiones del ítem 3) frena la corrida y se consulta al equipo.
+9. **Ajuste del ítem 8** (2026-11-07, decisión del equipo, antes de volver a correr; el ítem 8 se deja como estaba). (a) Borde
+   inferior en el ajuste con todo PD-dev: se mantiene el freno (la corrida sale con código 5). (b) Una de las 5 particiones
+   del ítem 3 con su óptimo en un borde, con el óptimo global adentro: **no se frena**; esa partición usa su T de borde tal
+   cual, el JSON registra qué partición y qué T (`particiones_en_borde`) y el ECE fuera de partición se reporta con esa nota
+   (`nota_ece`).
