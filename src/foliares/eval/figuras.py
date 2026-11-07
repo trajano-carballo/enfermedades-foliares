@@ -174,3 +174,53 @@ def figura_comparacion(base: dict, variante: dict, ruta: str | Path, nombres_mod
     fig.savefig(ruta, dpi=150)
     plt.close(fig)
     return Path(ruta)
+
+
+def figura_fiabilidad(dev: dict, ruta: str | Path) -> Path:
+    """Sesión 11: diagrama de fiabilidad antes (T = 1) y después (fuera de partición) en PD-dev, con el ECE y su IC."""
+    fig, ejes = plt.subplots(1, 2, figsize=(10, 4.4), sharey=True)
+    for ax, (clave, titulo, ic) in zip(ejes, [("antes_T_1", "Antes (T = 1)", dev["antes_T_1"]["ece"]),
+                                              ("despues_fuera_de_particion", f"Después (T por partición; T final = {dev['temperatura_final']:.2f})",
+                                               dev["despues_fuera_de_particion"]["ece"])]):
+        bins = [b for b in dev["fiabilidad"][clave] if b["n"]]
+        centros = [(b["desde"] + b["hasta"]) / 2 for b in bins]
+        ax.bar(centros, [b["acierto"] for b in bins], width=1 / len(dev["fiabilidad"][clave]) * 0.9, color="#1f77b4", alpha=0.8, label="acierto del bin")
+        ax.plot([b["confianza"] for b in bins], [b["acierto"] for b in bins], "o", color="#d62728", ms=3, label="(confianza media, acierto)")
+        ax.plot([0, 1], [0, 1], "k--", lw=0.8, label="calibración perfecta")
+        for c, b in zip(centros, bins):
+            ax.text(c, 0.02, str(b["n"]), ha="center", fontsize=6, rotation=90, color="white" if b["acierto"] > 0.1 else "k")
+        ax.set_title(f"{titulo}\nECE {ic['estimacion']:.3f} [{ic['ic_bajo']:.3f}; {ic['ic_alto']:.3f}]", fontsize=9)
+        ax.set_xlim(0, 1)
+        ax.set_ylim(0, 1)
+        ax.set_xlabel("confianza máxima (15 bins de igual ancho; n de cada bin abajo)")
+    ejes[0].set_ylabel("acierto")
+    ejes[0].legend(fontsize=7, loc="upper left")
+    fig.suptitle(f"PlantDoc-dev (n = {dev['n_pd_dev']}), {dev['modelo_base']['run_id']}", fontsize=9)
+    fig.tight_layout()
+    fig.savefig(ruta, dpi=150)
+    plt.close(fig)
+    return Path(ruta)
+
+
+def figura_cobertura(dev: dict, ruta: str | Path) -> Path:
+    """Sesión 11: cobertura contra acierto sobre lo respondido al variar τ (descriptiva), con τ fijo marcado."""
+    fig, ax = plt.subplots(figsize=(6, 4.4))
+    for clave, nombre, color in [("antes_T_1", "sin calibrar (T = 1)", "#7f7f7f"), ("despues_fuera_de_particion", "calibrado (fuera de partición)", "#1f77b4")]:
+        c = [p for p in dev["curva_cobertura"][clave] if p["acierto_respondidas"] is not None]
+        ax.plot([p["cobertura"] for p in c], [p["acierto_respondidas"] for p in c], "-", color=color, label=nombre)
+        p = next(p for p in dev["curva_cobertura"][clave] if abs(p["tau"] - dev["tau"]) < 1e-9)
+        if p["acierto_respondidas"] is not None:
+            ax.plot(p["cobertura"], p["acierto_respondidas"], "o", color=color, ms=7)
+            ax.annotate(f"τ = {dev['tau']}", (p["cobertura"], p["acierto_respondidas"]), textcoords="offset points", xytext=(-30, 8), fontsize=8, color=color)
+        else:                                            # §g.7: sin respondidas el acierto no está definido; se dice en la figura
+            ax.annotate(f"{nombre}, τ = {dev['tau']}: 0 respondidas\n(acierto no definido)", (0, 0.9), fontsize=8, color=color)
+    ax.set_xlim(0, 1.02)
+    ax.set_ylim(0, 1)
+    ax.set_xlabel("cobertura (fracción respondida)")
+    ax.set_ylabel("acierto sobre lo respondido")
+    ax.set_title(f"PlantDoc-dev (n = {dev['n_pd_dev']}): descriptiva, τ fijado de antemano", fontsize=9)
+    ax.legend(fontsize=8, loc="lower left")
+    fig.tight_layout()
+    fig.savefig(ruta, dpi=150)
+    plt.close(fig)
+    return Path(ruta)

@@ -1,0 +1,1559 @@
+{
+  "fecha": "2026-11-07 09:50:30",
+  "commit": "6e5196a7d3f4344cafb2ecb549a4a8507a67dc0b",
+  "cambios_sin_commitear": false,
+  "config": {
+    "calibracion": {
+      "experimento": "05_calibracion",
+      "config_modelo": "configs/02_modelo_base.yaml",
+      "candidatos": {
+        "base": {
+          "run_id": "02_modelo_base_20261104_201229",
+          "resultados": "results/02_modelo_base/02_modelo_base_20261104_201229/resultados.json"
+        },
+        "variante": {
+          "run_id": "04_aumentacion_20261106_232146",
+          "resultados": "results/04_aumentacion/04_aumentacion_20261106_232146/resultados.json"
+        }
+      },
+      "modelo_base": {
+        "run_id": "04_aumentacion_20261106_232146",
+        "checkpoint": "04_aumentacion/04_aumentacion_20261106_232146/mejor.pt",
+        "sha256": "326e6a730321136e3e026bffcf84ed1b9b0adcec7162de2d18d1e13ba7495953"
+      },
+      "tamano": 224,
+      "geometria": "aplastar",
+      "temperatura_grilla": {
+        "desde": 0.5,
+        "hasta": 1000.0,
+        "n": 200
+      },
+      "ece_bins": 15,
+      "particiones": {
+        "k": 5,
+        "semilla": 42
+      },
+      "tau": 0.5,
+      "bootstrap": {
+        "replicas": 2000,
+        "nivel": 0.95,
+        "semilla": 42
+      },
+      "batch": 64,
+      "run_dev": null,
+      "temperatura": null
+    },
+    "modelo": {
+      "experimento": "02_modelo_base",
+      "semilla": 42,
+      "determinista": true,
+      "splits": {
+        "plantvillage": "plantvillage_particion.csv",
+        "plantdoc": "plantdoc_particion.csv"
+      },
+      "clases": [
+        {
+          "pv": "Pepper,_bell___Bacterial_spot",
+          "plantdoc": "Bell_pepper leaf spot"
+        },
+        {
+          "pv": "Pepper,_bell___healthy",
+          "plantdoc": "Bell_pepper leaf"
+        },
+        {
+          "pv": "Potato___Early_blight",
+          "plantdoc": "Potato leaf early blight"
+        },
+        {
+          "pv": "Potato___Late_blight",
+          "plantdoc": "Potato leaf late blight"
+        },
+        {
+          "pv": "Tomato___Bacterial_spot",
+          "plantdoc": "Tomato leaf bacterial spot"
+        },
+        {
+          "pv": "Tomato___Early_blight",
+          "plantdoc": "Tomato Early blight leaf"
+        },
+        {
+          "pv": "Tomato___Late_blight",
+          "plantdoc": "Tomato leaf late blight"
+        },
+        {
+          "pv": "Tomato___Leaf_Mold",
+          "plantdoc": "Tomato mold leaf"
+        },
+        {
+          "pv": "Tomato___Septoria_leaf_spot",
+          "plantdoc": "Tomato Septoria leaf spot"
+        },
+        {
+          "pv": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+          "plantdoc": "Tomato leaf yellow virus"
+        },
+        {
+          "pv": "Tomato___Tomato_mosaic_virus",
+          "plantdoc": "Tomato leaf mosaic virus"
+        },
+        {
+          "pv": "Tomato___healthy",
+          "plantdoc": "Tomato leaf"
+        }
+      ],
+      "clase_mosaic": "Tomato___Tomato_mosaic_virus",
+      "preproceso": {
+        "geometria": "aplastar",
+        "tamano": 224
+      },
+      "modelo": {
+        "pesos_imagenet": true
+      },
+      "features": {
+        "batch": 64
+      },
+      "entrenamiento": {
+        "optimizador": "adam",
+        "lr": 0.001,
+        "batch": 256,
+        "max_epocas": 100,
+        "paciencia": 10,
+        "criterio": "macro_f1_val_con_mosaic"
+      },
+      "aumentacion": "ninguna",
+      "ponderacion_clases": false,
+      "umbral_desbalance": 5,
+      "desbalance_aceptado_por_el_equipo": true,
+      "metricas": {
+        "modo_sin_mosaic": "sin_imagenes_de_la_clase",
+        "desempate_trivial": "primera_en_orden"
+      }
+    }
+  },
+  "sha256_splits": {
+    "plantdoc_particion.csv": "dc82e2d5af43a91610a0342023f34a972561fe143e8dfe13c6d4cc02768c8bba",
+    "plantvillage_particion.csv": "1ff04397bed8182b901609f2e0d3e0e8b3ceed3ac4b7739512b64f9b366713dd"
+  },
+  "semillas": {
+    "bootstrap": 42,
+    "particiones": 42
+  },
+  "python": "3.13.7",
+  "plataforma": "Windows-11-10.0.26200-SP0",
+  "torch": "2.14.1+cpu",
+  "cuda_runtime": null,
+  "cudnn": null,
+  "dispositivo": "cpu",
+  "gpu": null,
+  "hilos_cpu": 6,
+  "fase": "dev",
+  "run_id": "05_calibracion_dev_20261107_095030",
+  "regla_modelo": {
+    "macro_f1_pv_val": {
+      "base": 0.9558872035989506,
+      "variante": 0.96583838354839
+    },
+    "json": {
+      "base": "results/02_modelo_base/02_modelo_base_20261104_201229/resultados.json",
+      "variante": "results/04_aumentacion/04_aumentacion_20261106_232146/resultados.json"
+    },
+    "elegido": "variante",
+    "run_id": "04_aumentacion_20261106_232146"
+  },
+  "modelo_base": {
+    "run_id": "04_aumentacion_20261106_232146",
+    "checkpoint": "04_aumentacion/04_aumentacion_20261106_232146/mejor.pt",
+    "sha256": "326e6a730321136e3e026bffcf84ed1b9b0adcec7162de2d18d1e13ba7495953"
+  },
+  "geometria": "aplastar",
+  "n_pd_dev": 696,
+  "grilla_temperatura": {
+    "desde": 0.5,
+    "hasta": 1000.0,
+    "n": 200
+  },
+  "logits": "05_calibracion/05_calibracion_dev_20261107_095030/logits_pd_dev.csv",
+  "tiempo_forward": {
+    "tiempo_s": 24.209,
+    "memoria_pico_gpu_mb": null,
+    "memoria_pico_cpu_mb": 842.8
+  },
+  "tiempo_s": 26.471,
+  "memoria_pico_gpu_mb": null,
+  "memoria_pico_cpu_mb": 842.8,
+  "rutas_relativas_a": "la carpeta --salida",
+  "nota_memoria": "memoria_pico_cpu_mb es el máximo del proceso entero",
+  "temperatura_final": 14.973042339479479,
+  "nll_pd_dev": {
+    "T_1": 8.888924657129907,
+    "T_final": 2.344746328775285
+  },
+  "temperatura_por_particion": [
+    13.871833638851014,
+    14.973042339479479,
+    14.411923965964153,
+    15.556007471959122,
+    15.556007471959122
+  ],
+  "imagenes_por_particion": [
+    140,
+    139,
+    139,
+    139,
+    139
+  ],
+  "tau": 0.5,
+  "particiones_en_borde": [],
+  "nota_ece": null,
+  "antes_T_1": {
+    "ece": {
+      "estimacion": 0.6284590465773486,
+      "ic_bajo": 0.6008158204581082,
+      "ic_alto": 0.6547070359246611,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.6286256672449329
+    },
+    "cobertura": {
+      "estimacion": 0.9425287356321839,
+      "ic_bajo": 0.9252873563218391,
+      "ic_alto": 0.9583333333333334,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.9427004310344828
+    },
+    "abstencion": {
+      "estimacion": 0.05747126436781613,
+      "ic_bajo": 0.04166666666666663,
+      "ic_alto": 0.07471264367816088,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.057299568965517245
+    },
+    "n_respondidas": {
+      "estimacion": 656.0,
+      "ic_bajo": 644.0,
+      "ic_alto": 667.0,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 656.1195
+    },
+    "errores_alta_confianza": {
+      "estimacion": 0.7442528735632183,
+      "ic_bajo": 0.7155172413793104,
+      "ic_alto": 0.771551724137931,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.7442262931034482
+    },
+    "exactitud": {
+      "estimacion": 0.20977011494252873,
+      "ic_bajo": 0.1853448275862069,
+      "ic_alto": 0.23419540229885058,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.20996336206896551
+    },
+    "acierto_respondidas": {
+      "estimacion": 0.21036585365853658,
+      "ic_bajo": 0.1859712346179353,
+      "ic_alto": 0.2362874541043797,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.21054386855124735,
+      "replicas_excluidas": 0
+    }
+  },
+  "despues_fuera_de_particion": {
+    "ece": {
+      "estimacion": 0.039831284630962145,
+      "ic_bajo": 0.019608338787077274,
+      "ic_alto": 0.06638846784886188,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.04168956179572675
+    },
+    "cobertura": {
+      "estimacion": 0.0,
+      "ic_bajo": 0.0,
+      "ic_alto": 0.0,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.0
+    },
+    "abstencion": {
+      "estimacion": 1.0,
+      "ic_bajo": 1.0,
+      "ic_alto": 1.0,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 1.0
+    },
+    "n_respondidas": {
+      "estimacion": 0.0,
+      "ic_bajo": 0.0,
+      "ic_alto": 0.0,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.0
+    },
+    "errores_alta_confianza": {
+      "estimacion": 0.0,
+      "ic_bajo": 0.0,
+      "ic_alto": 0.0,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.0
+    },
+    "exactitud": {
+      "estimacion": 0.20977011494252873,
+      "ic_bajo": 0.1853448275862069,
+      "ic_alto": 0.23419540229885058,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.20996336206896551
+    },
+    "acierto_respondidas": {
+      "estimacion": null,
+      "ic_bajo": null,
+      "ic_alto": null,
+      "nivel": 0.95,
+      "n_replicas": 0,
+      "media_replicas": null,
+      "replicas_excluidas": 2000,
+      "nota": "no definido (0 respondidas)"
+    }
+  },
+  "fiabilidad": {
+    "antes_T_1": [
+      {
+        "desde": 0.0,
+        "hasta": 0.06666666666666667,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.06666666666666667,
+        "hasta": 0.13333333333333333,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.13333333333333333,
+        "hasta": 0.2,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.2,
+        "hasta": 0.26666666666666666,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.26666666666666666,
+        "hasta": 0.3333333333333333,
+        "n": 1,
+        "confianza": 0.3152358236825957,
+        "acierto": 0.0
+      },
+      {
+        "desde": 0.3333333333333333,
+        "hasta": 0.4,
+        "n": 11,
+        "confianza": 0.3563845665600424,
+        "acierto": 0.18181818181818182
+      },
+      {
+        "desde": 0.4,
+        "hasta": 0.4666666666666667,
+        "n": 13,
+        "confianza": 0.43515654427173883,
+        "acierto": 0.15384615384615385
+      },
+      {
+        "desde": 0.4666666666666667,
+        "hasta": 0.5333333333333333,
+        "n": 32,
+        "confianza": 0.5038850645669244,
+        "acierto": 0.21875
+      },
+      {
+        "desde": 0.5333333333333333,
+        "hasta": 0.6,
+        "n": 42,
+        "confianza": 0.5687014960210847,
+        "acierto": 0.16666666666666666
+      },
+      {
+        "desde": 0.6,
+        "hasta": 0.6666666666666666,
+        "n": 47,
+        "confianza": 0.6295748983356736,
+        "acierto": 0.19148936170212766
+      },
+      {
+        "desde": 0.6666666666666666,
+        "hasta": 0.7333333333333333,
+        "n": 45,
+        "confianza": 0.6996258789925107,
+        "acierto": 0.15555555555555556
+      },
+      {
+        "desde": 0.7333333333333333,
+        "hasta": 0.8,
+        "n": 44,
+        "confianza": 0.7678618070881396,
+        "acierto": 0.18181818181818182
+      },
+      {
+        "desde": 0.8,
+        "hasta": 0.8666666666666667,
+        "n": 60,
+        "confianza": 0.8310003525154198,
+        "acierto": 0.21666666666666667
+      },
+      {
+        "desde": 0.8666666666666667,
+        "hasta": 0.9333333333333333,
+        "n": 69,
+        "confianza": 0.9041055674785248,
+        "acierto": 0.13043478260869565
+      },
+      {
+        "desde": 0.9333333333333333,
+        "hasta": 1.0,
+        "n": 332,
+        "confianza": 0.983140966241478,
+        "acierto": 0.2469879518072289
+      }
+    ],
+    "despues_fuera_de_particion": [
+      {
+        "desde": 0.0,
+        "hasta": 0.06666666666666667,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.06666666666666667,
+        "hasta": 0.13333333333333333,
+        "n": 64,
+        "confianza": 0.12583899004486934,
+        "acierto": 0.09375
+      },
+      {
+        "desde": 0.13333333333333333,
+        "hasta": 0.2,
+        "n": 479,
+        "confianza": 0.1644282868993339,
+        "acierto": 0.19832985386221294
+      },
+      {
+        "desde": 0.2,
+        "hasta": 0.26666666666666666,
+        "n": 128,
+        "confianza": 0.221402847745641,
+        "acierto": 0.265625
+      },
+      {
+        "desde": 0.26666666666666666,
+        "hasta": 0.3333333333333333,
+        "n": 25,
+        "confianza": 0.28921629293996004,
+        "acierto": 0.44
+      },
+      {
+        "desde": 0.3333333333333333,
+        "hasta": 0.4,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.4,
+        "hasta": 0.4666666666666667,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.4666666666666667,
+        "hasta": 0.5333333333333333,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.5333333333333333,
+        "hasta": 0.6,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.6,
+        "hasta": 0.6666666666666666,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.6666666666666666,
+        "hasta": 0.7333333333333333,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.7333333333333333,
+        "hasta": 0.8,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.8,
+        "hasta": 0.8666666666666667,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.8666666666666667,
+        "hasta": 0.9333333333333333,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.9333333333333333,
+        "hasta": 1.0,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      }
+    ]
+  },
+  "curva_cobertura": {
+    "antes_T_1": [
+      {
+        "tau": 0.0,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.01,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.02,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.03,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.04,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.05,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.06,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.07,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.08,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.09,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.1,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.11,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.12,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.13,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.14,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.15,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.16,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.17,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.18,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.19,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.2,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.21,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.22,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.23,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.24,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.25,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.26,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.27,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.28,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.29,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.3,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.31,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.32,
+        "cobertura": 0.9985632183908046,
+        "acierto_respondidas": 0.21007194244604316
+      },
+      {
+        "tau": 0.33,
+        "cobertura": 0.9985632183908046,
+        "acierto_respondidas": 0.21007194244604316
+      },
+      {
+        "tau": 0.34,
+        "cobertura": 0.9956896551724138,
+        "acierto_respondidas": 0.20923520923520925
+      },
+      {
+        "tau": 0.35,
+        "cobertura": 0.9913793103448276,
+        "acierto_respondidas": 0.20869565217391303
+      },
+      {
+        "tau": 0.36,
+        "cobertura": 0.9899425287356322,
+        "acierto_respondidas": 0.20899854862119013
+      },
+      {
+        "tau": 0.37,
+        "cobertura": 0.985632183908046,
+        "acierto_respondidas": 0.2099125364431487
+      },
+      {
+        "tau": 0.38,
+        "cobertura": 0.985632183908046,
+        "acierto_respondidas": 0.2099125364431487
+      },
+      {
+        "tau": 0.39,
+        "cobertura": 0.9827586206896551,
+        "acierto_respondidas": 0.21052631578947367
+      },
+      {
+        "tau": 0.4,
+        "cobertura": 0.9827586206896551,
+        "acierto_respondidas": 0.21052631578947367
+      },
+      {
+        "tau": 0.41,
+        "cobertura": 0.9813218390804598,
+        "acierto_respondidas": 0.2108345534407028
+      },
+      {
+        "tau": 0.42,
+        "cobertura": 0.9770114942528736,
+        "acierto_respondidas": 0.21176470588235294
+      },
+      {
+        "tau": 0.43,
+        "cobertura": 0.9741379310344828,
+        "acierto_respondidas": 0.21238938053097345
+      },
+      {
+        "tau": 0.44,
+        "cobertura": 0.9727011494252874,
+        "acierto_respondidas": 0.21122599704579026
+      },
+      {
+        "tau": 0.45,
+        "cobertura": 0.9712643678160919,
+        "acierto_respondidas": 0.21153846153846154
+      },
+      {
+        "tau": 0.46,
+        "cobertura": 0.9655172413793104,
+        "acierto_respondidas": 0.2113095238095238
+      },
+      {
+        "tau": 0.47,
+        "cobertura": 0.9626436781609196,
+        "acierto_respondidas": 0.21194029850746268
+      },
+      {
+        "tau": 0.48,
+        "cobertura": 0.9554597701149425,
+        "acierto_respondidas": 0.21052631578947367
+      },
+      {
+        "tau": 0.49,
+        "cobertura": 0.9439655172413793,
+        "acierto_respondidas": 0.2100456621004566
+      },
+      {
+        "tau": 0.5,
+        "cobertura": 0.9425287356321839,
+        "acierto_respondidas": 0.21036585365853658
+      },
+      {
+        "tau": 0.51,
+        "cobertura": 0.9382183908045977,
+        "acierto_respondidas": 0.20980091883614088
+      },
+      {
+        "tau": 0.52,
+        "cobertura": 0.9339080459770115,
+        "acierto_respondidas": 0.20923076923076922
+      },
+      {
+        "tau": 0.53,
+        "cobertura": 0.9252873563218391,
+        "acierto_respondidas": 0.2111801242236025
+      },
+      {
+        "tau": 0.54,
+        "cobertura": 0.9152298850574713,
+        "acierto_respondidas": 0.2119309262166405
+      },
+      {
+        "tau": 0.55,
+        "cobertura": 0.9022988505747126,
+        "acierto_respondidas": 0.21496815286624205
+      },
+      {
+        "tau": 0.56,
+        "cobertura": 0.8994252873563219,
+        "acierto_respondidas": 0.21405750798722045
+      },
+      {
+        "tau": 0.57,
+        "cobertura": 0.8850574712643678,
+        "acierto_respondidas": 0.21266233766233766
+      },
+      {
+        "tau": 0.58,
+        "cobertura": 0.875,
+        "acierto_respondidas": 0.2134646962233169
+      },
+      {
+        "tau": 0.59,
+        "cobertura": 0.8692528735632183,
+        "acierto_respondidas": 0.21322314049586777
+      },
+      {
+        "tau": 0.6,
+        "cobertura": 0.8577586206896551,
+        "acierto_respondidas": 0.21440536013400335
+      },
+      {
+        "tau": 0.61,
+        "cobertura": 0.8462643678160919,
+        "acierto_respondidas": 0.21222410865874364
+      },
+      {
+        "tau": 0.62,
+        "cobertura": 0.8333333333333334,
+        "acierto_respondidas": 0.2120689655172414
+      },
+      {
+        "tau": 0.63,
+        "cobertura": 0.8189655172413793,
+        "acierto_respondidas": 0.21578947368421053
+      },
+      {
+        "tau": 0.64,
+        "cobertura": 0.8132183908045977,
+        "acierto_respondidas": 0.21554770318021202
+      },
+      {
+        "tau": 0.65,
+        "cobertura": 0.8045977011494253,
+        "acierto_respondidas": 0.21428571428571427
+      },
+      {
+        "tau": 0.66,
+        "cobertura": 0.7974137931034483,
+        "acierto_respondidas": 0.21441441441441442
+      },
+      {
+        "tau": 0.67,
+        "cobertura": 0.7859195402298851,
+        "acierto_respondidas": 0.21755027422303475
+      },
+      {
+        "tau": 0.68,
+        "cobertura": 0.7729885057471264,
+        "acierto_respondidas": 0.21561338289962825
+      },
+      {
+        "tau": 0.69,
+        "cobertura": 0.7672413793103449,
+        "acierto_respondidas": 0.21722846441947566
+      },
+      {
+        "tau": 0.7,
+        "cobertura": 0.7629310344827587,
+        "acierto_respondidas": 0.21657250470809794
+      },
+      {
+        "tau": 0.71,
+        "cobertura": 0.75,
+        "acierto_respondidas": 0.21839080459770116
+      },
+      {
+        "tau": 0.72,
+        "cobertura": 0.7399425287356322,
+        "acierto_respondidas": 0.21941747572815534
+      },
+      {
+        "tau": 0.73,
+        "cobertura": 0.7298850574712644,
+        "acierto_respondidas": 0.2204724409448819
+      },
+      {
+        "tau": 0.74,
+        "cobertura": 0.7212643678160919,
+        "acierto_respondidas": 0.22310756972111553
+      },
+      {
+        "tau": 0.75,
+        "cobertura": 0.7112068965517241,
+        "acierto_respondidas": 0.2222222222222222
+      },
+      {
+        "tau": 0.76,
+        "cobertura": 0.6968390804597702,
+        "acierto_respondidas": 0.22474226804123712
+      },
+      {
+        "tau": 0.77,
+        "cobertura": 0.6882183908045977,
+        "acierto_respondidas": 0.22338204592901878
+      },
+      {
+        "tau": 0.78,
+        "cobertura": 0.6839080459770115,
+        "acierto_respondidas": 0.22478991596638656
+      },
+      {
+        "tau": 0.79,
+        "cobertura": 0.6767241379310345,
+        "acierto_respondidas": 0.22717622080679406
+      },
+      {
+        "tau": 0.8,
+        "cobertura": 0.6623563218390804,
+        "acierto_respondidas": 0.22559652928416485
+      },
+      {
+        "tau": 0.81,
+        "cobertura": 0.6436781609195402,
+        "acierto_respondidas": 0.22321428571428573
+      },
+      {
+        "tau": 0.82,
+        "cobertura": 0.6307471264367817,
+        "acierto_respondidas": 0.2255125284738041
+      },
+      {
+        "tau": 0.83,
+        "cobertura": 0.6221264367816092,
+        "acierto_respondidas": 0.22863741339491916
+      },
+      {
+        "tau": 0.84,
+        "cobertura": 0.6120689655172413,
+        "acierto_respondidas": 0.2323943661971831
+      },
+      {
+        "tau": 0.85,
+        "cobertura": 0.5948275862068966,
+        "acierto_respondidas": 0.22946859903381642
+      },
+      {
+        "tau": 0.86,
+        "cobertura": 0.5818965517241379,
+        "acierto_respondidas": 0.22962962962962963
+      },
+      {
+        "tau": 0.87,
+        "cobertura": 0.5704022988505747,
+        "acierto_respondidas": 0.22921914357682618
+      },
+      {
+        "tau": 0.88,
+        "cobertura": 0.5574712643678161,
+        "acierto_respondidas": 0.2345360824742268
+      },
+      {
+        "tau": 0.89,
+        "cobertura": 0.5474137931034483,
+        "acierto_respondidas": 0.2335958005249344
+      },
+      {
+        "tau": 0.9,
+        "cobertura": 0.5387931034482759,
+        "acierto_respondidas": 0.23733333333333334
+      },
+      {
+        "tau": 0.91,
+        "cobertura": 0.521551724137931,
+        "acierto_respondidas": 0.24242424242424243
+      },
+      {
+        "tau": 0.92,
+        "cobertura": 0.5,
+        "acierto_respondidas": 0.2442528735632184
+      },
+      {
+        "tau": 0.93,
+        "cobertura": 0.4813218390804598,
+        "acierto_respondidas": 0.24477611940298508
+      },
+      {
+        "tau": 0.94,
+        "cobertura": 0.45977011494252873,
+        "acierto_respondidas": 0.24375
+      },
+      {
+        "tau": 0.95,
+        "cobertura": 0.4295977011494253,
+        "acierto_respondidas": 0.2508361204013378
+      },
+      {
+        "tau": 0.96,
+        "cobertura": 0.39655172413793105,
+        "acierto_respondidas": 0.2536231884057971
+      },
+      {
+        "tau": 0.97,
+        "cobertura": 0.35919540229885055,
+        "acierto_respondidas": 0.268
+      },
+      {
+        "tau": 0.98,
+        "cobertura": 0.3275862068965517,
+        "acierto_respondidas": 0.2719298245614035
+      },
+      {
+        "tau": 0.99,
+        "cobertura": 0.257183908045977,
+        "acierto_respondidas": 0.2681564245810056
+      },
+      {
+        "tau": 1.0,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      }
+    ],
+    "despues_fuera_de_particion": [
+      {
+        "tau": 0.0,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.01,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.02,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.03,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.04,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.05,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.06,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.07,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.08,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.09,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.1,
+        "cobertura": 1.0,
+        "acierto_respondidas": 0.20977011494252873
+      },
+      {
+        "tau": 0.11,
+        "cobertura": 0.9985632183908046,
+        "acierto_respondidas": 0.21007194244604316
+      },
+      {
+        "tau": 0.12,
+        "cobertura": 0.9841954022988506,
+        "acierto_respondidas": 0.2116788321167883
+      },
+      {
+        "tau": 0.13,
+        "cobertura": 0.9353448275862069,
+        "acierto_respondidas": 0.21505376344086022
+      },
+      {
+        "tau": 0.14,
+        "cobertura": 0.8390804597701149,
+        "acierto_respondidas": 0.22602739726027396
+      },
+      {
+        "tau": 0.15,
+        "cobertura": 0.7370689655172413,
+        "acierto_respondidas": 0.2378167641325536
+      },
+      {
+        "tau": 0.16,
+        "cobertura": 0.603448275862069,
+        "acierto_respondidas": 0.24523809523809523
+      },
+      {
+        "tau": 0.17,
+        "cobertura": 0.49137931034482757,
+        "acierto_respondidas": 0.260233918128655
+      },
+      {
+        "tau": 0.18,
+        "cobertura": 0.37212643678160917,
+        "acierto_respondidas": 0.27413127413127414
+      },
+      {
+        "tau": 0.19,
+        "cobertura": 0.28448275862068967,
+        "acierto_respondidas": 0.2828282828282828
+      },
+      {
+        "tau": 0.2,
+        "cobertura": 0.21982758620689655,
+        "acierto_respondidas": 0.29411764705882354
+      },
+      {
+        "tau": 0.21,
+        "cobertura": 0.16235632183908047,
+        "acierto_respondidas": 0.2831858407079646
+      },
+      {
+        "tau": 0.22,
+        "cobertura": 0.11925287356321838,
+        "acierto_respondidas": 0.2891566265060241
+      },
+      {
+        "tau": 0.23,
+        "cobertura": 0.07902298850574713,
+        "acierto_respondidas": 0.2909090909090909
+      },
+      {
+        "tau": 0.24,
+        "cobertura": 0.06752873563218391,
+        "acierto_respondidas": 0.2978723404255319
+      },
+      {
+        "tau": 0.25,
+        "cobertura": 0.05603448275862069,
+        "acierto_respondidas": 0.3333333333333333
+      },
+      {
+        "tau": 0.26,
+        "cobertura": 0.041666666666666664,
+        "acierto_respondidas": 0.41379310344827586
+      },
+      {
+        "tau": 0.27,
+        "cobertura": 0.031609195402298854,
+        "acierto_respondidas": 0.45454545454545453
+      },
+      {
+        "tau": 0.28,
+        "cobertura": 0.02442528735632184,
+        "acierto_respondidas": 0.4117647058823529
+      },
+      {
+        "tau": 0.29,
+        "cobertura": 0.015804597701149427,
+        "acierto_respondidas": 0.45454545454545453
+      },
+      {
+        "tau": 0.3,
+        "cobertura": 0.011494252873563218,
+        "acierto_respondidas": 0.5
+      },
+      {
+        "tau": 0.31,
+        "cobertura": 0.004310344827586207,
+        "acierto_respondidas": 0.3333333333333333
+      },
+      {
+        "tau": 0.32,
+        "cobertura": 0.0014367816091954023,
+        "acierto_respondidas": 0.0
+      },
+      {
+        "tau": 0.33,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.34,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.35,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.36,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.37,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.38,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.39,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.4,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.41,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.42,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.43,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.44,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.45,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.46,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.47,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.48,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.49,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.5,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.51,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.52,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.53,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.54,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.55,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.56,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.57,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.58,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.59,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.6,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.61,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.62,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.63,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.64,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.65,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.66,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.67,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.68,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.69,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.7,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.71,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.72,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.73,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.74,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.75,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.76,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.77,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.78,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.79,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.8,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.81,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.82,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.83,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.84,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.85,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.86,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.87,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.88,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.89,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.9,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.91,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.92,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.93,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.94,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.95,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.96,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.97,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.98,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 0.99,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      },
+      {
+        "tau": 1.0,
+        "cobertura": 0.0,
+        "acierto_respondidas": null
+      }
+    ]
+  }
+}

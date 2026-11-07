@@ -47,9 +47,10 @@ def bootstrap(y, p, metrica: Metrica, n_replicas: int = 2000, semilla: int = 42,
 
 
 def bootstrap_multiple(y, p, metricas: Callable[[np.ndarray, np.ndarray], dict[str, float]], n_replicas: int = 2000,
-                       semilla: int = 42, nivel: float = 0.95) -> dict[str, dict]:
+                       semilla: int = 42, nivel: float = 0.95, excluir_nan: tuple[str, ...] = ()) -> dict[str, dict]:
     """Varias métricas sobre las MISMAS réplicas: `metricas(y, p)` devuelve {nombre: valor}. Con la misma semilla las réplicas
-    son las de `bootstrap`, así que cada métrica da el mismo IC que si se la pidiera sola."""
+    son las de `bootstrap`, así que cada métrica da el mismo IC que si se la pidiera sola. Para las métricas de `excluir_nan`
+    (no definidas en algunas réplicas, §g.7) el IC sale de las réplicas definidas y se informa `replicas_excluidas`."""
     y, p = _np(y), _np(p)
     idx = indices_estratificados(y, n_replicas, np.random.default_rng(semilla))
     puntual = metricas(y, p)
@@ -58,7 +59,13 @@ def bootstrap_multiple(y, p, metricas: Callable[[np.ndarray, np.ndarray], dict[s
         valores = metricas(y[i], p[i])
         for k in reps:
             reps[k][r] = valores[k]
-    return {k: _resumen(puntual[k], reps[k], nivel) for k in puntual}
+    res = {k: _resumen(puntual[k], reps[k], nivel) for k in puntual if k not in excluir_nan}
+    for k in excluir_nan:
+        v = reps[k][~np.isnan(reps[k])]
+        res[k] = {**(_resumen(puntual[k], v, nivel) if len(v) else {"estimacion": float(puntual[k]), "ic_bajo": None, "ic_alto": None,
+                                                                     "nivel": nivel, "n_replicas": 0, "media_replicas": None}),
+                  "replicas_excluidas": int(n_replicas - len(v))}
+    return res
 
 
 def bootstrap_pareado(y, p_a, p_b, metrica: Metrica, n_replicas: int = 2000, semilla: int = 42, nivel: float = 0.95) -> dict:

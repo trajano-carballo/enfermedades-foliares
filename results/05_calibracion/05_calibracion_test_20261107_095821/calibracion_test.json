@@ -1,0 +1,517 @@
+{
+  "fecha": "2026-11-07 09:58:22",
+  "commit": "5bff0d78a829184c5017505b3eccb0554301ad56",
+  "cambios_sin_commitear": false,
+  "config": {
+    "calibracion": {
+      "experimento": "05_calibracion",
+      "config_modelo": "configs/02_modelo_base.yaml",
+      "candidatos": {
+        "base": {
+          "run_id": "02_modelo_base_20261104_201229",
+          "resultados": "results/02_modelo_base/02_modelo_base_20261104_201229/resultados.json"
+        },
+        "variante": {
+          "run_id": "04_aumentacion_20261106_232146",
+          "resultados": "results/04_aumentacion/04_aumentacion_20261106_232146/resultados.json"
+        }
+      },
+      "modelo_base": {
+        "run_id": "04_aumentacion_20261106_232146",
+        "checkpoint": "04_aumentacion/04_aumentacion_20261106_232146/mejor.pt",
+        "sha256": "326e6a730321136e3e026bffcf84ed1b9b0adcec7162de2d18d1e13ba7495953"
+      },
+      "tamano": 224,
+      "geometria": "aplastar",
+      "temperatura_grilla": {
+        "desde": 0.5,
+        "hasta": 1000.0,
+        "n": 200
+      },
+      "ece_bins": 15,
+      "particiones": {
+        "k": 5,
+        "semilla": 42
+      },
+      "tau": 0.5,
+      "bootstrap": {
+        "replicas": 2000,
+        "nivel": 0.95,
+        "semilla": 42
+      },
+      "batch": 64,
+      "run_dev": "05_calibracion_dev_20261107_095030",
+      "temperatura": 14.973042339479479
+    },
+    "modelo": {
+      "experimento": "02_modelo_base",
+      "semilla": 42,
+      "determinista": true,
+      "splits": {
+        "plantvillage": "plantvillage_particion.csv",
+        "plantdoc": "plantdoc_particion.csv"
+      },
+      "clases": [
+        {
+          "pv": "Pepper,_bell___Bacterial_spot",
+          "plantdoc": "Bell_pepper leaf spot"
+        },
+        {
+          "pv": "Pepper,_bell___healthy",
+          "plantdoc": "Bell_pepper leaf"
+        },
+        {
+          "pv": "Potato___Early_blight",
+          "plantdoc": "Potato leaf early blight"
+        },
+        {
+          "pv": "Potato___Late_blight",
+          "plantdoc": "Potato leaf late blight"
+        },
+        {
+          "pv": "Tomato___Bacterial_spot",
+          "plantdoc": "Tomato leaf bacterial spot"
+        },
+        {
+          "pv": "Tomato___Early_blight",
+          "plantdoc": "Tomato Early blight leaf"
+        },
+        {
+          "pv": "Tomato___Late_blight",
+          "plantdoc": "Tomato leaf late blight"
+        },
+        {
+          "pv": "Tomato___Leaf_Mold",
+          "plantdoc": "Tomato mold leaf"
+        },
+        {
+          "pv": "Tomato___Septoria_leaf_spot",
+          "plantdoc": "Tomato Septoria leaf spot"
+        },
+        {
+          "pv": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+          "plantdoc": "Tomato leaf yellow virus"
+        },
+        {
+          "pv": "Tomato___Tomato_mosaic_virus",
+          "plantdoc": "Tomato leaf mosaic virus"
+        },
+        {
+          "pv": "Tomato___healthy",
+          "plantdoc": "Tomato leaf"
+        }
+      ],
+      "clase_mosaic": "Tomato___Tomato_mosaic_virus",
+      "preproceso": {
+        "geometria": "aplastar",
+        "tamano": 224
+      },
+      "modelo": {
+        "pesos_imagenet": true
+      },
+      "features": {
+        "batch": 64
+      },
+      "entrenamiento": {
+        "optimizador": "adam",
+        "lr": 0.001,
+        "batch": 256,
+        "max_epocas": 100,
+        "paciencia": 10,
+        "criterio": "macro_f1_val_con_mosaic"
+      },
+      "aumentacion": "ninguna",
+      "ponderacion_clases": false,
+      "umbral_desbalance": 5,
+      "desbalance_aceptado_por_el_equipo": true,
+      "metricas": {
+        "modo_sin_mosaic": "sin_imagenes_de_la_clase",
+        "desempate_trivial": "primera_en_orden"
+      }
+    }
+  },
+  "sha256_splits": {
+    "plantdoc_particion.csv": "dc82e2d5af43a91610a0342023f34a972561fe143e8dfe13c6d4cc02768c8bba",
+    "plantvillage_particion.csv": "1ff04397bed8182b901609f2e0d3e0e8b3ceed3ac4b7739512b64f9b366713dd"
+  },
+  "semillas": {
+    "bootstrap": 42
+  },
+  "python": "3.13.7",
+  "plataforma": "Windows-11-10.0.26200-SP0",
+  "torch": "2.14.1+cpu",
+  "cuda_runtime": null,
+  "cudnn": null,
+  "dispositivo": "cpu",
+  "gpu": null,
+  "hilos_cpu": 6,
+  "fase": "test",
+  "run_id": "05_calibracion_test_20261107_095821",
+  "accesos": {
+    "PD-test": {
+      "fecha": "2026-11-07",
+      "test": "PD-test",
+      "modelo_config": "variante de la etapa 4 `04_aumentacion_20261106_232146` (checkpoint sha256 `326e6a73…7495953`), elegida por la regla 1 del §g; config `configs/05_calibracion.yaml`, geometría `aplastar`, T = 14,973042339479479 (ajustada con todo PD-dev, run `05_calibracion_dev_20261107_095030`), τ = 0,5",
+      "commit": "fae65fa",
+      "motivo": "evaluación única de la etapa 5 (calibración y abstención, §g.6): ECE antes (T = 1) y después (T final), cobertura, acierto sobre lo respondido (con n de respondidas, §g.7), abstención y errores de alta confianza calibrados y sin calibrar, con IC bootstrap. PV-test no se toca",
+      "fila": 5,
+      "head": "5bff0d78a829184c5017505b3eccb0554301ad56"
+    }
+  },
+  "modelo_base": {
+    "run_id": "04_aumentacion_20261106_232146",
+    "checkpoint": "04_aumentacion/04_aumentacion_20261106_232146/mejor.pt",
+    "sha256": "326e6a730321136e3e026bffcf84ed1b9b0adcec7162de2d18d1e13ba7495953"
+  },
+  "geometria": "aplastar",
+  "n_pd_test": 300,
+  "temperatura": 14.973042339479479,
+  "tau": 0.5,
+  "run_dev": "05_calibracion_dev_20261107_095030",
+  "antes_T_1": {
+    "ece": {
+      "estimacion": 0.6764907945297569,
+      "ic_bajo": 0.6345361798004333,
+      "ic_alto": 0.7170581300359028,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.6763526037189017
+    },
+    "cobertura": {
+      "estimacion": 0.96,
+      "ic_bajo": 0.9366666666666666,
+      "ic_alto": 0.98,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.9597049999999999
+    },
+    "abstencion": {
+      "estimacion": 0.040000000000000036,
+      "ic_bajo": 0.020000000000000018,
+      "ic_alto": 0.06333333333333335,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.040295000000000004
+    },
+    "n_respondidas": {
+      "estimacion": 288.0,
+      "ic_bajo": 281.0,
+      "ic_alto": 294.0,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 287.9115
+    },
+    "errores_alta_confianza": {
+      "estimacion": 0.7866666666666666,
+      "ic_bajo": 0.7433333333333333,
+      "ic_alto": 0.8267499999999995,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.7864483333333333
+    },
+    "exactitud": {
+      "estimacion": 0.17333333333333334,
+      "ic_bajo": 0.13666666666666666,
+      "ic_alto": 0.21,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.17325666666666667
+    },
+    "acierto_respondidas": {
+      "estimacion": 0.18055555555555555,
+      "ic_bajo": 0.1413793103448276,
+      "ic_alto": 0.21993998269771461,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.18054785652336647,
+      "replicas_excluidas": 0
+    }
+  },
+  "despues_T_final": {
+    "ece": {
+      "estimacion": 0.02060038832377934,
+      "ic_bajo": 0.014848220664408432,
+      "ic_alto": 0.06683296726158797,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.036458050233201346
+    },
+    "cobertura": {
+      "estimacion": 0.0,
+      "ic_bajo": 0.0,
+      "ic_alto": 0.0,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.0
+    },
+    "abstencion": {
+      "estimacion": 1.0,
+      "ic_bajo": 1.0,
+      "ic_alto": 1.0,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 1.0
+    },
+    "n_respondidas": {
+      "estimacion": 0.0,
+      "ic_bajo": 0.0,
+      "ic_alto": 0.0,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.0
+    },
+    "errores_alta_confianza": {
+      "estimacion": 0.0,
+      "ic_bajo": 0.0,
+      "ic_alto": 0.0,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.0
+    },
+    "exactitud": {
+      "estimacion": 0.17333333333333334,
+      "ic_bajo": 0.13666666666666666,
+      "ic_alto": 0.21,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.17325666666666667
+    },
+    "acierto_respondidas": {
+      "estimacion": null,
+      "ic_bajo": null,
+      "ic_alto": null,
+      "nivel": 0.95,
+      "n_replicas": 0,
+      "media_replicas": null,
+      "replicas_excluidas": 2000,
+      "nota": "no definido (0 respondidas)"
+    }
+  },
+  "fiabilidad": {
+    "antes_T_1": [
+      {
+        "desde": 0.0,
+        "hasta": 0.06666666666666667,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.06666666666666667,
+        "hasta": 0.13333333333333333,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.13333333333333333,
+        "hasta": 0.2,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.2,
+        "hasta": 0.26666666666666666,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.26666666666666666,
+        "hasta": 0.3333333333333333,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.3333333333333333,
+        "hasta": 0.4,
+        "n": 1,
+        "confianza": 0.3975768906102129,
+        "acierto": 0.0
+      },
+      {
+        "desde": 0.4,
+        "hasta": 0.4666666666666667,
+        "n": 8,
+        "confianza": 0.4372140824065005,
+        "acierto": 0.0
+      },
+      {
+        "desde": 0.4666666666666667,
+        "hasta": 0.5333333333333333,
+        "n": 14,
+        "confianza": 0.5082572987751618,
+        "acierto": 0.14285714285714285
+      },
+      {
+        "desde": 0.5333333333333333,
+        "hasta": 0.6,
+        "n": 17,
+        "confianza": 0.5680044837539839,
+        "acierto": 0.17647058823529413
+      },
+      {
+        "desde": 0.6,
+        "hasta": 0.6666666666666666,
+        "n": 17,
+        "confianza": 0.6385823234407826,
+        "acierto": 0.11764705882352941
+      },
+      {
+        "desde": 0.6666666666666666,
+        "hasta": 0.7333333333333333,
+        "n": 17,
+        "confianza": 0.6963987046353844,
+        "acierto": 0.11764705882352941
+      },
+      {
+        "desde": 0.7333333333333333,
+        "hasta": 0.8,
+        "n": 19,
+        "confianza": 0.7582054484930051,
+        "acierto": 0.05263157894736842
+      },
+      {
+        "desde": 0.8,
+        "hasta": 0.8666666666666667,
+        "n": 25,
+        "confianza": 0.8330580743686997,
+        "acierto": 0.12
+      },
+      {
+        "desde": 0.8666666666666667,
+        "hasta": 0.9333333333333333,
+        "n": 33,
+        "confianza": 0.9010098022133125,
+        "acierto": 0.15151515151515152
+      },
+      {
+        "desde": 0.9333333333333333,
+        "hasta": 1.0,
+        "n": 149,
+        "confianza": 0.9840262689360812,
+        "acierto": 0.22818791946308725
+      }
+    ],
+    "despues_T_final": [
+      {
+        "desde": 0.0,
+        "hasta": 0.06666666666666667,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.06666666666666667,
+        "hasta": 0.13333333333333333,
+        "n": 27,
+        "confianza": 0.12676443836757936,
+        "acierto": 0.1111111111111111
+      },
+      {
+        "desde": 0.13333333333333333,
+        "hasta": 0.2,
+        "n": 210,
+        "confianza": 0.16415166358023164,
+        "acierto": 0.1523809523809524
+      },
+      {
+        "desde": 0.2,
+        "hasta": 0.26666666666666666,
+        "n": 52,
+        "confianza": 0.2253216319004108,
+        "acierto": 0.25
+      },
+      {
+        "desde": 0.26666666666666666,
+        "hasta": 0.3333333333333333,
+        "n": 8,
+        "confianza": 0.29138140349270214,
+        "acierto": 0.25
+      },
+      {
+        "desde": 0.3333333333333333,
+        "hasta": 0.4,
+        "n": 2,
+        "confianza": 0.3755283995552068,
+        "acierto": 1.0
+      },
+      {
+        "desde": 0.4,
+        "hasta": 0.4666666666666667,
+        "n": 1,
+        "confianza": 0.42235773935067494,
+        "acierto": 0.0
+      },
+      {
+        "desde": 0.4666666666666667,
+        "hasta": 0.5333333333333333,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.5333333333333333,
+        "hasta": 0.6,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.6,
+        "hasta": 0.6666666666666666,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.6666666666666666,
+        "hasta": 0.7333333333333333,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.7333333333333333,
+        "hasta": 0.8,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.8,
+        "hasta": 0.8666666666666667,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.8666666666666667,
+        "hasta": 0.9333333333333333,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      },
+      {
+        "desde": 0.9333333333333333,
+        "hasta": 1.0,
+        "n": 0,
+        "confianza": null,
+        "acierto": null
+      }
+    ]
+  },
+  "logits": "05_calibracion/05_calibracion_test_20261107_095821/logits_pd_test.csv",
+  "tiempo_forward": {
+    "tiempo_s": 10.508,
+    "memoria_pico_gpu_mb": null,
+    "memoria_pico_cpu_mb": 702.7
+  },
+  "tiempo_s": 12.183,
+  "memoria_pico_gpu_mb": null,
+  "memoria_pico_cpu_mb": 702.7,
+  "rutas_relativas_a": "la carpeta --salida",
+  "nota_memoria": "memoria_pico_cpu_mb es el máximo del proceso entero"
+}
