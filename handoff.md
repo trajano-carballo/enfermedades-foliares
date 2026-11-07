@@ -4,13 +4,14 @@
 
 ## 2026-11-06 — Sesión 10: intervención de la etapa 4 (fine-tuning parcial con aumentación dirigida)
 
-**Estado:** la variante está entrenada (Colab), evaluada una vez en los dos tests y comparada con el base. Mejora PV-test (diferencia pareada 0,019 [0,004; 0,033]) pero no PD-test (-0,004 [-0,030; 0,023], incluye el 0). La brecha queda en 0,830 [0,792; 0,867] (base: 0,807 [0,768; 0,845]). La sesión 13 (supresión de fondo, combinación y control) quedó recortada por plazo; la defensa es el 20/11.
+**Estado:** la variante está entrenada (Colab), evaluada una vez en los dos tests y comparada con el base. Mejora PV-test (diferencia pareada 0,019 [0,004; 0,033]) pero no PD-test (-0,004 [-0,030; 0,023], incluye el 0). La brecha queda en 0,830 [0,792; 0,867] (base: 0,807 [0,768; 0,845]). La sesión 13 (supresión de fondo, combinación y control) quedó recortada por plazo; la defensa es el 20/11. Suite: 287 pasan, 0 saltados.
 
 **Tabla base vs. variante** (macro-F1, IC 95 % bootstrap estratificado, 2.000 réplicas, semilla 42, `aplastar`; JSON en `results/04_aumentacion/`)
 
 | | Base | Variante | Diferencia pareada (variante − base) |
 |---|---|---|---|
 | PV-test (n = 2.170) | 0,937 [0,922; 0,950] | 0,956 [0,943; 0,967] | 0,019 [0,004; 0,033] |
+| PV-test sin mosaic (`sin_imagenes_de_la_clase`) | 0,951 [0,941; 0,960] | 0,966 [0,957; 0,974] | (no calculada) |
 | PD-test (n = 300) | 0,130 [0,093; 0,168] | 0,126 [0,087; 0,165] | -0,004 [-0,030; 0,023] |
 | Brecha (PV − PD) | 0,807 [0,768; 0,845] | 0,830 [0,792; 0,867] | (no calculada) |
 
@@ -18,10 +19,12 @@
 - Fase 0 (`281b9e0`): la guarda rechaza una fila ya usada (registro de uso: el bloque `accesos` de los JSON versionados de `results/`) y exige que no cambie nada en `configs/` desde el commit de la fila. Plazos y recorte de la sesión 13 en `decisiones.md`.
 - Decisiones a–h y BatchNorm de los bloques congelados en modo eval (`691336f`), antes de entrenar.
 - Código (`8e91fad`): `data/aumentacion.py` (solo PV-train; con `ninguna` es el pipeline del base), `descongelar_parcial` y `modo_entrenamiento_parcial`, `training/finetune.py` (forward completo, checkpoint por época, reanudación verificada por test), `scripts/entrenar_finetune.py`, `configs/04_aumentacion.yaml` y `notebooks/04_aumentacion_colab.ipynb` (solo lleva PlantVillage a Colab). La prueba corta en CPU encontró que las transformaciones no se podían serializar para los workers del DataLoader en Windows: corregido con test.
-- Entrenamiento en Colab (run `04_aumentacion_20261106_232146`, desde `8e91fad`, Tesla T4): época 18 de 20, macro-F1 en PV-val 0,966.
+- Entrenamiento en Colab (run `04_aumentacion_20261106_232146`, desde `8e91fad`, Tesla T4): época 18 de 20, macro-F1 en PV-val 0,966. La hora de los run_id generados en Colab está en UTC: `232146` son las 23:21 UTC, es decir las 20:21 en −03 (el resto de los run_id, generados en la PC, están en hora local).
 - Evaluación (`0a094ac`): `configs/04_evaluacion.yaml` y `--fase dev_informativo`. PD-dev (informativo): 0,146 [0,121; 0,171] contra 0,124 del base, diferencia pareada +0,022 [−0,003; +0,047].
 - Filas 3 y 4 (`9d0f5a7`) y pasada única (`6fa21ed` lleva su `tests.json`, la nota de accesos y el código de comparación y figuras).
 - Comparación pareada (`04_aumentacion_comparacion_20261106_211523`), IC por clase (`04_aumentacion_ic_20261106_211534`) y CAM sobre la misma muestra de la sesión 9 (`04_aumentacion_cam_20261106_211557`), los tres desde `6fa21ed` con el árbol limpio. Figuras en `docs/figuras_sesion10/`: `base_vs_variante.png`, `matrices_variante_pv_pd_test.png`, `cam_variante_clases_1a6.png` y `cam_variante_clases_7a12.png`.
+
+- **Review de la sesión 10** (`009f24c` y el commit siguiente): la figura de matrices compartía el eje y entre los dos paneles y el de PV-test mostraba el n de PD-test (las celdas, que son proporciones por fila, estaban bien). Se corrigió (`sharey=False` y más separación, con tests que leen las etiquetas de cada panel y que verifican que no se tapan) y se regeneraron desde el árbol limpio las matrices de las sesiones 9 y 10 a partir de los `tests.json` versionados (no es un acceso nuevo; nota en `accesos_test.md`). Se agregó "PV-test sin mosaic" a la tabla. El test de la guarda cubre ya las filas 1 a 4.
 
 **Qué quedó a medias:** nada de esta sesión.
 

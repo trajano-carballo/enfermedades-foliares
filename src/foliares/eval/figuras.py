@@ -85,6 +85,7 @@ def figura_matrices(tests: dict, ruta: str | Path, *, ic_json: str) -> Path:
         ax.set_xlabel("clase predicha")
         ax.set_title(f"{test} (n={tests['resultados'][test]['n']}, macro-F1 {tests['resultados'][test]['base_macro_f1_ic']['estimacion']:.3f})")
     ejes[0].set_ylabel("clase verdadera")
+    fig.subplots_adjust(wspace=0.55)        # sin eje compartido, las etiquetas de PD-test necesitan espacio para no tapar a PV-test
     fig.colorbar(im, ax=ejes, fraction=0.02, pad=0.02, label="proporción de la fila")
     fig.suptitle(leyenda_matrices(ic_json), fontsize=9, style="italic", y=0.995)         # arriba: no choca con las etiquetas del eje x
     fig.savefig(ruta, dpi=150, bbox_inches="tight")

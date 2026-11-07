@@ -179,3 +179,10 @@ def test_cada_panel_de_las_matrices_muestra_su_propio_n(tmp_path, monkeypatch):
     ejes = [a for a in capturadas[0].axes if a.get_title()]                    # los dos paneles (sin la barra de color)
     pv, pd_ = ([e.get_text() for e in a.get_yticklabels()] for a in ejes)
     assert [x.split("(n=")[1] for x in pv] == ["131)", "233)", "152)"] and [x.split("(n=")[1] for x in pd_] == ["20)", "17)", "29)"]
+    from matplotlib.backends.backend_agg import FigureCanvasAgg
+    fig = capturadas[0]
+    FigureCanvasAgg(fig)                                                        # la figura ya se cerró: se le da un canvas para medir
+    fig.canvas.draw()
+    r = fig.canvas.get_renderer()
+    borde_pv = ejes[0].get_window_extent(r).x1
+    assert min(e.get_window_extent(r).x0 for e in ejes[1].get_yticklabels()) > borde_pv     # las etiquetas de PD-test no tapan a PV-test
