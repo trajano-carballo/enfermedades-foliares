@@ -5,7 +5,7 @@
 - Regla 2 (modificada el 2026-11-07): un único T que minimiza la NLL en PD-dev, en una grilla logarítmica. Si el óptimo del
   ajuste con todo PD-dev cae en el borde superior, la etapa cierra con el hallazgo "T no acotada" (sin T final ni métricas
   calibradas ni PD-test). Borde inferior en el ajuste global: se frena. Una partición con óptimo en un borde (y el global
-  adentro) usa su T de borde tal cual y queda registrada (§g.8).
+  adentro) usa su T de borde tal cual y queda registrada (§g.9).
 - Regla 3: ECE de 15 bins de igual ancho sobre la confianza máxima; en PD-dev, fuera de partición (5 particiones
   estratificadas: cada imagen se calibra con una T ajustada SIN ella). La T final se ajusta con todo PD-dev.
 - Reglas 4–5: τ fijo; responde si p ≥ τ. Métricas del sistema con IC bootstrap (`foliares.eval.bootstrap`).
@@ -18,7 +18,6 @@ import json
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 import torch
 from sklearn.model_selection import StratifiedKFold
 
@@ -130,8 +129,8 @@ def _exigir_modelo_de_la_regla(repo: Path, cfg: dict) -> dict:
 
 
 def _ic(y, probs, cfg: dict) -> dict:
-    bs = cfg["bootstrap"]
     """IC de las métricas del sistema; acierto sobre lo respondido según §g.7 (réplicas sin respondidas afuera, contadas)."""
+    bs = cfg["bootstrap"]
     f = lambda yy, pp: metricas_sistema(yy, pp, cfg["tau"], cfg["ece_bins"])  # noqa: E731
     r = B.bootstrap_multiple(y, probs, f, bs["replicas"], bs["semilla"], bs["nivel"], excluir_nan=("acierto_respondidas",))
     if r["n_respondidas"]["estimacion"] == 0:

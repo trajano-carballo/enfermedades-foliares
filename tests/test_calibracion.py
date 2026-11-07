@@ -97,7 +97,7 @@ def test_ninguna_imagen_se_calibra_con_una_T_ajustada_con_ella(monkeypatch):
 
 
 def test_una_particion_en_el_borde_usa_su_T_y_queda_registrada(monkeypatch, tmp_path):
-    """§g.8: con el óptimo global adentro, una partición con óptimo en un borde no frena: usa esa T y el JSON lo registra."""
+    """§g.9: con el óptimo global adentro, una partición con óptimo en un borde no frena: usa esa T y el JSON lo registra."""
     _falsos(monkeypatch)
     real, n = C.optimo_en_grilla, []
 

@@ -3,10 +3,11 @@
 Uso:
   python scripts/calibrar.py --config configs/05_calibracion.yaml --salida <dir fuera del repo> --fase dev
       Regla 1 (modelo), T por grilla en PlantDoc-dev, ECE y métricas del sistema fuera de partición, con IC. No toca ningún test.
+      Si el óptimo de T con todo PD-dev cae en el borde superior, escribe el hallazgo "T no acotada" y termina (§g.8); el borde
+      inferior en el ajuste global sale con código 5; una partición en un borde se registra y sigue (§g.9).
   python scripts/calibrar.py --config configs/05_calibracion.yaml --salida <dir> --fase test --fila-accesos N
       Una pasada por PD-test con modelo, T y τ de la config. Exige la fila N de docs/bitacora/accesos_test.md commiteada y
-      coherente (guarda); si no, no evalúa (código 4). Si el óptimo de T con todo PD-dev cae en el borde superior, escribe el hallazgo "T no acotada" y termina (§g.2);
-      un borde no previsto (inferior, o en una partición) sale con código 5.
+      coherente (guarda); si no, no evalúa (código 4).
 `--salida` es la carpeta de las sesiones 8–10 (el checkpoint se busca relativo a ella). El JSON se copia a
 results/05_calibracion/<run_id>/.
 """
