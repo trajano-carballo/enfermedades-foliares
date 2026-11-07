@@ -64,3 +64,26 @@ estaba). "Excluye el 0" también lo cumple una geometría peor (IC entero debajo
 - PD-dev: solo informativo (macro-F1 con IC y diferencia pareada contra el base) y CAM sobre la misma muestra fija de §c.
 - PV-test y PD-test: una pasada, con filas de acceso nuevas commiteadas antes (§e). Se reportan con IC el macro-F1 de cada test
   y la brecha (§b), en una tabla base vs. variante. No se concluye sobre diferencias dentro del IC.
+
+## g. Calibración y abstención (sesión 11, registrada el 2026-11-07 antes de calcular cualquier número nuevo)
+1. **Modelo.** Se calibra el de mayor macro-F1 con mosaic en PV-val entre el base (`02_modelo_base_20261104_201229`) y la
+   variante (`04_aumentacion_20261106_232146`), leído de los JSON ya versionados en `results/`, sin calcular nada nuevo. Mayor
+   estricto; si empatan, el base. No usa PlantDoc ni ningún test. Aplicación: base 0,95589
+   (`results/02_modelo_base/02_modelo_base_20261104_201229/resultados.json`), variante 0,96584
+   (`results/04_aumentacion/04_aumentacion_20261106_232146/resultados.json`) → se calibra la **variante**.
+2. **Temperatura.** Un único escalar T que minimiza la NLL en PD-dev (696 imágenes, `aplastar` 224, §a), búsqueda en grilla de
+   0,5 a 10 con paso 0,05. Si el óptimo cae en un borde de la grilla, se frena y se avisa. Dividir los logits por T no cambia el
+   argmax: el macro-F1 no se mueve.
+3. **ECE.** 15 bins de igual ancho sobre la confianza máxima. En PD-dev se estima sin usar las imágenes que ajustaron T:
+   5 particiones estratificadas por clase (semilla 42); en cada una se ajusta T con las otras 4 y se calibran las de esa
+   partición; con las 696 predicciones calibradas fuera de partición se calcula un ECE. Se reporta el ECE antes (T = 1) y
+   después, con IC bootstrap (§b: 2.000 réplicas, estratificado por clase, semilla 42). La T final (la que usan el umbral,
+   PD-test y la app) se ajusta con todo PD-dev.
+4. **Umbral.** τ = 0,5 fijo sobre la probabilidad máxima calibrada: responde si p ≥ 0,5; si no, se abstiene. No se busca
+   nada en la curva de cobertura.
+5. **Métricas del sistema** (PD-dev fuera de partición y PD-test): cobertura (fracción respondida), acierto sobre lo
+   respondido, tasa de abstención y errores de alta confianza (respondidas con p ≥ τ y mal clasificadas, como fracción del
+   total), todas con IC bootstrap (§b); más los mismos errores de alta confianza sin calibrar (T = 1, p ≥ 0,5).
+6. **PD-test.** Una sola pasada con el modelo, T y τ ya fijos, bajo una fila nueva de `accesos_test.md` commiteada antes
+   (§e). Si las predicciones por imagen de la sesión 10 ya guardaron logits, se pueden usar sin pasar imágenes, pero la fila
+   hace falta igual. No se toca PV-test. Nada se ajusta después de ver estos números.
