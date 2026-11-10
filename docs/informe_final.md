@@ -503,7 +503,7 @@ el contenido final del documento.
   Detection. *CoDS-COMAD*. arXiv:1911.10317.
 - Zhou, B., Khosla, A., Lapedriza, A., Oliva, A. y Torralba, A. (2016). Learning Deep Features for Discriminative Localization.
   *CVPR*.
-- Anthropic. (2026). Claude [Modelo de lenguaje grande]. https://claude.ai
+- Anthropic. (2026). Claude Opus 5.5 y Claude Sonnet 5.5 [Modelos de lenguaje grandes]. https://claude.ai
 
 Repositorio, con el código, las configs, los resultados y la bitácora de decisiones y de accesos:
 https://github.com/trajano-carballo/enfermedades-foliares
