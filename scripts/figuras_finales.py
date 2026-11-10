@@ -3,13 +3,12 @@
 Uso:
   python scripts/figuras_finales.py --config configs/07_figuras_finales.yaml [--figuras <dir>]
 Solo lee JSON de results/ (números ya medidos): no carga ningún modelo, no lee ninguna imagen y no toca ningún test. Las
-grillas de CAM no se pueden regenerar desde results/ (necesitan checkpoint e imágenes): se copian desde docs/figuras_sesion9 y 10.
+grillas de CAM no están acá: necesitan checkpoint e imágenes y muestran fotos de PlantDoc (quedan en docs/figuras_sesion9 y 10).
 Escribe en la carpeta de figuras los PNG y `tablas.md` (tablas + fuente, commit y estado del árbol de cada JSON).
 """
 
 import argparse
 import json
-import shutil
 import sys
 from pathlib import Path
 
@@ -28,7 +27,7 @@ def main(argv: list[str] | None = None) -> int:
     a = ap.parse_args(argv)
     repo = raiz_repo()
     estado = info_repo(repo)            # antes de escribir: los archivos que escribe este script no deben contar como cambios
-    cfg =yaml.safe_load(a.config.read_text(encoding="utf-8"))
+    cfg = yaml.safe_load(a.config.read_text(encoding="utf-8"))
     for ruta in cfg["fuentes"].values():
         if not ruta.startswith("results/"):
             raise ValueError(f"Fuente fuera de results/: {ruta}")
@@ -49,8 +48,6 @@ def main(argv: list[str] | None = None) -> int:
         FIG.figura_cobertura(J["calibracion_dev"], figs / "cobertura_pd_dev.png"),
         F.figura_latencia(J["latencia"], figs / "latencia_tamano.png"),
     ]
-    for origen, destino in cfg["cam_ya_generadas"].items():
-        escritas.append(Path(shutil.copyfile(repo / origen, figs / destino)))
 
     fuentes = ["| Clave | JSON | Commit | Árbol limpio |", "|---|---|---|---|"]
     fuentes += [f"| {k} | `{cfg['fuentes'][k]}` | `{d['commit'][:7]}` | {'sí' if not d['cambios_sin_commitear'] else 'NO'} |" for k, d in J.items()]
@@ -63,7 +60,8 @@ def main(argv: list[str] | None = None) -> int:
           "## Calibración y abstención: PV-val contra PD-test (fila 5)", "", F.tabla_calibracion(J["pv_val_app"], J["calibracion_test"]), "",
           "## Latencia y tamaño de la app", "", F.tabla_latencia(J["latencia"]), "",
           "## Fuentes", "", *fuentes, "",
-          "Grillas de CAM copiadas (no se regeneran desde results/): " + ", ".join(f"`{o}`" for o in cfg["cam_ya_generadas"]), ""]
+          "Las grillas de CAM no salen de results/ (necesitan checkpoint e imágenes) y muestran fotos de PlantDoc: quedan en "
+          "`docs/figuras_sesion9/` y `docs/figuras_sesion10/`.", ""]
     escritas.append(figs / "tablas.md")
     (figs / "tablas.md").write_text("\n".join(md), encoding="utf-8")
     for p in escritas:

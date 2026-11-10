@@ -23,7 +23,8 @@ def test_script_escribe_figuras_y_tablas_con_los_numeros_de_results(tmp_path):
     assert figuras_finales.main(["--config", str(REPO / "configs" / "07_figuras_finales.yaml"), "--figuras", str(tmp_path)]) == 0
     pngs = {p.name for p in tmp_path.glob("*.png")}
     assert {"brecha_base_vs_variante.png", "matrices_base.png", "matrices_variante.png", "fiabilidad_pd_dev.png",
-            "cobertura_pd_dev.png", "fiabilidad_pd_test.png", "latencia_tamano.png", "cam_base_clases_1a6.png", "cam_variante_clases_7a12.png"} <= pngs
+            "cobertura_pd_dev.png", "fiabilidad_pd_test.png", "latencia_tamano.png"} <= pngs
+    assert not any(n.startswith("cam_") for n in pngs)          # las grillas de CAM muestran PlantDoc: no se copian (licencia)
     md = (tmp_path / "tablas.md").read_text(encoding="utf-8")
     for esperado in ("0,807 [0,768; 0,845]", "0,830 [0,792; 0,867]", "-0,004 [-0,030; 0,023]",      # brechas y pareada PD-test
                      "0,676 [0,635; 0,717]", "0,021 [0,015; 0,067]",                               # ECE PD-test antes/después
@@ -35,6 +36,6 @@ def test_script_escribe_figuras_y_tablas_con_los_numeros_de_results(tmp_path):
 
 def test_rechaza_fuente_fuera_de_results(tmp_path):
     cfg = tmp_path / "c.yaml"
-    cfg.write_text("figuras: x\nfuentes: {a: data/splits/plantdoc_particion.csv}\ncam_ya_generadas: {}\n", encoding="utf-8")
+    cfg.write_text("figuras: x\nfuentes: {a: data/splits/plantdoc_particion.csv}\n", encoding="utf-8")
     with pytest.raises(ValueError, match="fuera de results"):
         figuras_finales.main(["--config", str(cfg), "--figuras", str(tmp_path)])

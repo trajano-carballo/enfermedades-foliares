@@ -13,9 +13,5 @@ fuentes:                                         # relativas al repo; todas en r
   pv_val_app: results/06_app/06_app_pv_val_20261110_093958/pv_val_informativo.json
   latencia: results/06_app/06_app_latencia_20261110_150137/latencia.json
 
-# Las grillas de CAM no salen de results/ (necesitan el checkpoint y las imágenes): se copian tal cual se generaron.
-cam_ya_generadas:
-  docs/figuras_sesion9/cam_grilla_clases_1a6.png: cam_base_clases_1a6.png        # run 03_brecha_cam_20261105_090654
-  docs/figuras_sesion9/cam_grilla_clases_7a12.png: cam_base_clases_7a12.png
-  docs/figuras_sesion10/cam_variante_clases_1a6.png: cam_variante_clases_1a6.png  # run 04_aumentacion_cam_20261106_211557
-  docs/figuras_sesion10/cam_variante_clases_7a12.png: cam_variante_clases_7a12.png
+# Las grillas de CAM no salen de results/ (necesitan checkpoint e imágenes) y muestran fotos de PlantDoc: no se copian acá.
+# Quedan en docs/figuras_sesion9/ y docs/figuras_sesion10/ (decisión de la sesión 14).
