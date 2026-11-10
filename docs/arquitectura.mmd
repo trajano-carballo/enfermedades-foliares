@@ -1,0 +1,60 @@
+flowchart LR
+    subgraph DATOS["Datos (etapa 1, congelados)"]
+        PV["PlantVillage color<br/>12 clases, laboratorio"]
+        PD["PlantDoc<br/>12 clases, campo"]
+        DEP["Depuración de PlantDoc<br/>phash ≤ 6: contradictorias y copias<br/>revisión humana Tomato/Bell_pepper leaf"]
+        SPL[("data/splits/ v1<br/>congelado, sha256<br/>PV por hoja: train 11.968 / val 2.207 / test 2.170<br/>PD 70/30: dev 696 / test 300")]
+        PV --> SPL
+        PD --> DEP --> SPL
+    end
+
+    subgraph ENT["Entrenamiento (Colab / CPU)"]
+        BASE["Modelo base<br/>MobileNetV3-Small ImageNet congelada<br/>+ GAP → Linear(576, 12)"]
+        VAR["Variante<br/>fine-tuning parcial (features 11–12 + fc)<br/>+ aumentación dirigida"]
+        SEL{"Checkpoint por<br/>macro-F1 en PV-val"}
+        BASE --> VAR
+        BASE --> SEL
+        VAR --> SEL
+    end
+
+    subgraph EVAL["Evaluación (protocolo fijado antes de los números)"]
+        DEV["PD-dev: geometría,<br/>muestra de CAM (informativo)"]
+        TST["PV-test y PD-test<br/>una pasada por modelo<br/>accesos_test.md, guarda"]
+        MET["macro-F1 + IC bootstrap<br/>brecha PV-test − PD-test<br/>matrices, CAM"]
+        DEV --> MET
+        TST --> MET
+    end
+
+    subgraph CAL["Calibración (etapa 5)"]
+        TEMP["T = 14,97 ajustada en PD-dev<br/>τ = 0,5 fijado de antemano"]
+    end
+
+    subgraph APP["App Gradio (CPU)"]
+        IN["Foto (galería o cámara)"] --> PRE["Preproceso aplastar 224<br/>EXIF, alfa sobre blanco"]
+        PRE --> FWD["Forward único<br/>logits + mapa 576×7×7"]
+        FWD --> OUT["top-3 con softmax(z / T)<br/>CAM superpuesto<br/>cartel si p máx. < τ"]
+    end
+
+    USR(["Usuario: productor o técnico"])
+
+    SPL -->|PV-train| ENT
+    SPL -->|PV-val| SEL
+    SEL --> EVAL
+    SPL -->|PD-dev| DEV
+    SPL -->|PV-test, PD-test| TST
+    SPL -->|PD-dev| TEMP
+    SEL --> TEMP
+    TEMP --> APP
+    SEL -->|pesos 6,76 MB| APP
+    OUT --> USR
+    USR -.->|"feedback: foto + corrección del técnico<br/>NO IMPLEMENTADO (mejora)"| FB[("Banco de casos<br/>para reentrenar")]
+    FB -.->|"riesgo: invariante 1 si una foto<br/>de PlantDoc o del test entra al entrenamiento"| ENT
+
+    classDef lab fill:#dbe9f6,stroke:#1f77b4
+    classDef campo fill:#f6ead0,stroke:#b5873a
+    classDef res fill:#f8d7d7,stroke:#c0262d
+    classDef nohecho fill:#eeeeee,stroke:#999,stroke-dasharray: 4 3
+    class PV lab
+    class PD,DEP campo
+    class MET res
+    class FB nohecho
