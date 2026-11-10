@@ -39,8 +39,20 @@ salen de JSON ya versionados; nota en `accesos_test.md`). Suite: **468 pasan, 0 
 - Pesos: no se publican; el README dice que se piden al equipo.
 - Etiqueta de `commons_2`: no se investiga; queda como limitación (§9).
 
-**Decisiones pendientes:** ninguna de esta sesión. Si en la presentación se muestran las grillas de CAM con fotos de PlantDoc, vale la
-misma restricción de licencia.
+**Review de la sesión 14 (correcciones en el árbol, sin commitear al escribir esto)**
+- Hecho: MA1 (§6.2 y §2.3, con E39), MA2 (test de proximidad ID ↔ número, probado con errores inyectados en una copia fuera del
+  repo), m1 (IDs nuevos), m3, m4, m5 (Anexo A con la tabla de cambios y la de latencia; §4.5 compacta), m7 (sin copias de las
+  grillas de CAM en `docs/figuras_finales/`; hay que regenerar `tablas.md` desde el árbol limpio después del commit del código), m8,
+  espacio en `scripts/figuras_finales.py`, pie de la figura 5, fila (7) de decisiones, 0,995 de C22 y commit `f9995b9` de las capturas.
+- m2 (seis frases reformuladas como lectura o hipótesis) y m6 (README: fotos de Commons, `figuras_sesion9/10.py`,
+  `diagnostico_dev.py`, `ic_por_clase.py` para la variante, §0) con la redacción de la review.
+- MA1: el equipo aprobó la redacción con los dos conteos (24 de 27 *late*, 14 de 29 *early*; E39).
+
+**Decisiones pendientes**
+- **Después de la defensa:** coherencia de la licencia de PlantDoc en el repo. Hay imágenes de PlantDoc versionadas desde la sesión 3
+  (muestras y pares en `docs/figuras_sesion3/`, grillas de pares en `figuras_sesion4/`, ejemplos contradictorios y pares 7–10 en
+  `figuras_sesion5/`, y las grillas de CAM de `figuras_sesion9/` y `figuras_sesion10/`), y el repo es público. Si en la presentación se muestran esas grillas, vale la
+  misma restricción.
 
 **Riesgos abiertos**
 - Redondeo: el ECE de PD-test con T = 1 es 0,676 (0,67649); el handoff de la sesión 11 decía 0,677. El informe usa 0,676.
@@ -61,7 +73,7 @@ la sesión no usó PV-test ni PD-test, y la verificación de duplicados solo hiz
 | | Resultado |
 |---|---|
 | PV-val con T = 14,973 y τ = 0,5 (informativo, n = 2.207) | cobertura 0,000 [0; 0]; 0 respondidas; acierto sobre lo respondido no definido; exactitud 0,971 [0,963; 0,977] |
-| PV-val sin calibrar (T = 1, τ = 0,5) | cobertura 0,998 [0,996; 0,9995]; 2.202 respondidas; acierto sobre lo respondido 0,971 [0,964; 0,978] |
+| PV-val sin calibrar (T = 1, τ = 0,5) | cobertura 0,998 [0,996 (corregido en la sesión 14: 0,995); 0,9995]; 2.202 respondidas; acierto sobre lo respondido 0,971 [0,964; 0,978] |
 | Imágenes de Commons | 6 probadas con phash ≤ 6 (8 variantes) contra 108.611 de PlantVillage y 2.578 de PlantDoc: 2 duplicadas descartadas, 4 válidas |
 | Latencia p50 / p95 (ms), sin CAM → con CAM, CPU | PV-val 14,1 / 16,4 → 19,8 / 22,7; PD-dev 24,0 / 165,4 → 31,4 / 172,3; Commons 23,7 / 33,6 → 32,3 / 39,9 |
 | Latencia, total (solo p50, decisión del equipo) | 15,7 → 22,0 ms; sobrecosto del CAM 6,4 ms |
