@@ -22,7 +22,7 @@ salen de JSON ya versionados; nota en `accesos_test.md`). Suite: **468 pasan, 0 
 - Fase 4: `README.md` reescrito como guía de reproducción; referencia de Anthropic con las versiones (Opus 5.5 y Sonnet 5.5).
 
 **Qué quedó a medias**
-- En el informe: `[PENDIENTE]` la fecha de entrega y las capturas de la app (las completa el equipo en la versión final).
+- En el informe: `[PENDIENTE]` la fecha de entrega (la completa el equipo en la versión final).
 - Los comandos de descarga del README (clon con sparse-checkout de PlantVillage y rescate de PlantDoc con `--mover-originales` fuera
   de Windows) se escribieron desde la documentación de las sesiones 2 y 5c; **no se ejecutaron en esta sesión**.
 - Sin datos, no se verificó qué tests fallan (el README lo dice).
@@ -32,13 +32,15 @@ salen de JSON ya versionados; nota en `accesos_test.md`). Suite: **468 pasan, 0 
 2. Revisar la legibilidad del diagrama en A4 (es apaisado, 1568 × 414 px); si hace falta, exportar con `-w 3000`.
 3. PR de `sesion-14/documento` a `main`.
 
-**Decisiones pendientes**
-- **Licencia de las imágenes de PlantDoc en el informe** (heredada de la sesión 9): el informe incluye una grilla de CAM con fotos de
-  PlantDoc-dev (figura 4); PlantDoc es "uso académico, sin redistribución".
-- Atribución de `commons_4` y `commons_6` (CC BY-SA 4.0) si aparecen en las capturas.
-- Si se publican los pesos (6,76 MB) para que la app sea reproducible sin reentrenar; hoy solo están en el Drive del equipo, y pesos
-  reentrenados no pasan la verificación de sha256 de las configs.
-- Investigar o no la etiqueta dudosa de `commons_2` en PlantDoc (heredada; el informe la menciona en §9).
+**Decisiones tomadas al cierre (en `decisiones.md`)**
+- Licencia: el informe no muestra imágenes de PlantDoc. La figura 4 son las dos capturas de la app con fotos CC0 de Commons
+  (`docs/figuras_finales/app_commons5.png`, septoria predicha como Tomato late blight; `app_commons3.png`, pimiento, acierta). Las
+  grillas de CAM de PlantDoc quedan en el repo como evidencia; la §9 lo dice.
+- Pesos: no se publican; el README dice que se piden al equipo.
+- Etiqueta de `commons_2`: no se investiga; queda como limitación (§9).
+
+**Decisiones pendientes:** ninguna de esta sesión. Si en la presentación se muestran las grillas de CAM con fotos de PlantDoc, vale la
+misma restricción de licencia.
 
 **Riesgos abiertos**
 - Redondeo: el ECE de PD-test con T = 1 es 0,676 (0,67649); el handoff de la sesión 11 decía 0,677. El informe usa 0,676.

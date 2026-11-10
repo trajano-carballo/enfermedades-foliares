@@ -304,10 +304,18 @@ En los aciertos de PlantVillage el calor cae sobre la hoja y sus lesiones. En va
 suelo, otras hojas o marcas de agua de bancos de imágenes. La variante, sobre la misma muestra, acierta 8 de 24 en PD-dev y 11 de
 12 en PV-val (el base, 9 y 10) <!-- X2 X3 -->, y el patrón se repite.
 
-![CAM del base, clases 1 a 6](figuras_finales/cam_base_clases_1a6.png)
+Las grillas de CAM sobre PlantDoc y PlantVillage quedan en el repositorio como evidencia (`docs/figuras_finales/cam_*.png`), pero no
+se reproducen acá: PlantDoc no permite redistribuir sus imágenes (§9). En su lugar, la figura 4 muestra el mismo tipo de lectura en la
+app, con dos fotos CC0 de Wikimedia Commons que no están en ninguno de los dos conjuntos (§8).
 
-*Figura 4. CAM de la clase predicha, base, clases 1 a 6 (fila 1 y 2: PD-dev; fila 3: PV-val). Borde verde: acierto; rojo: error.
-Las clases 7 a 12 y la variante están en `docs/figuras_finales/`. Ilustrativo: 36 imágenes no son evidencia.*
+![App: septoria de tomate, commons_5](figuras_finales/app_commons5.png)
+
+![App: mancha bacteriana de pimiento, commons_3](figuras_finales/app_commons3.png)
+
+*Figura 4. Dos respuestas de la app, con T = 14,97 y el cartel de confianza baja. Arriba: septoria de tomate (Wolan268, CC0), que
+el modelo predice como Tomato late blight; el CAM se dispersa por la foto. Abajo: mancha bacteriana de pimiento (Scot Nelson, CC0),
+que acierta; el CAM se concentra en las lesiones. Imágenes CC0 de Wikimedia Commons. Ilustrativo, no evidencia: son dos fotos, y las
+probabilidades que se ven en las capturas no son un resultado.*
 
 Esto es **consistente con la hipótesis del atajo por fondo**, pero no la prueba: la muestra es chica y no se midió. El experimento
 que la habría puesto a prueba, la supresión de fondo, fue el que se recortó (§9).
@@ -400,8 +408,10 @@ abierta, y se compararon por phash (≤ 6 <!-- A16 -->) contra 108.611 imágenes
 resultaron ser fotos de PlantDoc y se descartaron; quedan 4 válidas <!-- A15 -->. Una de las descartadas reveló una posible
 etiqueta equivocada en PlantDoc (§9). Las fotos de Commons se usan solo para la demo y la latencia, nunca para métricas.
 
-[PENDIENTE: capturas de la app (una de PV-val y una de PD-dev, ambas con cartel); las saca el equipo. Si se muestra `commons_4` o
-`commons_6`, citar autor y licencia CC BY-SA 4.0 desde `docs/imagenes_externas.csv`.]
+**Capturas.** La figura 4 (§6.4) muestra dos respuestas de la app con fotos CC0 de Wikimedia Commons y T = 14,97, las dos con el
+cartel de confianza baja. En la que falla (septoria de tomate, predicha como Tomato late blight), el CAM se dispersa por la foto; en la
+que acierta (mancha bacteriana de pimiento), se concentra en las lesiones. Son ilustrativas, no evidencia, y sus probabilidades no se
+reportan como resultado.
 
 ## 9. Limitaciones
 
@@ -431,6 +441,9 @@ etiqueta equivocada en PlantDoc (§9). Las fotos de Commons se usan solo para la
   fotos nuevas de otra fuente; y deja al sistema subconfiado en el laboratorio (§7). El IC del ECE fuera de partición no incluye la
   variabilidad de ajustar T y puede ser algo optimista.
 - **Latencia de una sola máquina**, sin la red de Gradio ni otro hardware.
+- **El informe no muestra imágenes de PlantDoc**, porque el conjunto no permite redistribuirlas. Las grillas de CAM sobre PlantDoc,
+  en las que se apoya la lectura cualitativa de §6.4, quedan en el repositorio y no en este documento; las capturas de la figura 4 usan
+  fotos CC0 de Wikimedia Commons.
 
 ## 10. Mejoras y trabajo futuro
 

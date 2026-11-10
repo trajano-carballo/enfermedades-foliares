@@ -98,7 +98,8 @@ Cada corrida escribe su JSON completo en `SALIDA/<experimento>/<run_id>/` y copi
 versión de torch puede diferir por redondeo (ver [`docs/reproducibilidad.md`](docs/reproducibilidad.md)). Las evaluaciones y la app
 verifican el **sha256 del checkpoint** que fija cada config: con pesos reentrenados, el sha256 no va a coincidir y los scripts no
 cargan el modelo. Para usarlos, hay que poner su `run_id`, ruta y sha256 en la config, lo que es una corrida nueva y no la del
-informe. Los pesos del informe no se versionan; están en el Drive del equipo.
+informe. Los pesos del informe no se versionan ni se publican: **se piden al equipo** (los dos checkpoints van en
+`SALIDA/02_modelo_base/<run_id>/` y `SALIDA/04_aumentacion/<run_id>/`, con los `run_id` y sha256 de las configs).
 
 ## 5. Evaluación
 
