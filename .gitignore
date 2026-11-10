@@ -28,3 +28,5 @@ Thumbs.db
 .vscode/*
 !.vscode/settings.json
 *.egg-info/
+# Imágenes externas a los conjuntos (sesión 12; no se versionan: son para demo y latencia, nunca para métricas)
+data/externas/**

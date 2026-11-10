@@ -2,3 +2,7 @@
 # config de calibración (decisión del equipo del 2026-11-10: la app usa lo de la sesión 11 sin cambiarlo).
 experimento: 06_app
 calibracion: configs/05_calibracion.yaml
+externas:                                         # sesión 12, fase 3: imágenes de Wikimedia Commons (fuera de git)
+  carpeta: externas                               # relativa a DATA_ROOT
+  planilla: docs/imagenes_externas.csv
+  umbral_phash: 6                                 # el mismo de las sesiones 4 y 5
