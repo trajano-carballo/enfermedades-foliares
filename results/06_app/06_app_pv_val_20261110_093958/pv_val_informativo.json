@@ -1,0 +1,244 @@
+{
+  "fecha": "2026-11-10 09:39:58",
+  "commit": "2411ff98ad452ff7c1b58a6d3bb881a83c2a413e",
+  "cambios_sin_commitear": false,
+  "config": {
+    "app": {
+      "experimento": "06_app",
+      "calibracion": "configs/05_calibracion.yaml"
+    },
+    "calibracion": {
+      "experimento": "05_calibracion",
+      "config_modelo": "configs/02_modelo_base.yaml",
+      "candidatos": {
+        "base": {
+          "run_id": "02_modelo_base_20261104_201229",
+          "resultados": "results/02_modelo_base/02_modelo_base_20261104_201229/resultados.json"
+        },
+        "variante": {
+          "run_id": "04_aumentacion_20261106_232146",
+          "resultados": "results/04_aumentacion/04_aumentacion_20261106_232146/resultados.json"
+        }
+      },
+      "modelo_base": {
+        "run_id": "04_aumentacion_20261106_232146",
+        "checkpoint": "04_aumentacion/04_aumentacion_20261106_232146/mejor.pt",
+        "sha256": "326e6a730321136e3e026bffcf84ed1b9b0adcec7162de2d18d1e13ba7495953"
+      },
+      "tamano": 224,
+      "geometria": "aplastar",
+      "temperatura_grilla": {
+        "desde": 0.5,
+        "hasta": 1000.0,
+        "n": 200
+      },
+      "ece_bins": 15,
+      "particiones": {
+        "k": 5,
+        "semilla": 42
+      },
+      "tau": 0.5,
+      "bootstrap": {
+        "replicas": 2000,
+        "nivel": 0.95,
+        "semilla": 42
+      },
+      "batch": 64,
+      "run_dev": "05_calibracion_dev_20261107_095030",
+      "temperatura": 14.973042339479479
+    },
+    "modelo": {
+      "experimento": "02_modelo_base",
+      "semilla": 42,
+      "determinista": true,
+      "splits": {
+        "plantvillage": "plantvillage_particion.csv",
+        "plantdoc": "plantdoc_particion.csv"
+      },
+      "clases": [
+        {
+          "pv": "Pepper,_bell___Bacterial_spot",
+          "plantdoc": "Bell_pepper leaf spot"
+        },
+        {
+          "pv": "Pepper,_bell___healthy",
+          "plantdoc": "Bell_pepper leaf"
+        },
+        {
+          "pv": "Potato___Early_blight",
+          "plantdoc": "Potato leaf early blight"
+        },
+        {
+          "pv": "Potato___Late_blight",
+          "plantdoc": "Potato leaf late blight"
+        },
+        {
+          "pv": "Tomato___Bacterial_spot",
+          "plantdoc": "Tomato leaf bacterial spot"
+        },
+        {
+          "pv": "Tomato___Early_blight",
+          "plantdoc": "Tomato Early blight leaf"
+        },
+        {
+          "pv": "Tomato___Late_blight",
+          "plantdoc": "Tomato leaf late blight"
+        },
+        {
+          "pv": "Tomato___Leaf_Mold",
+          "plantdoc": "Tomato mold leaf"
+        },
+        {
+          "pv": "Tomato___Septoria_leaf_spot",
+          "plantdoc": "Tomato Septoria leaf spot"
+        },
+        {
+          "pv": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+          "plantdoc": "Tomato leaf yellow virus"
+        },
+        {
+          "pv": "Tomato___Tomato_mosaic_virus",
+          "plantdoc": "Tomato leaf mosaic virus"
+        },
+        {
+          "pv": "Tomato___healthy",
+          "plantdoc": "Tomato leaf"
+        }
+      ],
+      "clase_mosaic": "Tomato___Tomato_mosaic_virus",
+      "preproceso": {
+        "geometria": "aplastar",
+        "tamano": 224
+      },
+      "modelo": {
+        "pesos_imagenet": true
+      },
+      "features": {
+        "batch": 64
+      },
+      "entrenamiento": {
+        "optimizador": "adam",
+        "lr": 0.001,
+        "batch": 256,
+        "max_epocas": 100,
+        "paciencia": 10,
+        "criterio": "macro_f1_val_con_mosaic"
+      },
+      "aumentacion": "ninguna",
+      "ponderacion_clases": false,
+      "umbral_desbalance": 5,
+      "desbalance_aceptado_por_el_equipo": true,
+      "metricas": {
+        "modo_sin_mosaic": "sin_imagenes_de_la_clase",
+        "desempate_trivial": "primera_en_orden"
+      }
+    }
+  },
+  "sha256_splits": {
+    "plantdoc_particion.csv": "dc82e2d5af43a91610a0342023f34a972561fe143e8dfe13c6d4cc02768c8bba",
+    "plantvillage_particion.csv": "1ff04397bed8182b901609f2e0d3e0e8b3ceed3ac4b7739512b64f9b366713dd"
+  },
+  "semillas": {
+    "bootstrap": 42
+  },
+  "python": "3.13.7",
+  "plataforma": "Windows-11-10.0.26200-SP0",
+  "torch": "2.14.1+cpu",
+  "cuda_runtime": null,
+  "cudnn": null,
+  "dispositivo": "cpu",
+  "gpu": null,
+  "hilos_cpu": 6,
+  "fase": "pv_val_informativo",
+  "run_id": "06_app_pv_val_20261110_093958",
+  "modelo_base": {
+    "run_id": "04_aumentacion_20261106_232146",
+    "checkpoint": "04_aumentacion/04_aumentacion_20261106_232146/mejor.pt",
+    "sha256": "326e6a730321136e3e026bffcf84ed1b9b0adcec7162de2d18d1e13ba7495953"
+  },
+  "geometria": "aplastar",
+  "temperatura": 14.973042339479479,
+  "tau": 0.5,
+  "n_pv_val": 2207,
+  "resultados": {
+    "cobertura": {
+      "estimacion": 0.0,
+      "ic_bajo": 0.0,
+      "ic_alto": 0.0,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.0
+    },
+    "abstencion": {
+      "estimacion": 1.0,
+      "ic_bajo": 1.0,
+      "ic_alto": 1.0,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 1.0
+    },
+    "n_respondidas": {
+      "estimacion": 0.0,
+      "ic_bajo": 0.0,
+      "ic_alto": 0.0,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.0
+    },
+    "acierto_respondidas": {
+      "estimacion": null,
+      "ic_bajo": null,
+      "ic_alto": null,
+      "nivel": 0.95,
+      "n_replicas": 0,
+      "media_replicas": null,
+      "replicas_excluidas": 2000,
+      "nota": "no definido (0 respondidas)"
+    },
+    "exactitud": {
+      "estimacion": 0.970548255550521,
+      "ic_bajo": 0.9632985953783416,
+      "ic_alto": 0.9768917082011781,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.9704111916628908
+    }
+  },
+  "referencia_sin_calibrar_T1": {
+    "cobertura": {
+      "estimacion": 0.9977344811961939,
+      "ic_bajo": 0.9954689623923878,
+      "ic_alto": 0.9995468962392388,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.9977170367014045
+    },
+    "n_respondidas": {
+      "estimacion": 2202.0,
+      "ic_bajo": 2197.0,
+      "ic_alto": 2206.0,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 2201.9615
+    },
+    "acierto_respondidas": {
+      "estimacion": 0.9713896457765667,
+      "ic_bajo": 0.9641398093508852,
+      "ic_alto": 0.9777576032682705,
+      "nivel": 0.95,
+      "n_replicas": 2000,
+      "media_replicas": 0.9712740124031739,
+      "replicas_excluidas": 0
+    }
+  },
+  "confianza_maxima_calibrada": {
+    "min": 0.11644494344808017,
+    "p50": 0.20665386817279077,
+    "max": 0.4265115986468677
+  },
+  "solo_informativo": "PV-val no es un test; ninguna regla depende de este número (decisión del 2026-11-10)",
+  "tiempo_s": 32.928,
+  "memoria_pico_gpu_mb": null,
+  "memoria_pico_cpu_mb": 634.2,
+  "nota_memoria": "memoria_pico_cpu_mb es el máximo del proceso entero"
+}
