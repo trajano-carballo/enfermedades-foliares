@@ -31,6 +31,7 @@ cita por conjunto (decisión del equipo).
 - Imágenes externas (`0fe0a8b`, resultado y nota de accesos en `be3924d`): `src/foliares/data/externas.py`, `scripts/verificar_externas.py` con caché de hashes, `docs/imagenes_externas.csv`.
 - Latencia (`2126058`, resultado en `fd516ca`): `src/foliares/eval/latencia.py`, `scripts/medir_latencia.py`.
 - Cierre: decisión de reporte, hallazgos y este handoff.
+- Review de la sesión 12 (sin tocar ningún número medido): se corrigió en `decisiones.md` la frase del p95 global (con 1 / 3 / 18 llamadas lentas menos queda en 86,5 / 59,4 / 37,1 ms sin CAM y 88,8 / 63,6 / 43,0 con CAM, recalculado desde `latencia.json`); el aviso de la app dice "aparece en todas las imágenes probadas" (decisión del equipo, registrada); la nota de accesos de la fase 3 aclara que ninguna imagen fue vista por una persona pero el código las decodificó para el hash; el docstring del caché de hashes avisa que la clave no incluye contenido ni fecha.
 
 **Para levantar la app y sacar las capturas** (desde la raíz del repo; los pesos están fuera del repo, en la carpeta de salidas):
 ```
