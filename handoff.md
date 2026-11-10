@@ -2,15 +2,69 @@
 
 > Se actualiza al cierre de cada sesión de trabajo. Lo más reciente arriba.
 
-## 2026-11-10 — Sesión 12: app en Gradio (etapa 6) — EN CURSO
+## 2026-11-10 — Sesión 12: app en Gradio (etapa 6)
 
-**Riesgos abiertos (anotados durante la sesión)**
-- **Cache miss inexplicado en la verificación de imágenes externas.** La corrida de las 14:39 (`06_app_externas_20261110_143945`, desde `0fe0a8b` con el
-  árbol limpio) no acertó el caché de hashes de los conjuntos: la clave salió distinta de la del diagnóstico anterior y recalculó todo (298 s). No se
-  pudo reproducir: el código commiteado es idéntico, ejecutado como `__main__` los ingredientes de la clave (rutas con tamaño, versiones de PIL e
-  imagehash, bytes de `duplicados.py`) coinciden con los de la importación y la corrida siguiente (`06_app_externas_20261110_144834`) acertó el caché
-  en los dos conjuntos (11 s). Es un fallo seguro: el caché solo puede recalcular, y el resultado es el mismo con y sin caché (verificado). Quedó un par de
-  archivos huérfano en `foliares_salidas/cache_hashes/` (unos 90 MB) que se puede borrar a mano. Causa sin identificar.
+**Estado:** etapa 6 hecha. La app usa el modelo, T = 14,973 y τ = 0,5 de `configs/05_calibracion.yaml` sin cambiarlos (opción B del equipo): siempre muestra el
+top-3 con probabilidad calibrada y el CAM, y agrega el cartel "Confianza baja: no usar como diagnóstico" si la probabilidad máxima calibrada es < τ. **Con estos T y τ el
+cartel aparece con todas las fotos**, también con las de PlantVillage (medido en PV-val: confianza máxima calibrada de 0,116 a 0,427, ninguna ≥ 0,5); el aviso de alcance
+de la app lo dice con el texto acordado. Se probó con el servidor real de Gradio (respuesta por la API con una imagen de PV-val y una de PD-dev). No se tocó ningún test:
+la sesión no usó PV-test ni PD-test, y la verificación de duplicados solo hizo hash (nota en `accesos_test.md`). Suite: **335 pasan, 0 saltados**.
+
+**Números de la etapa 6** (JSON en `results/06_app/`)
+
+| | Resultado |
+|---|---|
+| PV-val con T = 14,973 y τ = 0,5 (informativo, n = 2.207) | cobertura 0,000 [0; 0]; 0 respondidas; acierto sobre lo respondido no definido; exactitud 0,971 [0,963; 0,977] |
+| PV-val sin calibrar (T = 1, τ = 0,5) | cobertura 0,998 [0,996; 0,9995]; 2.202 respondidas; acierto sobre lo respondido 0,971 [0,964; 0,978] |
+| Imágenes de Commons | 6 probadas con phash ≤ 6 (8 variantes) contra 108.611 de PlantVillage y 2.578 de PlantDoc: 2 duplicadas descartadas, 4 válidas |
+| Latencia p50 / p95 (ms), sin CAM → con CAM, CPU | PV-val 14,1 / 16,4 → 19,8 / 22,7; PD-dev 24,0 / 165,4 → 31,4 / 172,3; Commons 23,7 / 33,6 → 32,3 / 39,9 |
+| Latencia, total (solo p50, decisión del equipo) | 15,7 → 22,0 ms; sobrecosto del CAM 6,4 ms |
+| Carga del modelo / pesos / memoria | 0,10 s / 6.759.450 bytes (6,76 MB) / pico de 596 MB |
+| Entorno | AMD Ryzen 5 5500U, 6 hilos de torch (12 lógicos), torch 2.14.1+cpu, solo CPU |
+
+Runs: `06_app_pv_val_20261110_093958` (`2411ff9`), `06_app_externas_20261110_144834` (`0fe0a8b`), `06_app_latencia_20261110_150137` (`2126058`), todos con el árbol limpio.
+La latencia mide el cómputo de la app, sin la red de Gradio; el p95 del total depende de 18 llamadas (6 imágenes grandes de PD-dev) y de las proporciones de la muestra, por eso se
+cita por conjunto (decisión del equipo).
+
+**Hecho (en orden de commits; todos los hace el usuario)**
+- Decisiones (`85bdeb7`); medición en PV-val (`2411ff9`, resultado en `ca638c5`); app (`0b675f9`): `src/foliares/inferencia.py`, `app/app.py`, `gradio==6.30.0` en `requirements.txt`.
+- Imágenes externas (`0fe0a8b`, resultado y nota de accesos en `be3924d`): `src/foliares/data/externas.py`, `scripts/verificar_externas.py` con caché de hashes, `docs/imagenes_externas.csv`.
+- Latencia (`2126058`, resultado en `fd516ca`): `src/foliares/eval/latencia.py`, `scripts/medir_latencia.py`.
+- Cierre: decisión de reporte, hallazgos y este handoff.
+
+**Para levantar la app y sacar las capturas** (desde la raíz del repo; los pesos están fuera del repo, en la carpeta de salidas):
+```
+.venv/Scripts/python app/app.py --config configs/06_app.yaml --salida C:/Users/xbetr/foliares_salidas
+```
+Abre en `http://127.0.0.1:7860`. Capturas: (1) una respuesta con una imagen de PV-val, p. ej. `data/raw/plantvillage/raw/color/Pepper,_bell___Bacterial_spot/cef63924-0e7e-4df3-9b8c-bdc80f3215f2___JR_B.Spot 3376.JPG`
+(top-3 con Pepper Bacterial spot primero, 0,257); (2) una con una imagen de PD-dev, p. ej. `data/raw/plantdoc/train/Bell_pepper leaf spot/Bacterial_leaf_spot_symptoms.jpg`. **Las dos salen con el
+cartel**: no hay con la configuración actual una respuesta de PV-val sin cartel. Usar imágenes de PV-val o de PD-dev (nunca de un test; la lista completa de la muestra está en
+`results/06_app/06_app_latencia_20261110_150137/latencia.json`, evitando las de rutas con `/test/`).
+
+**Qué quedó a medias**
+- Las capturas de pantalla (las saca el equipo).
+- La app no trae imágenes de ejemplo precargadas (no se pidieron).
+- Ninguna medición con la red de Gradio ni en otro hardware.
+
+**Próximos pasos**
+1. Equipo: sacar las dos capturas y preparar informe y defensa (20/11) con las tablas de las etapas 5 y 6 y las figuras de la sesión 11.
+2. Decidir si se investiga la posible etiqueta equivocada de `commons_2` en PlantDoc (ver decisiones pendientes).
+
+**Decisiones pendientes**
+- Licencia de redistribución de las imágenes de PlantDoc en las figuras (heredado de la sesión 9).
+- Atribución de las imágenes de Commons si se muestran en el informe o en las capturas: `commons_4` (Sabina Bajracharya) y `commons_6` (Björn Andersson, SLU) son CC BY-SA 4.0; `commons_3` y `commons_5` son CC0. Autor, licencia y URL en `docs/imagenes_externas.csv`.
+- Investigar o no la posible etiqueta equivocada de una imagen de PlantDoc (`Late_blight_on_potato_leaf_2` está en "Potato leaf early blight"): costo bajo (consultar su partición y la etiqueta, sin tocar ningún número), pero conviene decidir si se hace antes de la defensa; si cae en PD-test, habría una etiqueta dudosa dentro del test congelado.
+
+**Riesgos abiertos**
+- **Cartel siempre visible:** con T = 14,973 y τ = 0,5 la app marca como "confianza baja" todas las fotos, incluso las de laboratorio acertadas. Es la consecuencia medida de la opción B y de la T de la sesión 11; el aviso de la app lo explica, pero en la demo puede leerse como que la app "no sirve".
+- **Cache miss inexplicado en la verificación de imágenes externas.** La corrida de las 14:39 (`06_app_externas_20261110_143945`, desde `0fe0a8b` con el árbol limpio) no acertó el caché de
+  hashes de los conjuntos: la clave salió distinta de la del diagnóstico anterior y recalculó todo (298 s). No se pudo reproducir: el código commiteado es idéntico, ejecutado como
+  `__main__` los ingredientes de la clave (rutas con tamaño, versiones de PIL e imagehash, bytes de `duplicados.py`) coinciden con los de la importación y la corrida siguiente
+  (`06_app_externas_20261110_144834`) acertó el caché en los dos conjuntos (11 s). Es un fallo seguro: el caché solo puede recalcular, y el resultado es el mismo con y sin caché
+  (verificado). Quedó un par de archivos huérfano en `foliares_salidas/cache_hashes/` (unos 90 MB) que se puede borrar a mano. Causa sin identificar.
+- La latencia es de una sola máquina (CPU de laptop) y no incluye la red de Gradio; el p95 de PD-dev (165–172 ms) lo domina la lectura y el decodificado de imágenes grandes.
+- Los pesos no se versionan: la app necesita la carpeta de salidas (`--salida`) con el checkpoint y verifica su sha256.
+- Filas 1 a 5 de `accesos_test.md` usadas; esta sesión no agregó ninguna.
 
 ## 2026-11-07 — Sesión 11: calibración por temperatura y abstención (etapa 5)
 
