@@ -3,7 +3,7 @@
 # En Colab torch/torchvision ya vienen instalados: alcanza con instalar el resto.
 torch>=2.3
 torchvision>=0.18
-gradio>=4.0
+gradio==6.30.0           # fijada: la app de la sesión 12 se probó con esta versión
 imagehash>=4.3
 scikit-learn>=1.4
 pyyaml>=6.0

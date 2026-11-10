@@ -1,0 +1,13 @@
+# Config de la etapa 6 (sesión 12, app en Gradio). El modelo, T, τ, geometría y bootstrap NO se repiten acá: salen de la
+# config de calibración (decisión del equipo del 2026-11-10: la app usa lo de la sesión 11 sin cambiarlo).
+experimento: 06_app
+calibracion: configs/05_calibracion.yaml
+externas:                                         # sesión 12, fase 3: imágenes de Wikimedia Commons (fuera de git)
+  carpeta: externas                               # relativa a DATA_ROOT
+  planilla: docs/imagenes_externas.csv
+  umbral_phash: 6                                 # el mismo de las sesiones 4 y 5
+latencia:                                         # sesión 12, fase 4 (parámetros de la medición; no cambian ningún resultado de la app)
+  semilla: 42
+  muestra_por_conjunto: 50                        # imágenes de PV-val y de PD-dev (las de Commons entran todas las válidas)
+  calentamiento: 5                                # llamadas sin medir antes de cada serie (con y sin CAM)
+  repeticiones: 3                                 # pasadas sobre la muestra por serie
