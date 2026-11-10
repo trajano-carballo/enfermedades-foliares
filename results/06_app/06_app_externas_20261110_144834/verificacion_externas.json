@@ -1,0 +1,181 @@
+{
+  "fecha": "2026-11-10 14:48:34",
+  "commit": "0fe0a8bc2aebbdc7cc1fabfa8e7a2f2041ddd748",
+  "cambios_sin_commitear": false,
+  "config": {
+    "app": {
+      "experimento": "06_app",
+      "calibracion": "configs/05_calibracion.yaml",
+      "externas": {
+        "carpeta": "externas",
+        "planilla": "docs/imagenes_externas.csv",
+        "umbral_phash": 6
+      }
+    }
+  },
+  "sha256_splits": {
+    "plantdoc_particion.csv": "dc82e2d5af43a91610a0342023f34a972561fe143e8dfe13c6d4cc02768c8bba",
+    "plantvillage_particion.csv": "1ff04397bed8182b901609f2e0d3e0e8b3ceed3ac4b7739512b64f9b366713dd"
+  },
+  "semillas": {},
+  "python": "3.13.7",
+  "plataforma": "Windows-11-10.0.26200-SP0",
+  "torch": "2.14.1+cpu",
+  "cuda_runtime": null,
+  "cudnn": null,
+  "dispositivo": "cpu",
+  "gpu": null,
+  "hilos_cpu": 6,
+  "fase": "verificacion_externas",
+  "run_id": "06_app_externas_20261110_144834",
+  "umbral_phash": 6,
+  "comparadas": {
+    "PlantVillage (color y segmented)": 108611,
+    "PlantDoc (train y test oficiales)": 2578
+  },
+  "imagenes": [
+    {
+      "archivo": "commons_1_tomato_late_blight.jpg",
+      "autor": "Scot Nelson",
+      "licencia": "CC0",
+      "url": "https://commons.wikimedia.org/wiki/File:Tomato_late_blight_leaf_sporulating_lesions_1_(5816170621).jpg",
+      "sha256": "1b45ab492ff96dee7f64a65ce5c7a09d1ee3375166df5c7c61d5f0b6b563c17d",
+      "resultado_duplicados": "DUPLICADA (phash <= 6, 8 variantes): PlantDoc (train y test oficiales): 0 contra raw/plantdoc/train/Tomato leaf late blight/5816170621_e1cce08736_z.jpg; descartada"
+    },
+    {
+      "archivo": "commons_2_potato_late_blight.jpg",
+      "autor": "Howard F. Schwartz, Colorado State University",
+      "licencia": "CC BY 3.0 US",
+      "url": "https://commons.wikimedia.org/wiki/File:Late_blight_on_potato_leaf_2.jpg",
+      "sha256": "4a49c43a20d12753fe56832eafc0cedbdef07f39b1237c59fa4f98bd33e203c3",
+      "resultado_duplicados": "DUPLICADA (phash <= 6, 8 variantes): PlantDoc (train y test oficiales): 0 contra raw/plantdoc/train/Potato leaf early blight/1200px-Late_blight_on_potato_leaf_2.jpg; descartada"
+    },
+    {
+      "archivo": "commons_3_pepper_bacterial_spot.jpg",
+      "autor": "Scot Nelson",
+      "licencia": "CC0",
+      "url": "https://commons.wikimedia.org/wiki/File:Bacterial_leaf_spot_of_pepper_(14954498489).jpg",
+      "sha256": "d6c51455146fa309d663f02315778e843d78fad97efee32a65a58c4cea22088d",
+      "resultado_duplicados": "sin duplicados (phash <= 6, 8 variantes); distancia minima: PlantVillage (color y segmented) 10 de 108611 imagenes; PlantDoc (train y test oficiales) 14 de 2578 imagenes"
+    },
+    {
+      "archivo": "commons_4_tomato_healthy.jpg",
+      "autor": "Sabina Bajracharya",
+      "licencia": "CC BY-SA 4.0",
+      "url": "https://commons.wikimedia.org/wiki/File:Tomato_Plant_Leaves_01.jpg",
+      "sha256": "e969251448ec7f103e139b91e80c79dc5ccb59d2771abd7e7a19dc45c423f18d",
+      "resultado_duplicados": "sin duplicados (phash <= 6, 8 variantes); distancia minima: PlantVillage (color y segmented) 12 de 108611 imagenes; PlantDoc (train y test oficiales) 16 de 2578 imagenes"
+    },
+    {
+      "archivo": "commons_5_tomato_septoria.jpg",
+      "autor": "Wolan268",
+      "licencia": "CC0",
+      "url": "https://commons.wikimedia.org/wiki/File:Tomato_septoria_leaf_spot_3007.jpg",
+      "sha256": "5e46912798317f412bc1b7499eb898761cc999aa7ce2bef01048b550d66bc344",
+      "resultado_duplicados": "sin duplicados (phash <= 6, 8 variantes); distancia minima: PlantVillage (color y segmented) 12 de 108611 imagenes; PlantDoc (train y test oficiales) 16 de 2578 imagenes"
+    },
+    {
+      "archivo": "commons_6_potato_late_blight.jpg",
+      "autor": "Björn Andersson (SLU)",
+      "licencia": "CC BY-SA 4.0",
+      "url": "https://commons.wikimedia.org/wiki/File:Potato_Late_Blight.JPG",
+      "sha256": "4ffb885b84a3866820663573d7f30f972ff3785d88df1ac8347bff0605a8a8f1",
+      "resultado_duplicados": "sin duplicados (phash <= 6, 8 variantes); distancia minima: PlantVillage (color y segmented) 12 de 108611 imagenes; PlantDoc (train y test oficiales) 16 de 2578 imagenes"
+    }
+  ],
+  "detalle_por_imagen": [
+    {
+      "archivo": "commons_1_tomato_late_blight.jpg",
+      "phash_propio": "c84d7fb6b1881ec1",
+      "mas_cercana": {
+        "PlantVillage (color y segmented)": {
+          "ruta": "raw/plantvillage/raw/segmented/Pepper,_bell___healthy/6120353a-2ee2-46d3-80f1-6535ddfe7aab___JR_HL 8073_final_masked.jpg",
+          "distancia": 12
+        },
+        "PlantDoc (train y test oficiales)": {
+          "ruta": "raw/plantdoc/train/Tomato leaf late blight/5816170621_e1cce08736_z.jpg",
+          "distancia": 0
+        }
+      }
+    },
+    {
+      "archivo": "commons_2_potato_late_blight.jpg",
+      "phash_propio": "d5492039cacbce3e",
+      "mas_cercana": {
+        "PlantVillage (color y segmented)": {
+          "ruta": "raw/plantvillage/raw/color/Peach___Bacterial_spot/2496a2b6-aba8-4a81-bebb-19a4248378bc___Rutg._Bact.S 1799.JPG",
+          "distancia": 14
+        },
+        "PlantDoc (train y test oficiales)": {
+          "ruta": "raw/plantdoc/train/Potato leaf early blight/1200px-Late_blight_on_potato_leaf_2.jpg",
+          "distancia": 0
+        }
+      }
+    },
+    {
+      "archivo": "commons_3_pepper_bacterial_spot.jpg",
+      "phash_propio": "d42b64c82db1725f",
+      "mas_cercana": {
+        "PlantVillage (color y segmented)": {
+          "ruta": "raw/plantvillage/raw/segmented/Orange___Haunglongbing_(Citrus_greening)/fd9c40f2-f567-4158-a3fc-d4a98a4cc555___CREC_HLB 5143_final_masked.jpg",
+          "distancia": 10
+        },
+        "PlantDoc (train y test oficiales)": {
+          "ruta": "raw/plantdoc/train/Apple leaf/fruit_apple_apple-tree_wallpaper_EA60026.jpg",
+          "distancia": 14
+        }
+      }
+    },
+    {
+      "archivo": "commons_4_tomato_healthy.jpg",
+      "phash_propio": "cffb608592a916d1",
+      "mas_cercana": {
+        "PlantVillage (color y segmented)": {
+          "ruta": "raw/plantvillage/raw/color/Grape___Leaf_blight_(Isariopsis_Leaf_Spot)/4597e55d-b339-4598-b1d0-63f001748aab___FAM_L.Blight 1693.JPG",
+          "distancia": 12
+        },
+        "PlantDoc (train y test oficiales)": {
+          "ruta": "raw/plantdoc/test/Tomato leaf late blight/636368370164094909-late-blight-15-.jpg",
+          "distancia": 16
+        }
+      }
+    },
+    {
+      "archivo": "commons_5_tomato_septoria.jpg",
+      "phash_propio": "d54c48f06bac55d6",
+      "mas_cercana": {
+        "PlantVillage (color y segmented)": {
+          "ruta": "raw/plantvillage/raw/segmented/Orange___Haunglongbing_(Citrus_greening)/e7b89b86-3933-4328-9331-c4bbe973502a___UF.Citrus_HLB_Lab 1293_final_masked.jpg",
+          "distancia": 12
+        },
+        "PlantDoc (train y test oficiales)": {
+          "ruta": "raw/plantdoc/test/Tomato leaf/Tomato_leaf.jpg",
+          "distancia": 16
+        }
+      }
+    },
+    {
+      "archivo": "commons_6_potato_late_blight.jpg",
+      "phash_propio": "dc1e23f1be16c624",
+      "mas_cercana": {
+        "PlantVillage (color y segmented)": {
+          "ruta": "raw/plantvillage/raw/color/Orange___Haunglongbing_(Citrus_greening)/bb249aa7-acd7-46d4-842a-1e1d03702911___UF.Citrus_HLB_Lab 9686.JPG",
+          "distancia": 12
+        },
+        "PlantDoc (train y test oficiales)": {
+          "ruta": "raw/plantdoc/train/Cherry leaf/prunus-pensylvanica-007.jpg",
+          "distancia": 16
+        }
+      }
+    }
+  ],
+  "cache_hashes": {
+    "PlantVillage (color y segmented)": "hit",
+    "PlantDoc (train y test oficiales)": "hit"
+  },
+  "tiempo_s": 11.229,
+  "memoria_pico_gpu_mb": null,
+  "memoria_pico_cpu_mb": 647.0,
+  "nota": "solo hash: no se abrió ni mostró ninguna imagen de los conjuntos y no se calculó ninguna métrica",
+  "nota_memoria": "memoria_pico_cpu_mb es el máximo del proceso entero"
+}
