@@ -2,6 +2,50 @@
 
 > Se actualiza al cierre de cada sesión de trabajo. Lo más reciente arriba.
 
+## 2026-11-10 — Sesión 14: documento final y reproducibilidad (etapa 7)
+
+**Estado:** etapa 7 hecha en el repo. Borrador completo del informe (`docs/informe_final.md`, secciones 1–12, unas 5.150 palabras de
+prosa más tablas y 5 figuras), con cada número trazado a su fuente y verificado por un test; figuras y tablas finales regenerables
+desde `results/`; README de reproducción. **No se entrenó, evaluó ni calibró nada, y no se tocó ningún test** (las figuras de PD-test
+salen de JSON ya versionados; nota en `accesos_test.md`). Suite: **468 pasan, 0 saltados**.
+
+**Hecho (en orden de commits; todos los hace el usuario)**
+- Fase 1 (`9f2ccb8` código, `6ceb59e` docs): `src/foliares/eval/finales.py` (tablas con coma decimal y figura de latencia),
+  `scripts/figuras_finales.py` + `configs/07_figuras_finales.yaml` (solo lee JSON de `results/`; registra commit y estado del árbol),
+  `notebooks/07_figuras_finales.ipynb`, `figura_fiabilidad` admite el JSON de PD-test. Figuras en `docs/figuras_finales/`, regeneradas
+  desde `9f2ccb8` con el árbol limpio, incluida `fiabilidad_pd_test.png` (pedida por el equipo). Las grillas de CAM se copian: no salen
+  de `results/`. Diagrama `docs/arquitectura.mmd` exportado a `docs/figuras_finales/arquitectura.png` con mermaid-cli.
+- Fase 2 (`b9d272f`): `docs/trazabilidad.md` (número → archivo → config → commit → fila de accesos; total de accesos: PV-test 2,
+  PD-test 3) y `tests/test_trazabilidad.py` (compara cada valor con su JSON/CSV/YAML al redondeo mostrado; probado con errores inyectados).
+- Fase 3 (`04c7896`): informe; sección 12 (uso de IA) aprobada por el equipo con cambios; parámetros (P), referencias (R), D19, C28 y
+  A17 en la trazabilidad; test de que cada ID citado en el informe tiene fila.
+- Fase 4: `README.md` reescrito como guía de reproducción; referencia de Anthropic con las versiones (Opus 5.5 y Sonnet 5.5).
+
+**Qué quedó a medias**
+- En el informe: `[PENDIENTE]` la fecha de entrega y las capturas de la app (las completa el equipo en la versión final).
+- Los comandos de descarga del README (clon con sparse-checkout de PlantVillage y rescate de PlantDoc con `--mover-originales` fuera
+  de Windows) se escribieron desde la documentación de las sesiones 2 y 5c; **no se ejecutaron en esta sesión**.
+- Sin datos, no se verificó qué tests fallan (el README lo dice).
+
+**Próximos pasos**
+1. Equipo: versión final del informe y presentación (chat web) desde `docs/informe_final.md`; ensayo de la demo; defensa el 20/11.
+2. Revisar la legibilidad del diagrama en A4 (es apaisado, 1568 × 414 px); si hace falta, exportar con `-w 3000`.
+3. PR de `sesion-14/documento` a `main`.
+
+**Decisiones pendientes**
+- **Licencia de las imágenes de PlantDoc en el informe** (heredada de la sesión 9): el informe incluye una grilla de CAM con fotos de
+  PlantDoc-dev (figura 4); PlantDoc es "uso académico, sin redistribución".
+- Atribución de `commons_4` y `commons_6` (CC BY-SA 4.0) si aparecen en las capturas.
+- Si se publican los pesos (6,76 MB) para que la app sea reproducible sin reentrenar; hoy solo están en el Drive del equipo, y pesos
+  reentrenados no pasan la verificación de sha256 de las configs.
+- Investigar o no la etiqueta dudosa de `commons_2` en PlantDoc (heredada; el informe la menciona en §9).
+
+**Riesgos abiertos**
+- Redondeo: el ECE de PD-test con T = 1 es 0,676 (0,67649); el handoff de la sesión 11 decía 0,677. El informe usa 0,676.
+- Las cifras del paper de PlantDoc (2.598 imágenes, 27 clases) siguen leídas con una herramienta y sin confirmar a mano; la §12 ya no
+  afirma que estén verificadas, sino que se citan como las reporta la fuente.
+- Filas 1 a 5 de `accesos_test.md` usadas; esta sesión no agregó ninguna.
+
 ## 2026-11-10 — Sesión 12: app en Gradio (etapa 6)
 
 **Estado:** etapa 6 hecha. La app usa el modelo, T = 14,973 y τ = 0,5 de `configs/05_calibracion.yaml` sin cambiarlos (opción B del equipo): siempre muestra el
