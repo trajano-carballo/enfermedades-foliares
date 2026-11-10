@@ -1,0 +1,4 @@
+# Config de la etapa 6 (sesión 12, app en Gradio). El modelo, T, τ, geometría y bootstrap NO se repiten acá: salen de la
+# config de calibración (decisión del equipo del 2026-11-10: la app usa lo de la sesión 11 sin cambiarlo).
+experimento: 06_app
+calibracion: configs/05_calibracion.yaml
