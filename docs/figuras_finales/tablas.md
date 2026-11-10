@@ -2,7 +2,7 @@
 
 Generado por `scripts/figuras_finales.py --config configs/07_figuras_finales.yaml` desde los JSON de `results/` (sin cómputo nuevo). IC 95 % bootstrap estratificado, 2.000 réplicas, semilla 42.
 
-Generado desde el commit `9f2ccb8`; cambios sin commitear al generar: no.
+Generado desde el commit `31fb2f9`; cambios sin commitear al generar: no.
 
 ## Macro-F1 base vs. variante (filas 1–4)
 
@@ -52,4 +52,4 @@ ms, CPU AMD Ryzen 5 5500U with Radeon Graphics, 6 hilos de torch, torch 2.14.1+c
 | pv_val_app | `results/06_app/06_app_pv_val_20261110_093958/pv_val_informativo.json` | `2411ff9` | sí |
 | latencia | `results/06_app/06_app_latencia_20261110_150137/latencia.json` | `2126058` | sí |
 
-Grillas de CAM copiadas (no se regeneran desde results/): `docs/figuras_sesion9/cam_grilla_clases_1a6.png`, `docs/figuras_sesion9/cam_grilla_clases_7a12.png`, `docs/figuras_sesion10/cam_variante_clases_1a6.png`, `docs/figuras_sesion10/cam_variante_clases_7a12.png`
+Las grillas de CAM no salen de results/ (necesitan checkpoint e imágenes) y muestran fotos de PlantDoc: quedan en `docs/figuras_sesion9/` y `docs/figuras_sesion10/`.
