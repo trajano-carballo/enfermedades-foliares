@@ -50,6 +50,14 @@ miraron 130 imágenes de PlantDoc, de las que **34 caen en el test congelado de 
 | `APP_PV` | `results/06_app/06_app_pv_val_20261110_093958/pv_val_informativo.json` | `configs/06_app.yaml` | `2411ff9` | — (PV-val) |
 | `APP_EXT` | `results/06_app/06_app_externas_20261110_144834/verificacion_externas.json` | `configs/06_app.yaml` | `0fe0a8b` | — (solo hash) |
 | `APP_LAT` | `results/06_app/06_app_latencia_20261110_150137/latencia.json` | `configs/06_app.yaml` | `2126058` | — (PV-val, PD-dev, Commons) |
+| `CFG_BASE` | `configs/02_modelo_base.yaml` | (es la config) | — | — |
+| `CFG_EVAL` | `configs/03_brecha.yaml` | (es la config) | — | — |
+| `CFG_VAR` | `configs/04_aumentacion.yaml` | (es la config) | — | — |
+| `CFG_CAL` | `configs/05_calibracion.yaml` | (es la config) | — | — |
+| `DECISIONES` | `docs/bitacora/decisiones.md` | — (decisiones del equipo) | — | — |
+| `MAPEO` | `docs/mapeo_clases.md` | — (mapeo de clases) | — | — |
+| `PROPUESTA` | `docs/propuesta_entregable1.md` | — (Entregable 1, cifras bibliográficas) | — | — |
+| `INVENTARIO` | `docs/exploracion_datasets.md` | — (inventario de la sesión 2) | — | — |
 
 Las figuras y tablas de `docs/figuras_finales/` salen de estas mismas fuentes con `scripts/figuras_finales.py`
 (`configs/07_figuras_finales.yaml`, commit `9f2ccb8`, árbol limpio); `docs/figuras_finales/tablas.md` repite la lista de fuentes.
@@ -77,6 +85,7 @@ Las figuras y tablas de `docs/figuras_finales/` salen de estas mismas fuentes co
 | D15 | (ídem) `descartar` | 10 | `REVISION` | `revisor_1=descartar` |
 | D16 | Pares de distancia 7–10 revisados como la misma foto | 3 | `PARES` | `decision_equipo=misma_foto` |
 | D17 | Imágenes de PD-test por clase (mín. – máx.) | 16 – 41 | `T_BASE` | `derivado: min y max de resultados.PD-test.base.soporte_por_clase` |
+| D19 | Clases con par en PlantDoc antes de quitar arañas; imágenes de arañas en PlantDoc train; en test | 13; 2; 0 | `MAPEO` | `— sección Tomate y decisión Sesión 5 (1)` |
 | D18 | Imágenes de la revisión humana que caen en el test congelado de PlantDoc | 34 | `ACCESOS` | `— nota de la sesión 6` |
 
 ### Modelo y entrenamiento
@@ -170,6 +179,7 @@ Las figuras y tablas de `docs/figuras_finales/` salen de estas mismas fuentes co
 | C18 | Acierto sobre lo respondido en PD-test, antes | 0,181 [0,141; 0,220] | `CAL_TEST` | `antes_T_1.acierto_respondidas` |
 | C19 | Errores de alta confianza en PD-test, antes (fracción del total) | 0,787 [0,743; 0,827] | `CAL_TEST` | `antes_T_1.errores_alta_confianza` |
 | C20 | Errores de alta confianza en PD-test, después | 0,000 [0,000; 0,000] | `CAL_TEST` | `despues_T_final.errores_alta_confianza` |
+| C28 | Curva de cobertura en PD-dev sin calibrar: máximo acierto sobre lo respondido; su τ; su cobertura | 0,272; 0,98; 0,328 | `CAL_DEV` | `curva_cobertura.antes_T_1.98.acierto_respondidas; curva_cobertura.antes_T_1.98.tau; curva_cobertura.antes_T_1.98.cobertura` |
 | C21 | τ | 0,5 | `CAL_TEST` | `tau` |
 | C22 | PV-val con T = 1: cobertura | 0,998 [0,995; 1,000] | `APP_PV` | `referencia_sin_calibrar_T1.cobertura` |
 | C23 | PV-val con T = 1: respondidas | 2.202 | `APP_PV` | `referencia_sin_calibrar_T1.n_respondidas.estimacion` |
@@ -197,4 +207,32 @@ Las figuras y tablas de `docs/figuras_finales/` salen de estas mismas fuentes co
 | A13 | Hilos de torch | 6 | `APP_LAT` | `entorno.hilos_torch` |
 | A14 | Imágenes contra las que se buscaron duplicados de Commons: PlantVillage; PlantDoc | 108.611; 2.578 | `APP_EXT` | `comparadas.PlantVillage (color y segmented); comparadas.PlantDoc (train y test oficiales)` |
 | A15 | Imágenes de Commons: probadas; duplicadas (descartadas); válidas | 6; 2; 4 | `APP_EXT` | `derivado: imagenes (6) y resultado_duplicados de cada una (2 "DUPLICADA")` |
+| A17 | Llamadas lentas que dominan el p95 global (de 312 por serie) | 18 | `DECISIONES` | `— Sesión 12: cómo se reporta la latencia` |
 | A16 | Umbral de phash | 6 | `APP_EXT` | `umbral_phash` |
+
+### Parámetros fijados en las configs y en las decisiones
+
+| ID | Número | Valor | Fuente | Clave |
+|---|---|---|---|---|
+| P1 | Clases de entrenamiento y evaluación | 12 | `CFG_BASE` | `derivado: largo de clases` |
+| P2 | Tamaño de entrada (px) | 224 | `CFG_BASE` | `preproceso.tamano` |
+| P3 | Semilla | 42 | `CFG_BASE` | `semilla` |
+| P4 | Base: LR; batch; máx. épocas; paciencia | 0,001; 256; 100; 10 | `CFG_BASE` | `entrenamiento.lr; entrenamiento.batch; entrenamiento.max_epocas; entrenamiento.paciencia` |
+| P5 | Variante: bloques descongelados de `features` | 11; 12 | `CFG_VAR` | `finetune.bloques_entrenables.0; finetune.bloques_entrenables.1` |
+| P6 | Variante: LR; batch; máx. épocas; paciencia | 0,0001; 64; 20; 5 | `CFG_VAR` | `finetune.lr; finetune.batch; finetune.max_epocas; finetune.paciencia` |
+| P7 | Aumentación: escala del recorte; rotación (grados); brillo; contraste; saturación | 0,6; 1,0; 20; 0,3; 0,3; 0,3 | `CFG_VAR` | `aumentacion.escala_recorte.0; aumentacion.escala_recorte.1; aumentacion.rotacion_grados; aumentacion.brillo; aumentacion.contraste; aumentacion.saturacion` |
+| P8 | Bootstrap: réplicas; nivel; semilla | 2.000; 0,95; 42 | `CFG_EVAL` | `bootstrap.replicas; bootstrap.nivel; bootstrap.semilla` |
+| P9 | Muestra de CAM: por clase de PD-dev; por clase de PV-val | 2; 1 | `CFG_EVAL` | `cam.por_clase_pd_dev; cam.por_clase_pv_val` |
+| P10 | Grilla de T: desde; hasta; valores | 0,5; 1.000; 200 | `CFG_CAL` | `temperatura_grilla.desde; temperatura_grilla.hasta; temperatura_grilla.n` |
+| P11 | Bins del ECE; particiones para el ECE fuera de partición | 15; 5 | `CFG_CAL` | `ece_bins; particiones.k` |
+| P12 | Partición de PlantDoc dev/test (%); umbral de phash para duplicados | 70/30; 6 | `DECISIONES` | `— Sesión 5 (2)` |
+| P13 | Zona de descarte de mosaic (imágenes); tope de PV-train por clase | 20; 1.500 | `DECISIONES` | `— Sesión 5 (3) y (4)` |
+
+### Referencias e inventario (no son resultados del proyecto)
+
+| ID | Número | Valor | Fuente | Clave |
+|---|---|---|---|---|
+| R1 | Mohanty et al. (2016): exactitud en el test retenido de PlantVillage; en imágenes de otras condiciones (%) | 99,35; 31,4 | `PROPUESTA` | `— §1, cita bibliográfica` |
+| R2 | PlantVillage color (commit fijado): imágenes; clases | 54.305; 38 | `INVENTARIO` | `— §1` |
+| R3 | PlantDoc (commit fijado): imágenes en train + test; carpetas de clase | 2.578; 28 | `INVENTARIO` | `— §2` |
+| R4 | PlantDoc según el paper: imágenes; clases | 2.598; 27 | `PROPUESTA` | `— §3 (cita de Singh et al., 2020)` |

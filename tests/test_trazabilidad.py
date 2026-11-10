@@ -1,7 +1,7 @@
 """Sesión 14: cada número de docs/trazabilidad.md coincide con su fuente (JSON de results/ o CSV congelado de data/splits/).
 
 Tabla de fuentes: | `ALIAS` | `ruta` | config | `commit` | accesos |. Tabla de números: | ID | número | valor | `ALIAS` | `clave` |.
-Clave de un JSON: ruta con puntos (`resultados.PD-test.n`; un segmento numérico indexa una lista); varias claves con `;`.
+Clave de un JSON (o de un YAML de configs/): ruta con puntos (`resultados.PD-test.n`; un segmento numérico indexa una lista); varias claves con `;`.
 Clave de un CSV: condiciones `col=valor` o `col!=valor` unidas con `&`; el valor es el número de filas que las cumplen.
 Las claves que empiezan con `derivado` o `—` no se verifican acá (la fórmula está escrita en la tabla).
 """
@@ -12,6 +12,7 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
+import yaml
 
 REPO = Path(__file__).resolve().parents[1]
 DOC = REPO / "docs" / "trazabilidad.md"
@@ -84,8 +85,17 @@ def test_commit_de_cada_json(fuente):
 @pytest.mark.parametrize("n", [n for n in NUMEROS if not n["clave"].startswith(("derivado", "—"))], ids=lambda n: n["id"])
 def test_cada_numero_coincide_con_su_fuente(n):
     ruta = REPO / FUENTES[n["alias"]]["ruta"]
-    reales = valor_csv(ruta, n["clave"]) if ruta.suffix == ".csv" else valores_json(json.loads(ruta.read_text(encoding="utf-8")), n["clave"])
+    if ruta.suffix == ".csv":
+        reales = valor_csv(ruta, n["clave"])
+    else:                                  # JSON de results/ o YAML de configs/ (yaml lee los dos)
+        reales = valores_json(yaml.safe_load(ruta.read_text(encoding="utf-8")), n["clave"])
     escritos = numeros_de(n["valor"])
     assert len(escritos) == len(reales), f"{n['id']}: {n['valor']!r} contra {reales}"
     for (x, dec), real in zip(escritos, reales):
         assert abs(real - x) <= 0.5 * 10 ** -dec + 1e-9, f"{n['id']}: escrito {x} (con {dec} decimales), fuente {real}"
+
+
+def test_cada_id_citado_en_el_informe_tiene_fila():
+    informe = (REPO / "docs" / "informe_final.md").read_text(encoding="utf-8")
+    citados = set(re.findall(r"\b[A-Z]\d+\b", " ".join(re.findall(r"<!--(.*?)-->", informe, re.S))))
+    assert citados and citados <= {n["id"] for n in NUMEROS}, sorted(citados - {n["id"] for n in NUMEROS})
