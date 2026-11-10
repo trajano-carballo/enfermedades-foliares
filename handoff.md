@@ -2,6 +2,16 @@
 
 > Se actualiza al cierre de cada sesión de trabajo. Lo más reciente arriba.
 
+## 2026-11-10 — Sesión 12: app en Gradio (etapa 6) — EN CURSO
+
+**Riesgos abiertos (anotados durante la sesión)**
+- **Cache miss inexplicado en la verificación de imágenes externas.** La corrida de las 14:39 (`06_app_externas_20261110_143945`, desde `0fe0a8b` con el
+  árbol limpio) no acertó el caché de hashes de los conjuntos: la clave salió distinta de la del diagnóstico anterior y recalculó todo (298 s). No se
+  pudo reproducir: el código commiteado es idéntico, ejecutado como `__main__` los ingredientes de la clave (rutas con tamaño, versiones de PIL e
+  imagehash, bytes de `duplicados.py`) coinciden con los de la importación y la corrida siguiente (`06_app_externas_20261110_144834`) acertó el caché
+  en los dos conjuntos (11 s). Es un fallo seguro: el caché solo puede recalcular, y el resultado es el mismo con y sin caché (verificado). Quedó un par de
+  archivos huérfano en `foliares_salidas/cache_hashes/` (unos 90 MB) que se puede borrar a mano. Causa sin identificar.
+
 ## 2026-11-07 — Sesión 11: calibración por temperatura y abstención (etapa 5)
 
 **Estado:** etapa 5 cerrada con las reglas del §g del protocolo (fijadas antes de cada número). Se calibró la variante de la

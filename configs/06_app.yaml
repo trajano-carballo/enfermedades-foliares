@@ -6,3 +6,8 @@ externas:                                         # sesión 12, fase 3: imágene
   carpeta: externas                               # relativa a DATA_ROOT
   planilla: docs/imagenes_externas.csv
   umbral_phash: 6                                 # el mismo de las sesiones 4 y 5
+latencia:                                         # sesión 12, fase 4 (parámetros de la medición; no cambian ningún resultado de la app)
+  semilla: 42
+  muestra_por_conjunto: 50                        # imágenes de PV-val y de PD-dev (las de Commons entran todas las válidas)
+  calentamiento: 5                                # llamadas sin medir antes de cada serie (con y sin CAM)
+  repeticiones: 3                                 # pasadas sobre la muestra por serie
