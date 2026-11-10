@@ -87,7 +87,7 @@ def test_el_aviso_de_alcance_tiene_el_texto_acordado_y_cita_el_run():
     a = _app()
     for frase in ("no un diagnóstico", "consultá a un técnico", "tomate, papa y pimiento", "{n} clases",
                   "La confianza se calibró con fotos de campo, donde el modelo acierta poco. Por eso es baja incluso cuando la respuesta "
-                  "es correcta, y el cartel de confianza baja aparece en casi todas las imágenes. El orden del top-3 sigue siendo "
+                  "es correcta, y el cartel de confianza baja aparece en todas las imágenes probadas. El orden del top-3 sigue siendo "
                   "informativo: con fotos de laboratorio, la primera opción acierta el 97 %."):
         assert frase in a.AVISO.replace("**", "")
     assert "06_app_pv_val_20261110_093958" in (REPO / "app" / "app.py").read_text(encoding="utf-8")

@@ -38,7 +38,9 @@ def escribir_planilla(ruta: str | Path, filas: list[dict]) -> None:
 
 def hashes_con_cache(rutas: list[Path], nombre: str, cache: str | Path | None) -> tuple[list[Path], np.ndarray, str]:
     """`hashes_uint64(rutas)` con caché en disco (fuera del repo). La clave es el sha256 de las rutas con su tamaño, la versión de
-    PIL e imagehash y el código de `duplicados.py`: si algo cambia, se recalcula. Devuelve (rutas_ok, hashes, "hit"|"miss"|"sin_cache")."""
+    PIL e imagehash y el código de `duplicados.py`: si algo cambia, se recalcula. La clave no incluye el contenido de los archivos
+    ni su fecha: un archivo reemplazado por otro del mismo tamaño en la misma ruta daría un acierto con los hashes viejos; con `data/`
+    congelado es improbable. Devuelve (rutas_ok, hashes, "hit"|"miss"|"sin_cache")."""
     if cache is None:
         return (*hashes_uint64(list(rutas)), "sin_cache")
     clave = hashlib.sha256("\n".join(f"{r.as_posix()}|{r.stat().st_size}" for r in rutas).encode()

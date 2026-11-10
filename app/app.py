@@ -25,7 +25,7 @@ AVISO = """**Alcance y uso.** Esta app es una orientación, **no un diagnóstico
 Cubre tomate, papa y pimiento, y solo estas {n} clases: {clases}.
 
 La confianza se calibró con fotos de campo, donde el modelo acierta poco. Por eso es baja incluso cuando la respuesta es correcta, \
-y el cartel de confianza baja aparece en casi todas las imágenes. El orden del top-3 sigue siendo informativo: con fotos de \
+y el cartel de confianza baja aparece en todas las imágenes probadas. El orden del top-3 sigue siendo informativo: con fotos de \
 laboratorio, la primera opción acierta el 97 %."""
 
 
