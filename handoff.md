@@ -2,6 +2,64 @@
 
 > Se actualiza al cierre de cada sesión de trabajo. Lo más reciente arriba.
 
+## 2026-11-10 — Sesión 14: documento final y reproducibilidad (etapa 7)
+
+**Estado:** etapa 7 hecha en el repo. Borrador completo del informe (`docs/informe_final.md`, secciones 1–12, unas 5.150 palabras de
+prosa más tablas y 5 figuras), con cada número trazado a su fuente y verificado por un test; figuras y tablas finales regenerables
+desde `results/`; README de reproducción. **No se entrenó, evaluó ni calibró nada, y no se tocó ningún test** (las figuras de PD-test
+salen de JSON ya versionados; nota en `accesos_test.md`). Suite: **468 pasan, 0 saltados**.
+
+**Hecho (en orden de commits; todos los hace el usuario)**
+- Fase 1 (`9f2ccb8` código, `6ceb59e` docs): `src/foliares/eval/finales.py` (tablas con coma decimal y figura de latencia),
+  `scripts/figuras_finales.py` + `configs/07_figuras_finales.yaml` (solo lee JSON de `results/`; registra commit y estado del árbol),
+  `notebooks/07_figuras_finales.ipynb`, `figura_fiabilidad` admite el JSON de PD-test. Figuras en `docs/figuras_finales/`, regeneradas
+  desde `9f2ccb8` con el árbol limpio, incluida `fiabilidad_pd_test.png` (pedida por el equipo). Las grillas de CAM se copian: no salen
+  de `results/`. Diagrama `docs/arquitectura.mmd` exportado a `docs/figuras_finales/arquitectura.png` con mermaid-cli.
+- Fase 2 (`b9d272f`): `docs/trazabilidad.md` (número → archivo → config → commit → fila de accesos; total de accesos: PV-test 2,
+  PD-test 3) y `tests/test_trazabilidad.py` (compara cada valor con su JSON/CSV/YAML al redondeo mostrado; probado con errores inyectados).
+- Fase 3 (`04c7896`): informe; sección 12 (uso de IA) aprobada por el equipo con cambios; parámetros (P), referencias (R), D19, C28 y
+  A17 en la trazabilidad; test de que cada ID citado en el informe tiene fila.
+- Fase 4: `README.md` reescrito como guía de reproducción; referencia de Anthropic con las versiones (Opus 5.5 y Sonnet 5.5).
+
+**Qué quedó a medias**
+- En el informe: `[PENDIENTE]` la fecha de entrega (la completa el equipo en la versión final).
+- Los comandos de descarga del README (clon con sparse-checkout de PlantVillage y rescate de PlantDoc con `--mover-originales` fuera
+  de Windows) se escribieron desde la documentación de las sesiones 2 y 5c; **no se ejecutaron en esta sesión**.
+- Sin datos, no se verificó qué tests fallan (el README lo dice).
+
+**Próximos pasos**
+1. Equipo: versión final del informe y presentación (chat web) desde `docs/informe_final.md`; ensayo de la demo; defensa el 20/11.
+2. Revisar la legibilidad del diagrama en A4 (es apaisado, 1568 × 414 px); si hace falta, exportar con `-w 3000`.
+3. PR de `sesion-14/documento` a `main`.
+
+**Decisiones tomadas al cierre (en `decisiones.md`)**
+- Licencia: el informe no muestra imágenes de PlantDoc. La figura 4 son las dos capturas de la app con fotos CC0 de Commons
+  (`docs/figuras_finales/app_commons5.png`, septoria predicha como Tomato late blight; `app_commons3.png`, pimiento, acierta). Las
+  grillas de CAM de PlantDoc quedan en el repo como evidencia; la §9 lo dice.
+- Pesos: no se publican; el README dice que se piden al equipo.
+- Etiqueta de `commons_2`: no se investiga; queda como limitación (§9).
+
+**Review de la sesión 14 (correcciones en el árbol, sin commitear al escribir esto)**
+- Hecho: MA1 (§6.2 y §2.3, con E39), MA2 (test de proximidad ID ↔ número, probado con errores inyectados en una copia fuera del
+  repo), m1 (IDs nuevos), m3, m4, m5 (Anexo A con la tabla de cambios y la de latencia; §4.5 compacta), m7 (sin copias de las
+  grillas de CAM en `docs/figuras_finales/`; hay que regenerar `tablas.md` desde el árbol limpio después del commit del código), m8,
+  espacio en `scripts/figuras_finales.py`, pie de la figura 5, fila (7) de decisiones, 0,995 de C22 y commit `f9995b9` de las capturas.
+- m2 (seis frases reformuladas como lectura o hipótesis) y m6 (README: fotos de Commons, `figuras_sesion9/10.py`,
+  `diagnostico_dev.py`, `ic_por_clase.py` para la variante, §0) con la redacción de la review.
+- MA1: el equipo aprobó la redacción con los dos conteos (24 de 27 *late*, 14 de 29 *early*; E39).
+
+**Decisiones pendientes**
+- **Después de la defensa:** coherencia de la licencia de PlantDoc en el repo. Hay imágenes de PlantDoc versionadas desde la sesión 3
+  (muestras y pares en `docs/figuras_sesion3/`, grillas de pares en `figuras_sesion4/`, ejemplos contradictorios y pares 7–10 en
+  `figuras_sesion5/`, y las grillas de CAM de `figuras_sesion9/` y `figuras_sesion10/`), y el repo es público. Si en la presentación se muestran esas grillas, vale la
+  misma restricción.
+
+**Riesgos abiertos**
+- Redondeo: el ECE de PD-test con T = 1 es 0,676 (0,67649); el handoff de la sesión 11 decía 0,677. El informe usa 0,676.
+- Las cifras del paper de PlantDoc (2.598 imágenes, 27 clases) siguen leídas con una herramienta y sin confirmar a mano; la §12 ya no
+  afirma que estén verificadas, sino que se citan como las reporta la fuente.
+- Filas 1 a 5 de `accesos_test.md` usadas; esta sesión no agregó ninguna.
+
 ## 2026-11-10 — Sesión 12: app en Gradio (etapa 6)
 
 **Estado:** etapa 6 hecha. La app usa el modelo, T = 14,973 y τ = 0,5 de `configs/05_calibracion.yaml` sin cambiarlos (opción B del equipo): siempre muestra el
@@ -15,7 +73,7 @@ la sesión no usó PV-test ni PD-test, y la verificación de duplicados solo hiz
 | | Resultado |
 |---|---|
 | PV-val con T = 14,973 y τ = 0,5 (informativo, n = 2.207) | cobertura 0,000 [0; 0]; 0 respondidas; acierto sobre lo respondido no definido; exactitud 0,971 [0,963; 0,977] |
-| PV-val sin calibrar (T = 1, τ = 0,5) | cobertura 0,998 [0,996; 0,9995]; 2.202 respondidas; acierto sobre lo respondido 0,971 [0,964; 0,978] |
+| PV-val sin calibrar (T = 1, τ = 0,5) | cobertura 0,998 [0,996 (corregido en la sesión 14: 0,995); 0,9995]; 2.202 respondidas; acierto sobre lo respondido 0,971 [0,964; 0,978] |
 | Imágenes de Commons | 6 probadas con phash ≤ 6 (8 variantes) contra 108.611 de PlantVillage y 2.578 de PlantDoc: 2 duplicadas descartadas, 4 válidas |
 | Latencia p50 / p95 (ms), sin CAM → con CAM, CPU | PV-val 14,1 / 16,4 → 19,8 / 22,7; PD-dev 24,0 / 165,4 → 31,4 / 172,3; Commons 23,7 / 33,6 → 32,3 / 39,9 |
 | Latencia, total (solo p50, decisión del equipo) | 15,7 → 22,0 ms; sobrecosto del CAM 6,4 ms |

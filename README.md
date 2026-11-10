@@ -3,63 +3,204 @@
 Proyecto Integrador AIAI — Aplicaciones de Aprendizaje Automático (LIDIA, UTEC ITRN).
 César Carballo · Juan Lucas Pimentel · Victor Uría — Prof. Juan Pedro de León.
 
-## Qué es
+MobileNetV3-Small (ImageNet) con cabezal GAP → Linear, entrenada en **PlantVillage** (laboratorio) y evaluada en **PlantDoc**
+(campo), en 12 clases de tomate, papa y pimiento. El resultado principal es la **brecha de macro-F1** entre los dos dominios, con
+IC bootstrap; después vienen una variante con fine-tuning parcial y aumentación, la calibración por temperatura con umbral de
+abstención, y una app en Gradio con CAM. Informe: [`docs/informe_final.md`](docs/informe_final.md). Estado al día:
+[`handoff.md`](handoff.md).
 
-Entrenamos un clasificador de enfermedades foliares sobre **PlantVillage** (laboratorio) y lo
-evaluamos sobre **PlantDoc** (campo), que nunca se usa en entrenamiento. El resultado principal
-no es la accuracy de laboratorio sino la **brecha ID→OOD en macro-F1**, por qué ocurre y cuánto
-se recupera con dos intervenciones: aumentación dirigida y supresión de fondo. La
-explicabilidad se resuelve con **CAM** (no se usa Grad-CAM en ninguna etapa). El subconjunto
-común de clases parte de tomate y papa (maíz queda excluido), evaluando si sumar pimiento.
+Este README explica cómo reproducir el proyecto, desde clonar el repo hasta levantar la app. Cada paso dice qué escribe y
+dónde.
 
-El producto final es un asistente de orientación (nunca diagnóstico) que se **abstiene** cuando
-no está en condiciones de opinar. Propuesta completa: [`docs/propuesta_entregable1.md`](docs/propuesta_entregable1.md).
+## 0. Lo que se reproduce sin datos
 
-## Estado
+Los números del informe salen de `results/`, `data/splits/` y las configs; el diagrama y las capturas de la app no salen de
+`results/`. Sin descargar nada:
 
-Etapa 0 — estructura del repositorio. Ver [`handoff.md`](handoff.md) para el estado al día.
+```
+pip install -r requirements.txt && pip install -e . --no-deps
+python scripts/figuras_finales.py --config configs/07_figuras_finales.yaml   # docs/figuras_finales/ (figuras y tablas.md)
+python -m pytest tests/test_trazabilidad.py tests/test_figuras_finales.py    # cada número del informe contra su fuente
+```
+
+`docs/trazabilidad.md` lleva cada número del informe a su archivo, config, commit y fila de acceso a test.
+
+## 1. Entorno
+
+- **Python ≥ 3.11.4** (probado con 3.13.7 en Windows y 3.13.16 en Colab).
+- `pip install -r requirements.txt` y `pip install -e . --no-deps`. `requirements.txt` fija cotas mínimas; las versiones exactas
+  de la PC de trabajo están en `docs/entorno_referencia.txt`, y cada JSON de `results/` registra torch, CUDA, GPU e hilos.
+- **Sin GPU** alcanza para todo menos el entrenamiento de la variante (Colab, T4). El modelo base entrena en CPU en minutos.
+- Tests: `python -m pytest -rs`. Con los datos y los pesos en su lugar pasa la suite completa. Sin ellos, algunos tests se saltan
+  (`-rs` dice cuáles) y no se verificó qué pasa con el resto; sin datos, correr los de §0.
+- Windows: activar rutas largas (`LongPathsEnabled=1`) para PlantDoc (§2).
+
+Todas las rutas salen de `configs/paths.yaml`. Los datos van en `data/` (o en la carpeta que diga la variable `DATA_ROOT`). Los
+pesos y las salidas pesadas van en una carpeta **fuera del repo**, que acá se llama `SALIDA` (por ejemplo `../foliares_salidas`):
+los scripts se niegan a escribir pesos adentro del repo.
+
+## 2. Datos
+
+Ninguno de los dos conjuntos se redistribuye (uso académico): se clonan de sus repositorios, en el commit fijado.
+
+```
+# PlantVillage (solo color, segmented y leaf_grouping)
+git clone --filter=blob:none --no-checkout https://github.com/spMohanty/PlantVillage-Dataset data/raw/plantvillage
+git -C data/raw/plantvillage sparse-checkout set raw/color raw/segmented leaf_grouping
+git -C data/raw/plantvillage checkout 7f7ecc7e1eaca78107e3affe7cb5abd9427e139a
+
+# PlantDoc
+git clone --no-checkout https://github.com/pratikkayal/PlantDoc-Dataset data/raw/plantdoc
+git -C data/raw/plantdoc checkout 5467f6012d78d1c446145d5f582da6096f852ae8
+python scripts/rescatar_archivos_plantdoc.py --rev 5467f6012d78d1c446145d5f582da6096f852ae8 --mover-originales
+```
+
+El rescate aplica el mapeo versionado (`docs/bitacora/plantdoc_archivos_renombrados.csv`, 101 archivos) para que los nombres
+coincidan con los de las particiones en cualquier sistema, y verifica el sha1 de cada archivo contra el árbol de git. **En Windows**
+el `checkout` de PlantDoc falla (nombres con `?` y colisiones de mayúsculas): seguir el procedimiento de tres pasos de
+[`docs/exploracion_datasets.md`](docs/exploracion_datasets.md) §2 (checkout selectivo y después el rescate).
+
+## 3. Particiones congeladas (no se regeneran)
+
+`data/splits/` tiene las particiones de la etapa 1 (congeladas el 2026-10-23, commit `b79d3a2`). Nunca se regeneran
+(invariante 2 de [`CLAUDE.md`](CLAUDE.md)). Para verificarlas:
+
+```
+cd data/splits && sha256sum -c SHA256SUMS.txt      # PowerShell: Get-FileHash <archivo> -Algorithm SHA256
+```
+
+Cada script que las lee registra su sha256 en el JSON de salida. Cómo se armaron (partición por hoja, depuración de PlantDoc,
+revisión humana): `docs/exploracion_sesion5.md`, `data/splits/README_VERSION.md` y los notebooks `01_preparacion_datos.ipynb` y
+`01b_depuracion_plantdoc.ipynb`.
+
+## 4. Entrenamiento
+
+**Modelo base** (CPU, unos 6 minutos: features GAP precalculadas y un `Linear(576, 12)`; solo PV-train y PV-val):
+
+```
+python scripts/entrenar.py --config configs/02_modelo_base.yaml --salida SALIDA
+```
+
+**Variante** (fine-tuning parcial y aumentación; Colab con GPU T4, unos 25 minutos). Usa el checkpoint del base:
+
+1. Empaquetar el subconjunto de 12 clases (en la PC con los datos; antes, correr los notebooks `01` y `01b`, que escriben los
+   manifiestos en `data/interim/`):
+   `python scripts/empaquetar_subconjunto.py --config configs/paquete_subconjunto.yaml --salida <carpeta>`, y subir el `.tar`
+   de PlantVillage y su `.sha256` a `foliares/paquetes/` en Drive. PlantDoc no va a Colab: no entrena ni elige nada.
+2. Subir el checkpoint del base a `foliares/checkpoints/02_modelo_base/<run_id>/mejor_checkpoint.pt`.
+3. Abrir `notebooks/04_aumentacion_colab.ipynb` en Colab y correr las celdas en orden: clona el repo, descomprime y verifica el
+   paquete (`scripts/verificar_paquete.py`), y entrena con `scripts/entrenar_finetune.py --config configs/04_aumentacion.yaml`,
+   con un checkpoint por época y reanudación si se corta la sesión.
+4. Bajar `mejor.pt` y `resultados.json` a `SALIDA/04_aumentacion/<run_id>/`.
+
+Cada corrida escribe su JSON completo en `SALIDA/<experimento>/<run_id>/` y copia los JSON chicos a `results/<experimento>/<run_id>/`.
+
+**Sobre la igualdad exacta.** Con `determinista=True` y la misma máquina, el resultado se repite bit a bit. En otra GPU u otra
+versión de torch puede diferir por redondeo (ver [`docs/reproducibilidad.md`](docs/reproducibilidad.md)). Las evaluaciones y la app
+verifican el **sha256 del checkpoint** que fija cada config: con pesos reentrenados, el sha256 no va a coincidir y los scripts no
+cargan el modelo. Para usarlos, hay que poner su `run_id`, ruta y sha256 en la config, lo que es una corrida nueva y no la del
+informe. Los pesos del informe no se versionan ni se publican: **se piden al equipo** (los dos checkpoints van en
+`SALIDA/02_modelo_base/<run_id>/` y `SALIDA/04_aumentacion/<run_id>/`, con los `run_id` y sha256 de las configs).
+
+## 5. Evaluación
+
+```
+# PlantDoc-dev: compara las tres geometrías de preproceso y aplica la regla fijada (no toca ningún test)
+python scripts/evaluar.py --config configs/03_brecha.yaml --salida SALIDA --fase dev
+# PlantDoc-dev, variante (informativo, con la diferencia pareada contra el base)
+python scripts/evaluar.py --config configs/04_evaluacion.yaml --salida SALIDA --fase dev_informativo
+```
+
+**Los tests ya se evaluaron y no se vuelven a evaluar.** `--fase tests` solo corre con una fila nueva de
+[`docs/bitacora/accesos_test.md`](docs/bitacora/accesos_test.md), commiteada antes y no usada; la guarda rechaza las filas 1–5, que
+ya están gastadas. Los números de los tests están en `results/` (`tests.json` de cada modelo), y lo que se deriva de ellos sale de las
+predicciones guardadas, sin volver a pasar ningún test por un modelo:
+
+```
+python scripts/ic_por_clase.py --config configs/03_brecha.yaml --salida SALIDA --run-dev <run dev> --run-tests <run tests>
+python scripts/ic_por_clase.py --config configs/04_evaluacion.yaml --salida SALIDA --run-dev <run dev_informativo> --run-tests <run tests de la variante>
+python scripts/comparar_con_base.py --config configs/04_evaluacion.yaml --salida SALIDA --run-tests <run tests de la variante>
+```
+
+Diagnóstico de PD-dev (mapeo de clases, permutación, control de preproceso y colapso hacia una clase; no toca ningún test):
+
+```
+python scripts/diagnostico_dev.py --config configs/03_brecha.yaml --salida SALIDA --run-dev <run dev>
+```
+
+Grillas de CAM (muestra fija de PD-dev y PV-val, nunca de un test). Necesitan el checkpoint y las imágenes, y muestran fotos de
+PlantDoc, por eso no están en el informe; quedan en `docs/figuras_sesion9/` (base) y `docs/figuras_sesion10/` (variante):
+
+```
+python scripts/figuras_sesion9.py --config configs/03_brecha.yaml --salida SALIDA --run-dev <run dev> --run-tests <run tests> --run-ic <run ic>
+python scripts/figuras_sesion10.py --config configs/04_evaluacion.yaml --salida SALIDA --run-tests <run tests de la variante> --run-ic <run ic de la variante>
+```
+
+Protocolo completo, con las reglas fijadas antes de cada número: [`docs/protocolo_evaluacion.md`](docs/protocolo_evaluacion.md).
+
+## 6. Calibración
+
+```
+python scripts/calibrar.py --config configs/05_calibracion.yaml --salida SALIDA --fase dev
+```
+
+Elige el modelo por PV-val (regla 1), ajusta T en PlantDoc-dev con la grilla de la config y estima el ECE fuera de partición. La
+fase `test` exige una fila de acceso, igual que en §5 (la del informe es la fila 5, ya usada). La T y τ que usa la app están en
+`configs/05_calibracion.yaml` (`temperatura`, `tau`).
+
+## 7. App
+
+```
+python app/app.py --config configs/06_app.yaml --salida SALIDA        # http://127.0.0.1:7860
+```
+
+Carga el checkpoint, T y τ de `configs/05_calibracion.yaml` y verifica el sha256. Muestra el top-3 calibrado, el CAM y, si la
+probabilidad máxima calibrada es menor que τ, el cartel "Confianza baja". Con la T del informe, ese cartel aparece en todas las
+fotos (ver el informe, §7–8). Para probarla, usar imágenes de PV-val o de PD-dev, nunca de un test (la lista está en
+`results/06_app/06_app_latencia_20261110_150137/latencia.json`).
+
+Mediciones de la app (no tocan ningún test):
+
+```
+python scripts/medir_pv_val.py --config configs/06_app.yaml --salida SALIDA        # cobertura informativa en PV-val
+python scripts/verificar_externas.py --config configs/06_app.yaml --cache <carpeta>  # duplicados de las fotos de Commons
+python scripts/medir_latencia.py --config configs/06_app.yaml --salida SALIDA      # latencia y tamaño, en CPU
+```
+
+**Fotos de Wikimedia Commons** (demo y latencia; no se versionan). Van en `DATA_ROOT/externas/` (`externas.carpeta` de
+`configs/06_app.yaml`), con el nombre de la columna `archivo` de [`docs/imagenes_externas.csv`](docs/imagenes_externas.csv). La
+columna `url` es la página de cada archivo en Commons: abrirla y bajar el archivo original. Hacen falta solo las válidas
+(`commons_3` a `commons_6`); `commons_1` y `commons_2` se descartaron por ser fotos de PlantDoc. El sha256 de cada una está en la
+misma planilla para comprobar que es el mismo archivo. `commons_4` y `commons_6` son CC BY-SA 4.0 (citar autor y licencia si se
+muestran); `commons_3` y `commons_5`, CC0.
 
 ## Estructura
 
 ```
-data/
-  raw/plantvillage, raw/plantdoc   descargas originales (no versionadas)
-  interim/                         datos tras controles de integridad y mapeo
-  processed/                       tensores/features listos para entrenar
-  splits/                          particiones congeladas (CSV, SÍ versionadas)
-configs/                           un YAML por experimento
-notebooks/                         exploración y reportes, numerados por etapa (01_, 02_…)
-src/foliares/
-  data/        descarga, integridad, mapeo de clases, deduplicado perceptual, splits
-  models/      backbone MobileNetV3-Small + cabezal GAP→Linear
-  training/    loop de entrenamiento, aumentaciones
-  evaluation/  macro-F1, matrices de confusión, bootstrap, calibración, cobertura/abstención
-  explain/     CAM (deploy y análisis; no se usa Grad-CAM)
-scripts/                           puntos de entrada por línea de comandos
-app/                               demo en Gradio
-artifacts/checkpoints/             pesos entrenados (no versionados)
-results/metrics, results/figures   salidas versionadas que respaldan el documento
-docs/                              propuesta, bitácoras, documento final
-tests/                             tests unitarios
+configs/           un YAML por experimento (02 base, 03 evaluación, 04 variante, 05 calibración, 06 app, 07 figuras)
+data/splits/       particiones congeladas (versionadas); data/raw, interim, processed no se versionan
+src/foliares/      data/ (preproceso, particiones, duplicados), models/, training/, eval/ (métricas, bootstrap,
+                   calibración, guarda de accesos, figuras), explain/ (CAM), inferencia.py (lo que usa la app)
+scripts/           puntos de entrada con --config
+notebooks/         numerados por etapa; solo orquestan y grafican
+app/app.py         la app en Gradio
+results/           JSON chicos de cada corrida (versionados); los pesos van en SALIDA
+docs/              informe, protocolo, trazabilidad, arquitectura, figuras; bitacora/ (decisiones y accesos a test)
+tests/             tests
 ```
 
 ## Reglas del experimento
 
-1. PlantDoc **nunca** entra al entrenamiento ni a la validación.
-2. Las particiones se congelan en `data/splits/` al cierre de la etapa 1 y no se regeneran.
-3. Toda evaluación sobre un test se registra en [`docs/bitacora/accesos_test.md`](docs/bitacora/accesos_test.md).
-4. Toda decisión metodológica se registra en [`docs/bitacora/decisiones.md`](docs/bitacora/decisiones.md).
-5. La accuracy en PlantVillage no se reporta como resultado titular.
+1. PlantDoc no entra al entrenamiento ni a la selección del checkpoint. PlantDoc-dev elige geometría, temperatura y umbral;
+   PlantDoc-test se evalúa una vez por modelo para la brecha, más una pasada de calibración (fila 5).
+2. `data/splits/` no se regenera, y cada evaluación de un test se registra en `docs/bitacora/accesos_test.md` antes de calcular.
+3. Mismo preproceso y mismos pesos para los dos dominios; cabezal GAP → Linear (habilita CAM); semillas fijas.
+4. Toda métrica fuera de distribución lleva IC bootstrap, y toda decisión va a `docs/bitacora/decisiones.md`.
+5. La exactitud en PlantVillage no se reporta como resultado titular.
 
-## Datos
+## Datos y licencias
 
-- PlantVillage (Hughes y Salathé, 2015) — Kaggle `emmarex/plantdisease`.
-- PlantDoc (Singh et al., 2020) — GitHub `pratikkayal/PlantDoc-Dataset`.
+- PlantVillage (Hughes y Salathé, 2015): https://github.com/spMohanty/PlantVillage-Dataset
+- PlantDoc (Singh et al., 2020): https://github.com/pratikkayal/PlantDoc-Dataset
 
-Uso académico, sin redistribución: los datos no se suben al repositorio.
-
-## Entorno
-
-**Python ≥ 3.11.4** (`requires-python` en `pyproject.toml`). Instalación: `pip install -r requirements.txt` y `pip install -e . --no-deps`.
-Colab gratuito para entrenamiento, local para la app. Tests: `python -m pytest -rs`.
-Los CSV y `.meta.json` que escribe el código salen con fin de línea LF (ver `.gitattributes`), para que los sha256 coincidan entre PC.
+Uso académico, sin redistribución: los datos y los pesos no se suben al repositorio.

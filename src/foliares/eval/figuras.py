@@ -176,12 +176,14 @@ def figura_comparacion(base: dict, variante: dict, ruta: str | Path, nombres_mod
     return Path(ruta)
 
 
-def figura_fiabilidad(dev: dict, ruta: str | Path) -> Path:
-    """Sesión 11: diagrama de fiabilidad antes (T = 1) y después (fuera de partición) en PD-dev, con el ECE y su IC."""
+def figura_fiabilidad(dev: dict, ruta: str | Path, *, despues: str = "despues_fuera_de_particion", titulo_despues: str | None = None,
+                      conjunto: str = "PlantDoc-dev", n: int | None = None) -> Path:
+    """Sesión 11: diagrama de fiabilidad antes (T = 1) y después (fuera de partición) en PD-dev, con el ECE y su IC.
+    Sesión 14: los argumentos con nombre permiten dibujar el mismo diagrama desde `calibracion_test.json` (`despues_T_final`)."""
+    titulo_despues = titulo_despues or f"Después (T por partición; T final = {dev['temperatura_final']:.2f})"
     fig, ejes = plt.subplots(1, 2, figsize=(10, 4.4), sharey=True)
     for ax, (clave, titulo, ic) in zip(ejes, [("antes_T_1", "Antes (T = 1)", dev["antes_T_1"]["ece"]),
-                                              ("despues_fuera_de_particion", f"Después (T por partición; T final = {dev['temperatura_final']:.2f})",
-                                               dev["despues_fuera_de_particion"]["ece"])]):
+                                              (despues, titulo_despues, dev[despues]["ece"])]):
         bins = [b for b in dev["fiabilidad"][clave] if b["n"]]
         centros = [(b["desde"] + b["hasta"]) / 2 for b in bins]
         ax.bar(centros, [b["acierto"] for b in bins], width=1 / len(dev["fiabilidad"][clave]) * 0.9, color="#1f77b4", alpha=0.8, label="acierto del bin")
@@ -195,7 +197,7 @@ def figura_fiabilidad(dev: dict, ruta: str | Path) -> Path:
         ax.set_xlabel("confianza máxima (15 bins de igual ancho; n de cada bin abajo)")
     ejes[0].set_ylabel("acierto")
     ejes[0].legend(fontsize=7, loc="upper left")
-    fig.suptitle(f"PlantDoc-dev (n = {dev['n_pd_dev']}), {dev['modelo_base']['run_id']}", fontsize=9)
+    fig.suptitle(f"{conjunto} (n = {n if n is not None else dev['n_pd_dev']}), {dev['modelo_base']['run_id']}", fontsize=9)
     fig.tight_layout()
     fig.savefig(ruta, dpi=150)
     plt.close(fig)
