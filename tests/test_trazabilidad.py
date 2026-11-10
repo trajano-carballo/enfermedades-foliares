@@ -99,3 +99,29 @@ def test_cada_id_citado_en_el_informe_tiene_fila():
     informe = (REPO / "docs" / "informe_final.md").read_text(encoding="utf-8")
     citados = set(re.findall(r"\b[A-Z]\d+\b", " ".join(re.findall(r"<!--(.*?)-->", informe, re.S))))
     assert citados and citados <= {n["id"] for n in NUMEROS}, sorted(citados - {n["id"] for n in NUMEROS})
+
+
+def ids_sin_su_numero(informe: str, numeros: list[dict], ventana: int = 700) -> list[str]:
+    """IDs citados en un comentario cuyo valor (ningún número de la celda Valor) no aparece en los `ventana` caracteres
+    anteriores al comentario, sin contar otros comentarios. Detecta un ID pegado a un número que no es el suyo."""
+    valor = {n["id"]: n["valor"] for n in numeros}
+    malos = []
+    for m in re.finditer(r"<!--(.*?)-->", informe, re.S):
+        antes = re.sub(r"<!--.*?-->", " ", informe[max(0, m.start() - ventana):m.start()], flags=re.S)
+        antes = re.sub(r"^.*?-->", " ", antes, flags=re.S)          # comentario cortado por el borde de la ventana
+        for i in re.findall(r"\b[A-Z]\d+\b", m.group(1)):
+            tokens = re.findall(r"\d+(?:[.,]\d+)*", valor[i])
+            if not any(re.search(rf"(?<![\d.,]){re.escape(t)}(?!\d|[.,]\d)", antes) for t in tokens):
+                malos.append(f"{i} (línea {informe.count(chr(10), 0, m.start()) + 1})")
+    return malos
+
+
+def test_cada_id_tiene_su_numero_cerca():
+    assert ids_sin_su_numero((REPO / "docs" / "informe_final.md").read_text(encoding="utf-8"), NUMEROS) == []
+
+
+def test_ids_sin_su_numero_detecta_un_id_mal_puesto():
+    numeros = [{"id": "E9", "valor": "0,807 [0,768; 0,845]"}, {"id": "E8", "valor": "0,130 [0,093; 0,168]"}]
+    assert ids_sin_su_numero("la brecha es 0,807 <!-- E9 -->", numeros) == []
+    assert ids_sin_su_numero("la brecha es 0,8071 <!-- E9 -->", numeros) == ["E9 (línea 1)"]       # no vale un prefijo
+    assert ids_sin_su_numero("PD-test 0,130 <!-- E8 --> y la brecha <!-- E9 -->", numeros) == ["E9 (línea 1)"]

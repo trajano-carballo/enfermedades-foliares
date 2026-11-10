@@ -14,7 +14,8 @@ dónde.
 
 ## 0. Lo que se reproduce sin datos
 
-Todos los números y figuras del informe salen de JSON versionados en `results/`. Sin descargar nada:
+Los números del informe salen de `results/`, `data/splits/` y las configs; el diagrama y las capturas de la app no salen de
+`results/`. Sin descargar nada:
 
 ```
 pip install -r requirements.txt && pip install -e . --no-deps
@@ -117,7 +118,22 @@ predicciones guardadas, sin volver a pasar ningún test por un modelo:
 
 ```
 python scripts/ic_por_clase.py --config configs/03_brecha.yaml --salida SALIDA --run-dev <run dev> --run-tests <run tests>
+python scripts/ic_por_clase.py --config configs/04_evaluacion.yaml --salida SALIDA --run-dev <run dev_informativo> --run-tests <run tests de la variante>
 python scripts/comparar_con_base.py --config configs/04_evaluacion.yaml --salida SALIDA --run-tests <run tests de la variante>
+```
+
+Diagnóstico de PD-dev (mapeo de clases, permutación, control de preproceso y colapso hacia una clase; no toca ningún test):
+
+```
+python scripts/diagnostico_dev.py --config configs/03_brecha.yaml --salida SALIDA --run-dev <run dev>
+```
+
+Grillas de CAM (muestra fija de PD-dev y PV-val, nunca de un test). Necesitan el checkpoint y las imágenes, y muestran fotos de
+PlantDoc, por eso no están en el informe; quedan en `docs/figuras_sesion9/` (base) y `docs/figuras_sesion10/` (variante):
+
+```
+python scripts/figuras_sesion9.py --config configs/03_brecha.yaml --salida SALIDA --run-dev <run dev> --run-tests <run tests> --run-ic <run ic>
+python scripts/figuras_sesion10.py --config configs/04_evaluacion.yaml --salida SALIDA --run-tests <run tests de la variante> --run-ic <run ic de la variante>
 ```
 
 Protocolo completo, con las reglas fijadas antes de cada número: [`docs/protocolo_evaluacion.md`](docs/protocolo_evaluacion.md).
@@ -151,7 +167,12 @@ python scripts/verificar_externas.py --config configs/06_app.yaml --cache <carpe
 python scripts/medir_latencia.py --config configs/06_app.yaml --salida SALIDA      # latencia y tamaño, en CPU
 ```
 
-Las fotos de Wikimedia Commons no se versionan: autor, licencia, URL y sha256 están en `docs/imagenes_externas.csv`.
+**Fotos de Wikimedia Commons** (demo y latencia; no se versionan). Van en `DATA_ROOT/externas/` (`externas.carpeta` de
+`configs/06_app.yaml`), con el nombre de la columna `archivo` de [`docs/imagenes_externas.csv`](docs/imagenes_externas.csv). La
+columna `url` es la página de cada archivo en Commons: abrirla y bajar el archivo original. Hacen falta solo las válidas
+(`commons_3` a `commons_6`); `commons_1` y `commons_2` se descartaron por ser fotos de PlantDoc. El sha256 de cada una está en la
+misma planilla para comprobar que es el mismo archivo. `commons_4` y `commons_6` son CC BY-SA 4.0 (citar autor y licencia si se
+muestran); `commons_3` y `commons_5`, CC0.
 
 ## Estructura
 
@@ -171,7 +192,7 @@ tests/             tests
 ## Reglas del experimento
 
 1. PlantDoc no entra al entrenamiento ni a la selección del checkpoint. PlantDoc-dev elige geometría, temperatura y umbral;
-   PlantDoc-test se evalúa una vez por modelo.
+   PlantDoc-test se evalúa una vez por modelo para la brecha, más una pasada de calibración (fila 5).
 2. `data/splits/` no se regenera, y cada evaluación de un test se registra en `docs/bitacora/accesos_test.md` antes de calcular.
 3. Mismo preproceso y mismos pesos para los dos dominios; cabezal GAP → Linear (habilita CAM); semillas fijas.
 4. Toda métrica fuera de distribución lleva IC bootstrap, y toda decisión va a `docs/bitacora/decisiones.md`.

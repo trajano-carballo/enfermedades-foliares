@@ -144,6 +144,8 @@ Las figuras y tablas de `docs/figuras_finales/` salen de estas mismas fuentes co
 | E35 | Recall de Tomato late blight en PD-test, variante | 0,600 [0,433; 0,767] | `IC_VAR` | `pd_test.por_clase.Tomato___Late_blight.recall` |
 | E36 | PD-test, variante: Potato late → Tomato late (de 27) | 22 | `T_VAR` | `derivado: celda [Potato___Late_blight, Tomato___Late_blight] de la matriz de PD-test` |
 | E37 | PD-test, variante: filas cuya diagonal es el máximo (de 12) | 2 | `T_VAR` | `derivado: argmax de cada fila de la matriz de PD-test` |
+| E39 | PD-test, base: Potato early blight predicha como Tomato late blight (de 29); Potato late blight (de 27) | 14; 29; 24; 27 | `T_BASE` | `derivado: celdas [Potato___Early_blight, Tomato___Late_blight] y [Potato___Late_blight, Tomato___Late_blight] y sumas de esas filas de la matriz de PD-test` |
+| E40 | Semiancho aproximado del IC del macro-F1 en PD-test | 0,04 | `T_BASE` | `derivado: (0,168 − 0,093) / 2 ≈ 0,04, de resultados.PD-test.base_macro_f1_ic (E8)` |
 | E38 | PD-test, variante: clases con límite superior del recall ≤ 0,25 (de 12) | 8 | `IC_VAR` | `derivado: cuenta de pd_test.por_clase.*.recall.ic_alto ≤ 0,25` |
 
 ### CAM (cualitativo: ilustración, no evidencia)
@@ -167,7 +169,7 @@ Las figuras y tablas de `docs/figuras_finales/` salen de estas mismas fuentes co
 | C6 | ECE en PD-dev, después (fuera de partición) | 0,040 [0,020; 0,066] | `CAL_DEV` | `despues_fuera_de_particion.ece` |
 | C7 | Cobertura con τ = 0,5 en PD-dev, antes | 0,943 [0,925; 0,958] | `CAL_DEV` | `antes_T_1.cobertura` |
 | C8 | Cobertura con τ = 0,5 en PD-dev, después | 0,000 [0,000; 0,000] | `CAL_DEV` | `despues_fuera_de_particion.cobertura` |
-| C9 | Respondidas en PD-dev, antes; después | 656; 0 | `CAL_DEV` | `antes_T_1.n_respondidas.estimacion; despues_fuera_de_particion.n_respondidas.estimacion` |
+| C9 | Respondidas en PD-dev, antes; después | 656 [644; 667]; 0 [0; 0] | `CAL_DEV` | `antes_T_1.n_respondidas; despues_fuera_de_particion.n_respondidas` |
 | C10 | Acierto sobre lo respondido en PD-dev, antes | 0,210 [0,186; 0,236] | `CAL_DEV` | `antes_T_1.acierto_respondidas` |
 | C11 | Errores de alta confianza en PD-dev, antes (fracción del total) | 0,744 [0,716; 0,772] | `CAL_DEV` | `antes_T_1.errores_alta_confianza` |
 | C12 | Exactitud de la variante en PD-dev | 0,210 [0,185; 0,234] | `CAL_DEV` | `antes_T_1.exactitud` |
@@ -175,11 +177,13 @@ Las figuras y tablas de `docs/figuras_finales/` salen de estas mismas fuentes co
 | C14 | ECE en PD-test, después (T = 14,97) | 0,021 [0,015; 0,067] | `CAL_TEST` | `despues_T_final.ece` |
 | C15 | Cobertura con τ = 0,5 en PD-test, antes | 0,960 [0,937; 0,980] | `CAL_TEST` | `antes_T_1.cobertura` |
 | C16 | Cobertura con τ = 0,5 en PD-test, después | 0,000 [0,000; 0,000] | `CAL_TEST` | `despues_T_final.cobertura` |
-| C17 | Respondidas en PD-test, antes; después | 288; 0 | `CAL_TEST` | `antes_T_1.n_respondidas.estimacion; despues_T_final.n_respondidas.estimacion` |
+| C17 | Respondidas en PD-test, antes; después | 288 [281; 294]; 0 [0; 0] | `CAL_TEST` | `antes_T_1.n_respondidas; despues_T_final.n_respondidas` |
 | C18 | Acierto sobre lo respondido en PD-test, antes | 0,181 [0,141; 0,220] | `CAL_TEST` | `antes_T_1.acierto_respondidas` |
 | C19 | Errores de alta confianza en PD-test, antes (fracción del total) | 0,787 [0,743; 0,827] | `CAL_TEST` | `antes_T_1.errores_alta_confianza` |
 | C20 | Errores de alta confianza en PD-test, después | 0,000 [0,000; 0,000] | `CAL_TEST` | `despues_T_final.errores_alta_confianza` |
 | C28 | Curva de cobertura en PD-dev sin calibrar: máximo acierto sobre lo respondido; su τ; su cobertura | 0,272; 0,98; 0,328 | `CAL_DEV` | `curva_cobertura.antes_T_1.98.acierto_respondidas; curva_cobertura.antes_T_1.98.tau; curva_cobertura.antes_T_1.98.cobertura` |
+| C29 | Fiabilidad de PD-test, T calibrada: imágenes del bin cuyo acierto es 1 | 2 | `CAL_TEST` | `fiabilidad.despues_T_final.5.n` |
+| C30 | NLL de una predicción uniforme sobre 12 clases (ln 12) | 2,48 | `CAL_DEV` | `derivado: ln(12) = 2,4849` |
 | C21 | τ | 0,5 | `CAL_TEST` | `tau` |
 | C22 | PV-val con T = 1: cobertura | 0,998 [0,995; 1,000] | `APP_PV` | `referencia_sin_calibrar_T1.cobertura` |
 | C23 | PV-val con T = 1: respondidas | 2.202 | `APP_PV` | `referencia_sin_calibrar_T1.n_respondidas.estimacion` |
@@ -235,4 +239,6 @@ Las figuras y tablas de `docs/figuras_finales/` salen de estas mismas fuentes co
 | R1 | Mohanty et al. (2016): exactitud en el test retenido de PlantVillage; en imágenes de otras condiciones (%) | 99,35; 31,4 | `PROPUESTA` | `— §1, cita bibliográfica` |
 | R2 | PlantVillage color (commit fijado): imágenes; clases | 54.305; 38 | `INVENTARIO` | `— §1` |
 | R3 | PlantDoc (commit fijado): imágenes en train + test; carpetas de clase | 2.578; 28 | `INVENTARIO` | `— §2` |
+| R5 | Propuesta: imágenes por clase del test oficial de PlantDoc | 8; 12 | `PROPUESTA` | `— §3 y §7` |
+| R6 | Propuesta: precisión mínima de la "cobertura útil" | 0,80 | `PROPUESTA` | `— §6, métricas de aplicación` |
 | R4 | PlantDoc según el paper: imágenes; clases | 2.598; 27 | `PROPUESTA` | `— §3 (cita de Singh et al., 2020)` |

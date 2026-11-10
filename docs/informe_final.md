@@ -16,9 +16,9 @@ Entrenamos un clasificador de 12 enfermedades y estados sanos de tomate, papa y 
 modelo no se equivoca al azar: colapsa hacia una sola clase, *Tomato late blight*, y lo hace con alta confianza. Una variante con
 fine-tuning parcial y aumentación dirigida mejora el laboratorio pero no el campo: la diferencia pareada en PlantDoc-test es
 -0,004 [-0,030; 0,023] <!-- E29 -->. La calibración por temperatura corrige la sobreconfianza (el ECE en PlantDoc-test baja de
-0,676 a 0,021 <!-- C13 C14 -->), pero con el umbral fijado de antemano el sistema calibrado no responde ninguna foto. La app en
-Gradio muestra igual su mejor sugerencia, con un cartel de confianza baja, y responde en unos 22 ms en CPU <!-- A8 -->. El
-resultado central no es un modelo que funcione en el campo, sino una medición honesta de cuánto no funciona y de por qué.
+0,676 [0,635; 0,717] a 0,021 [0,015; 0,067] <!-- C13 C14 -->), pero con el umbral fijado de antemano el sistema calibrado no responde ninguna foto. La app en
+Gradio muestra igual su mejor sugerencia, con un cartel de confianza baja, y responde en una mediana de 22,0 ms en CPU <!-- A8 -->. El
+resultado central no es un modelo que funcione en el campo, sino una medición honesta de cuánto no funciona y de qué factores podrían explicarla.
 
 ## 1. Problema y pregunta
 
@@ -86,7 +86,8 @@ PlantVillage. Contra PlantVillage no apareció ningún duplicado real. Dentro de
 resultado y validada por el docente, excluye antes de partir:
 
 - todas las copias de un grupo de duplicados con **etiquetas contradictorias** (la misma foto en dos clases): 62 imágenes
-  <!-- D6 -->. La combinación más frecuente es papa *early* contra *late blight*, justo las clases que el modelo después confunde;
+  <!-- D6 -->. La combinación más frecuente es papa *early* contra *late blight*, las dos clases de papa; en PD-test el modelo base
+  después manda a *Tomato late blight* 24 de las 27 hojas de *Potato late blight* y 14 de las 29 de *Potato early blight* <!-- E39 -->;
 - las **copias repetidas** dentro de la misma clase, conservando una: 30 <!-- D7 -->;
 - las que la **revisión humana** de *Tomato leaf* y *Bell_pepper leaf* marcó para descartar: 10 de 124 revisadas
   <!-- D8 D13 D15 --> (no era la especie, no era una hoja, o mostraba lesiones de una enfermedad con nombre). Además, los 3 pares de
@@ -106,7 +107,8 @@ imágenes por clase <!-- P13 -->. Resultado: PV-train 11.968, PV-val 2.207 y PV-
 **PlantDoc** se partió 70/30 <!-- P12 --> estratificado por clase con semilla 42 <!-- P3 -->: PD-dev 696 y PD-test 300
 <!-- D10 D11 -->, entre 16 y 41 imágenes por clase en el test <!-- D17 -->. Es una partición propia y no la oficial: solo 24 de las
 300 imágenes de PD-test vienen de la carpeta *test* oficial <!-- D12 -->. PD-dev es el dev de campo, donde se elige todo lo que
-depende del dominio (geometría de preproceso, temperatura, umbral); PD-test se reserva para una medición final.
+depende del dominio (geometría de preproceso, temperatura, umbral); PD-test se reserva para la medición final: una vez por modelo
+para la brecha, más una pasada de calibración (fila 5, §5).
 
 Las dos particiones se congelaron el 23/10 en `data/splits/` (commit `b79d3a2`) con su sha256, y desde entonces no se regeneraron.
 Cada script que las usa verifica el sha256 y lo escribe en su resultado.
@@ -125,7 +127,8 @@ dominio y no al procedimiento. El de **producción** es la app.
 - **Datos → entrenamiento.** Solo PV-train entrena y solo PV-val elige el checkpoint. PlantDoc nunca entra al entrenamiento ni a la
   selección del checkpoint: si un lote de campo se filtrara, la medición de la brecha perdería sentido (invariante 1 del proyecto).
 - **Entrenamiento → evaluación.** PD-dev elige la geometría de preproceso y da números informativos. PV-test y PD-test se evalúan
-  una sola vez por modelo, con cada acceso registrado antes de calcular (§5).
+  una vez por modelo para la brecha, más una pasada de calibración por PD-test (fila 5), con cada acceso registrado antes de
+  calcular (§5).
 - **Evaluación → calibración.** La temperatura se ajusta en PD-dev; el umbral τ se fijó antes de cualquier número.
 - **Calibración → app.** La app carga los pesos (6,76 MB <!-- A10 -->), la temperatura y τ desde la misma config que usó la
   evaluación (`configs/05_calibracion.yaml`) y verifica el sha256 del checkpoint.
@@ -161,8 +164,8 @@ CAM_c(x, y) = Σ_k w_ck · A_k(x, y)
 donde A_k es el canal *k* del último mapa de features y w_ck el peso del cabezal. El CAM sale **del mismo forward** que la
 predicción, sin backward ni gradientes. La alternativa inicial era Grad-CAM (Selvaraju et al., 2017), que necesita un backward
 por imagen; a partir de la devolución docente sobre su costo en deploy, el equipo la descartó del alcance y se quedó con CAM en la
-app y en el análisis. El precio es la restricción sobre el cabezal (sin capa oculta), que en este problema no es una pérdida
-relevante: el cuello de botella es el dominio, no la capacidad del cabezal.
+app y en el análisis. El precio es la restricción sobre el cabezal (sin capa oculta); nuestra lectura es que el límite está en el cambio de dominio más
+que en la capacidad del cabezal; no se comparó con un cabezal con capa oculta.
 
 ### 4.3 Modelo base
 
@@ -186,14 +189,10 @@ de la época 18 dio 0,9658 en PV-val <!-- M8 M9 -->. PlantDoc no intervino en el
 
 | Alternativa | Por qué se descartó (de `docs/bitacora/decisiones.md`) |
 |---|---|
-| Grad-CAM, en deploy o sobre una muestra | Costo de un backward por imagen y plazos (devolución docente); CAM da la misma lectura desde el forward |
-| Clasificador de torchvision (con capa oculta) | No permite CAM directo (invariante del cabezal GAP → Linear) |
-| Ponderar la pérdida por frecuencia o re-muestrear | El umbral de desbalance era una alarma, no un criterio; macro-F1 ya pesa igual las clases |
-| Comparar varias variantes (solo descongelar, solo aumentar) o descongelar todo el backbone | Plazo de la defensa y criterio de sencillez: una variante explicable. Limitación: no separa los dos efectos |
-| Supresión de fondo con la versión segmentada de PlantVillage, combinación y control | Recortadas por plazo (sesión 13); quedan como trabajo futuro (§10) |
-| Backbone alternativo (ResNet-18, EfficientNet-B0), previsto como contingencia | No se llegó por plazo; la variante no mejoró el campo, que era la condición para probarlo |
-| Elegir el modelo o la temperatura con PV-val, o el modelo con PD-dev | PV-val no representa el campo para la temperatura; elegir el modelo con PD-dev mezclaría selección y medición. Modelo: PV-val; temperatura y umbral: PD-dev |
-| Buscar τ en la curva de cobertura | Sobreajustaría el umbral a PD-dev; τ = 0,5 se fijó de antemano |
+| Grad-CAM | Un backward por imagen; costo en deploy (devolución docente). CAM da la lectura desde el forward |
+| Más variantes (solo descongelar, solo aumentar) y supresión de fondo | Plazo de la defensa (sesión 13 recortada); trabajo futuro (§10) |
+| Backbone alternativo (ResNet-18, EfficientNet-B0) | Descartado por plazo (defensa 20/11), aunque la condición de la propuesta para probarlo se cumplió: la variante no mejoró el campo |
+| Temperatura en PV-val, modelo en PD-dev, τ buscado en la curva | PV-val no representa el campo; elegir el modelo en PD-dev mezcla selección y medición; τ en la curva sobreajusta a dev. Modelo: PV-val; T: PD-dev; τ = 0,5 fijado antes |
 
 ## 5. Protocolo de evaluación
 
@@ -256,20 +255,22 @@ de un test. Además, en la revisión humana de etiquetas se miraron imágenes de
 *Figura 2. Macro-F1 por dominio y brecha, con IC 95 % bootstrap. Fuente: `docs/figuras_finales/`, desde los `tests.json` de las filas 1–4.*
 
 El modelo base pierde 0,807 [0,768; 0,845] de macro-F1 al pasar de PlantVillage a PlantDoc <!-- E9 -->. En PlantDoc queda por
-encima del clasificador trivial (0,015 <!-- E10 -->), pero lejos de algo usable. El macro-F1 de PD-test es compatible con el de
+encima del clasificador trivial (0,015 <!-- E10 -->; al ser constante, su IC bootstrap es degenerado, un único punto), pero lejos
+de algo usable. El macro-F1 de PD-test es compatible con el de
 PD-dev (0,124 [0,099; 0,148] <!-- E1 -->): la caída no es un accidente del test.
 
 ### 6.2 Cómo cae: colapso hacia *Tomato late blight*
 
 La matriz de confusión distingue tres maneras de fallar: confundir enfermedades de la misma especie, confundir especies, o colapsar
-hacia una clase. En PlantVillage la diagonal domina las 12 filas. En PlantDoc pasa lo tercero:
+hacia una clase. En PlantVillage la diagonal domina las 12 filas. En PlantDoc pasa lo tercero. Los conteos de esta sección salen de
+las matrices y son descriptivos (sin IC); los recall y las precisiones llevan IC.
 
 - en PD-test, 175 de las 300 predicciones del base son *Tomato late blight* <!-- E14 -->, y esa clase atrae 147 de los 244 errores
   <!-- E15 -->. La diagonal es el máximo de su fila en 1 de 12 clases <!-- E17 -->, justamente *Tomato late blight*;
 - por eso esa clase tiene un recall de 0,933 [0,833; 1,000] con una precisión de 0,160 [0,142; 0,179] <!-- E18 E19 -->: la acierta
   porque la predice casi siempre;
 - 24 de las 27 hojas de *Potato late blight* de PD-test se predicen como *Tomato late blight* <!-- E16 --> (descriptivo, sin IC);
-  es la misma enfermedad en otra especie y, en PlantDoc, el par de clases con más duplicados contradictorios (§2.3);
+  es la misma enfermedad en otra especie;
 - en 7 de 12 clases el límite superior del IC del recall en PD-test no pasa de 0,25 <!-- E20 -->.
 
 ![Matrices del base](figuras_finales/matrices_base.png)
@@ -277,8 +278,9 @@ hacia una clase. En PlantVillage la diagonal domina las 12 filas. En PlantDoc pa
 *Figura 3. Matrices de confusión normalizadas por fila, base, PV-test y PD-test (descriptivas; los IC por clase están en
 `results/03_brecha/03_brecha_ic_20261105_085644/ic_por_clase.json`).*
 
-El modelo se equivoca **con seguridad**. En PD-dev, 417 de 696 imágenes se predicen como *Tomato late blight*, y la probabilidad
-media de la clase predicha es 0,874 en los aciertos y 0,788 en los errores <!-- E22 E23 -->: casi no distingue cuándo acierta.
+El modelo se equivoca **con seguridad**. En PD-dev, 417 de 696 imágenes se predicen como *Tomato late blight* <!-- E22 -->, y la
+probabilidad media de la clase predicha es 0,874 en los aciertos y 0,788 en los errores <!-- E23 --> (descriptivo, sin IC): casi no
+distingue cuándo acierta.
 Antes de aceptar la caída como real se descartaron errores propios en PD-dev: el mapeo de clases coincide con el documentado, no hay
 permutación de índices (la mejor reasignación posible de columnas apenas mejora) y el mismo camino de código reproduce en
 PlantVillage las features y logits del entrenamiento.
@@ -291,10 +293,11 @@ incluye el 0 <!-- E24 E28 -->. **No mejora el campo:** en PD-test da 0,126 [0,08
 <!-- E31 -->, también con el 0 adentro. La brecha queda en 0,830 [0,792; 0,867] <!-- E27 -->: los IC de las dos brechas se
 solapan y no se calculó su diferencia, así que no se afirma que la variante la empeore.
 
-El colapso se atenúa sin desaparecer: 128 de 300 predicciones en PD-test son *Tomato late blight* (175 en el base) y el recall de
+El colapso se atenúa sin desaparecer (conteos descriptivos): 128 de 300 predicciones en PD-test son *Tomato late blight* (175 en el base) y el recall de
 esa clase baja a 0,600 [0,433; 0,767] <!-- E34 E35 -->, pero la diagonal sigue siendo el máximo en solo 2 de 12 filas, 22 de 27 hojas
 de *Potato late blight* siguen yendo a *Tomato late blight* y en 8 de 12 clases el límite superior del recall no pasa de 0,25
-<!-- E36 E37 E38 -->. La aumentación de encuadre y color no alcanzó para que el modelo deje de usar lo que usaba.
+<!-- E36 E37 E38 -->. La aumentación de encuadre y color no alcanzó para mejorar el desempeño en campo; si cambió lo que mira
+el modelo no se midió (las CAM son cualitativas).
 
 ### 6.4 Dónde mira el modelo (CAM, cualitativo)
 
@@ -302,17 +305,17 @@ Sobre una muestra fija, elegida con semilla 42 antes de mirarla (2 imágenes por
 hay, y 1 por clase de PV-val <!-- P9 -->; 36 imágenes, ninguna de un test <!-- X1 -->), se superpuso el CAM de la clase predicha.
 En los aciertos de PlantVillage el calor cae sobre la hoja y sus lesiones. En varios errores de PlantDoc cae sobre el fondo, el
 suelo, otras hojas o marcas de agua de bancos de imágenes. La variante, sobre la misma muestra, acierta 8 de 24 en PD-dev y 11 de
-12 en PV-val (el base, 9 y 10) <!-- X2 X3 -->, y el patrón se repite.
+12 en PV-val (el base, 9 y 10; descriptivo) <!-- X2 X3 -->, y el patrón se repite.
 
-Las grillas de CAM sobre PlantDoc y PlantVillage quedan en el repositorio como evidencia (`docs/figuras_finales/cam_*.png`), pero no
-se reproducen acá: PlantDoc no permite redistribuir sus imágenes (§9). En su lugar, la figura 4 muestra el mismo tipo de lectura en la
+Las grillas de CAM sobre PlantDoc y PlantVillage quedan en el repositorio como evidencia (`docs/figuras_sesion9/` para el base y
+`docs/figuras_sesion10/` para la variante), pero no se reproducen acá: PlantDoc no permite redistribuir sus imágenes (§9). En su lugar, la figura 4 muestra el mismo tipo de lectura en la
 app, con dos fotos CC0 de Wikimedia Commons que no están en ninguno de los dos conjuntos (§8).
 
 ![App: septoria de tomate, commons_5](figuras_finales/app_commons5.png)
 
 ![App: mancha bacteriana de pimiento, commons_3](figuras_finales/app_commons3.png)
 
-*Figura 4. Dos respuestas de la app, con T = 14,97 y el cartel de confianza baja. Arriba: septoria de tomate (Wolan268, CC0), que
+*Figura 4. Dos respuestas de la app (commit `f9995b9`), con T = 14,97 <!-- C2 --> y el cartel de confianza baja. Arriba: septoria de tomate (Wolan268, CC0), que
 el modelo predice como Tomato late blight; el CAM se dispersa por la foto. Abajo: mancha bacteriana de pimiento (Scot Nelson, CC0),
 que acierta; el CAM se concentra en las lesiones. Imágenes CC0 de Wikimedia Commons. Ilustrativo, no evidencia: son dos fotos, y las
 probabilidades que se ven en las capturas no son un resultado.*
@@ -331,26 +334,25 @@ calibración no mueve el macro-F1.
 
 **Qué T.** La que minimiza la log-verosimilitud negativa (NLL) en PD-dev, buscada en una grilla logarítmica de 200 valores entre 0,5
 y 1.000 <!-- P10 -->: **T = 14,97** <!-- C2 -->, adentro de la grilla. Ajustada en cada una de 5 particiones de PD-dev, va de 13,87
-a 15,56 <!-- C3 P11 -->. La NLL baja de 8,89 a 2,34 <!-- C4 -->, cerca de log 12 = 2,48, la de una predicción uniforme: una T tan alta
+a 15,56 <!-- C3 P11 -->. La NLL baja de 8,89 a 2,34 <!-- C4 -->, cerca de log 12 = 2,48 <!-- C30 -->, la de una predicción uniforme: una T tan alta
 significa que el modelo, en el campo, debería estar casi tan inseguro como si no supiera nada.
 
 **ECE.** El error de calibración esperado (15 bins de igual ancho <!-- P11 -->) en PD-dev se estimó **fuera de partición**: cada
 imagen se calibró con la T ajustada en las otras cuatro particiones, para no medir la calibración sobre los datos que la fijaron.
 
-| | PD-dev, T = 1 | PD-dev, T calibrada | PD-test, T = 1 | PD-test, T = 14,97 |
+| | PD-dev, T = 1 | PD-dev, T calibrada | PD-test, T = 1 | PD-test, T = 14,97 <!-- C2 --> |
 |---|---|---|---|---|
-| ECE | 0,628 [0,601; 0,655] | 0,040 [0,020; 0,066] | 0,676 [0,635; 0,717] | 0,021 [0,015; 0,067] |
-| Cobertura con τ = 0,5 | 0,943 [0,925; 0,958] | 0,000 [0,000; 0,000] | 0,960 [0,937; 0,980] | 0,000 [0,000; 0,000] |
-| Respondidas | 656 | 0 | 288 | 0 |
-| Acierto sobre lo respondido | 0,210 [0,186; 0,236] | no definido (0 respondidas) | 0,181 [0,141; 0,220] | no definido (0 respondidas) |
-| Errores de alta confianza (fracción del total) | 0,744 [0,716; 0,772] | 0,000 [0,000; 0,000] | 0,787 [0,743; 0,827] | 0,000 [0,000; 0,000] |
-
-<!-- C5 C6 C7 C8 C9 C10 C11 C13 C14 C15 C16 C17 C18 C19 C20 -->
+| ECE | 0,628 [0,601; 0,655] | 0,040 [0,020; 0,066] | 0,676 [0,635; 0,717] | 0,021 [0,015; 0,067] <!-- C5 C6 C13 C14 --> |
+| Cobertura con τ = 0,5 | 0,943 [0,925; 0,958] | 0,000 [0,000; 0,000] | 0,960 [0,937; 0,980] | 0,000 [0,000; 0,000] <!-- C7 C8 C15 C16 --> |
+| Respondidas | 656 [644; 667] | 0 [0; 0] | 288 [281; 294] | 0 [0; 0] <!-- C9 C17 --> |
+| Acierto sobre lo respondido | 0,210 [0,186; 0,236] | no definido (0 respondidas) | 0,181 [0,141; 0,220] | no definido (0 respondidas) <!-- C10 C18 --> |
+| Errores de alta confianza (fracción del total) | 0,744 [0,716; 0,772] | 0,000 [0,000; 0,000] | 0,787 [0,743; 0,827] | 0,000 [0,000; 0,000] <!-- C11 C19 C20 --> |
 
 ![Fiabilidad en PD-test](figuras_finales/fiabilidad_pd_test.png)
 
-*Figura 5. Diagrama de fiabilidad en PD-test antes y después de calibrar (pasada única, fila 5); el n de cada bin está impreso. La
-barra alta de la derecha es un bin de 2 imágenes. La versión de PD-dev y la curva de cobertura están en `docs/figuras_finales/`.*
+*Figura 5. Diagrama de fiabilidad en PD-test antes y después de calibrar (pasada única, fila 5); el n de cada bin está impreso. En
+el panel de la derecha, la barra que llega a 1 es un bin de 2 imágenes <!-- C29 -->: pesa casi nada en el ECE. La versión de PD-dev
+y la curva de cobertura están en `docs/figuras_finales/`.*
 
 **La calibración funciona y deja al sistema sin responder.** Sin calibrar, el modelo respondía casi todo con p ≥ 0,5, y tres de
 cada cuatro imágenes de campo eran errores emitidos con alta confianza (0,787 [0,743; 0,827] en PD-test <!-- C19 -->), que es el
@@ -360,11 +362,12 @@ el modelo acierta alrededor del 17–21 % de las fotos de campo (exactitud de la
 es del 100 % en PlantDoc.
 
 **La T de campo es subconfiada en el laboratorio.** Esa T se ajustó para el campo. En PV-val (no es un test), donde la variante
-acierta 0,971 [0,963; 0,977] <!-- C26 -->, la confianza máxima calibrada va de 0,116 a 0,427 (mediana 0,207) <!-- C27 -->: el
-sistema calibrado tampoco responde ninguna foto de laboratorio (cobertura 0,000 <!-- C25 -->), aunque acierta casi todas. Sin
+acierta 0,971 [0,963; 0,977] <!-- C26 -->, la confianza máxima calibrada va de 0,116 a 0,427 (mediana 0,207; descriptivo)
+<!-- C27 -->: el sistema calibrado tampoco responde ninguna foto de laboratorio (cobertura 0,000 [0,000; 0,000] <!-- C25 -->), aunque
+acierta casi todas. Sin
 calibrar, en PV-val responde 0,998 [0,995; 1,000] de las fotos y acierta 0,971 [0,964; 0,978] de lo que responde
-<!-- C22 C24 -->. Una sola temperatura no puede servir a los dos dominios: el modelo no sabe en qué dominio está, y la T que corrige su
-exceso de confianza en el campo lo vuelve demasiado tímido en el laboratorio.
+<!-- C22 C24 -->. Con este modelo, la T ajustada en campo lo deja subconfiado en laboratorio y T = 1 lo deja sobreconfiado en
+campo; nuestra lectura es que una T única no sirve a los dos dominios.
 
 ## 8. Aplicación
 
@@ -374,7 +377,7 @@ La app (`app/app.py`, Gradio) recorre este flujo:
 2. **Procesamiento:** el mismo preproceso de la evaluación (corrección de orientación EXIF, canal alfa sobre blanco, `aplastar` a
    224 px <!-- P2 -->, normalización de ImageNet).
 3. **Modelo:** un único forward de la variante, que da los logits y el mapa de features.
-4. **Salida:** top-3 con softmax(z / T), T = 14,97, y el CAM de la clase más probable superpuesto a la foto.
+4. **Salida:** top-3 con softmax(z / T), T = 14,97 <!-- C2 -->, y el CAM de la clase más probable superpuesto a la foto.
 5. **Interpretación:** si la probabilidad máxima calibrada es menor que τ = 0,5, un cartel visible: "Confianza baja: no usar como
    diagnóstico".
 
@@ -387,29 +390,20 @@ el laboratorio (§7).
 
 **Latencia y tamaño (CPU).** Medidas de punta a punta (leer el archivo, preprocesar, forward, calibrar, top-3 y, con CAM, el mapa
 superpuesto) sobre 50 imágenes de PV-val, 50 de PD-dev y 4 de Wikimedia Commons <!-- A1 -->, en una laptop (AMD Ryzen 5 5500U, 6
-hilos <!-- A13 -->), sin la capa de red de Gradio.
-
-| ms | p50 sin CAM | p95 sin CAM | p50 con CAM | p95 con CAM |
-|---|---|---|---|---|
-| PV-val | 14,1 | 16,4 | 19,8 | 22,7 |
-| PD-dev | 24,0 | 165,4 | 31,4 | 172,3 |
-| Commons | 23,7 | 33,6 | 32,3 | 39,9 |
-| Total (solo p50) | 15,7 | — | 22,0 | — |
-
-<!-- A2 A3 A4 A5 A6 A7 A8 -->
-
-El CAM agrega 6,4 ms en la mediana <!-- A9 -->, porque reutiliza el forward. El p95 de PD-dev lo domina la lectura de unas pocas
-fotos grandes; del total se cita solo el p50, porque su p95 depende de 18 llamadas lentas <!-- A17 --> y de la proporción de la muestra (decisión
-del equipo). Los pesos ocupan 6,76 MB, el modelo carga en 0,10 s y el proceso usa 596 MB de memoria como máximo
-<!-- A10 A11 A12 -->: el modelo cabe en un teléfono y la latencia no es el problema.
+hilos <!-- A13 -->), sin la capa de red de Gradio. La mediana del total es 15,7 ms sin CAM y 22,0 ms con CAM <!-- A8 -->: el CAM
+agrega 6,4 ms <!-- A9 -->, porque reutiliza el forward. Por conjunto, el p95 más alto es el de PD-dev, 172,3 ms con CAM <!-- A5 -->,
+dominado por la lectura de unas pocas fotos grandes; del total se cita solo el p50, porque su p95 depende de 18 llamadas lentas
+<!-- A17 --> y de la proporción de la muestra (decisión del equipo). La tabla por conjunto está en el Anexo A.2. Los pesos ocupan 6,76 MB, el modelo carga en 0,10 s y el proceso usa 596 MB de memoria como máximo
+<!-- A10 A11 A12 -->: pesa 6,76 MB y en una notebook sin GPU responde en unas decenas de milisegundos; no se midió en un
+teléfono.
 
 **Imágenes externas.** Para probar la app con fotos ajenas a los dos conjuntos se bajaron 6 de Wikimedia Commons con licencia
 abierta, y se compararon por phash (≤ 6 <!-- A16 -->) contra 108.611 imágenes de PlantVillage y 2.578 de PlantDoc <!-- A14 -->. Dos
 resultaron ser fotos de PlantDoc y se descartaron; quedan 4 válidas <!-- A15 -->. Una de las descartadas reveló una posible
 etiqueta equivocada en PlantDoc (§9). Las fotos de Commons se usan solo para la demo y la latencia, nunca para métricas.
 
-**Capturas.** La figura 4 (§6.4) muestra dos respuestas de la app con fotos CC0 de Wikimedia Commons y T = 14,97, las dos con el
-cartel de confianza baja. En la que falla (septoria de tomate, predicha como Tomato late blight), el CAM se dispersa por la foto; en la
+**Capturas.** La figura 4 (§6.4) muestra dos respuestas de la app (commit `f9995b9`) con fotos CC0 de Wikimedia Commons y
+T = 14,97 <!-- C2 -->, las dos con el cartel de confianza baja. En la que falla (septoria de tomate, predicha como Tomato late blight), el CAM se dispersa por la foto; en la
 que acierta (mancha bacteriana de pimiento), se concentra en las lesiones. Son ilustrativas, no evidencia, y sus probabilidades no se
 reportan como resultado.
 
@@ -417,7 +411,8 @@ reportan como resultado.
 
 - **El test de PlantDoc es propio y no se puede comparar con el oficial.** La partición 70/30 depurada deja solo 24 de las 300
   imágenes de PD-test en la carpeta *test* oficial <!-- D12 -->. Los números no son comparables con trabajos que usen el split
-  oficial; a cambio, el test no tiene duplicados contradictorios ni fugas desde dev.
+  oficial; a cambio, el test no tiene duplicados contradictorios ni casi-duplicados con dev según phash ≤ 6
+  <!-- P12 -->; similitudes que ese umbral no detecta no se descartan.
 - **Ruido de etiquetas.** PlantDoc trae fotos idénticas en clases distintas (62 imágenes excluidas por eso <!-- D6 -->) y es
   esperable que queden errores no detectables por hash. Un ejemplo apareció tarde: una foto de Commons cuyo nombre dice *late
   blight* resultó idéntica a una imagen que PlantDoc tiene en *Potato leaf early blight*. No se investigó en qué partición cae; si
@@ -425,7 +420,7 @@ reportan como resultado.
 - **Revisión humana de un solo revisor, asistida por IA.** La regla original pedía dos revisores independientes; por disponibilidad
   del equipo la hizo uno, con una IA en el chat web que describía cada imagen y proponía una decisión, y con la decisión final del
   usuario fila por fila (124 imágenes <!-- D13 -->). La IA pudo sesgar las decisiones, y no hubo acuerdo entre revisores que medir.
-- **n chico.** PD-test tiene 300 imágenes, entre 16 y 41 por clase <!-- D11 D17 -->. Los IC del macro-F1 son de unos ±0,04 y los
+- **n chico.** PD-test tiene 300 imágenes, entre 16 y 41 por clase <!-- D11 D17 -->. Los IC del macro-F1 son de unos ±0,04 <!-- E40 --> y los
   del recall por clase, muy anchos; muchas diferencias por clase no se pueden afirmar.
 - **Una sola semilla y una sola corrida por modelo.** Los IC reflejan la variabilidad de las imágenes de test, no la del
   entrenamiento. La diferencia pareada en PV-test (0,019 [0,004; 0,033] <!-- E28 -->) es sobre las mismas imágenes; otra semilla
@@ -437,7 +432,7 @@ reportan como resultado.
   atajo por fondo queda como observación cualitativa de los CAM (§6.4), no como resultado.
 - **Sesgo de especie y geográfico.** Tres especies hortícolas; ninguno de los dos conjuntos se construyó en Uruguay ni con las
   patologías locales, y ninguno incluye especies forestales. No se promete transferencia a otro contexto.
-- **Una temperatura para todo.** La T ajustada en PD-dev describe este modelo en esta distribución de 696 imágenes de internet, no
+- **Una temperatura para todo.** La T ajustada en PD-dev describe este modelo en esta distribución de 696 imágenes de internet <!-- D10 -->, no
   fotos nuevas de otra fuente; y deja al sistema subconfiado en el laboratorio (§7). El IC del ECE fuera de partición no incluye la
   variabilidad de ajustar T y puede ser algo optimista.
 - **Latencia de una sola máquina**, sin la red de Gradio ni otro hardware.
@@ -462,21 +457,10 @@ reportan como resultado.
 
 ## 11. Cambios respecto de la propuesta
 
-| Propuesta (Entregable 1) | Qué se hizo | Por qué |
-|---|---|---|
-| Intersección de clases en tomate y maíz | Tomate, papa y pimiento; maíz fuera; 12 clases | Intersección real con PlantDoc (decisión del equipo, 25/09 y 08/10) |
-| PlantDoc solo para evaluar | PlantDoc-dev elige geometría, temperatura y umbral; PlantDoc-test se mide una vez por modelo, con acceso registrado | Hacía falta un dev de campo para calibrar y elegir sin tocar el test |
-| Test de PlantDoc oficial, 8–12 imágenes por clase | Partición propia 70/30 depurada, 16–41 por clase <!-- D17 --> | Duplicados contradictorios en la copia fijada; validado por el docente |
-| Duplicados solo entre PlantVillage y PlantDoc | También dentro de PlantDoc, con exclusión previa al split y revisión humana | Aparecieron grupos de fotos idénticas con etiquetas distintas |
-| Partición de PlantVillage sin especificar | Por hoja, mosaic por rangos con zona de descarte, tope por clase | Evitar que el test premie memorizar hojas |
-| Grad-CAM | CAM (cabezal GAP → Linear, mismo forward) | Devolución docente sobre el costo en deploy |
-| Calibración y umbral en validación | Temperatura en PD-dev; τ = 0,5 fijado de antemano | PV-val no representa el campo; τ fijo para no sobreajustar a dev |
-| "Cobertura útil": responder solo con precisión ≥ 0,80 | No se buscó el umbral en la curva; se reporta cobertura y acierto con τ fijo | Elegir τ en la curva sobreajusta a PD-dev; además, en PD-dev ningún τ llega a 0,80: el máximo sin calibrar es 0,272, con τ = 0,98 y cobertura 0,328 (descriptivo) <!-- C28 --> |
-| Preproceso fijo a 224 × 224 | Geometría elegida en PD-dev entre tres, con regla fijada antes | Las fotos de campo no son cuadradas |
-| Ponderación de clases en la pérdida | Sin ponderar | El desbalance (5,73) era una alarma; macro-F1 ya pesa igual las clases |
-| Dos intervenciones, por separado y combinadas | Una variante (fine-tuning parcial + aumentación) | Plazo; la supresión de fondo y la combinación quedaron recortadas (sesión 13) |
-| Backbone alternativo como contingencia | No se probó | Plazo |
-| Macro-F1 en distribución | Con y sin mosaic | Mosaic se partió por rangos, sin grupos de hoja |
+Los cambios principales respecto del Entregable 1 fueron: tomate, papa y pimiento en lugar de tomate y maíz; una partición propia y
+depurada de PlantDoc, con un dev de campo para elegir geometría, temperatura y umbral; CAM en lugar de Grad-CAM; calibración en
+PD-dev con τ fijado de antemano en lugar de un umbral buscado en la curva; y una sola intervención, porque la supresión de fondo, la
+combinación y el backbone alternativo quedaron fuera por plazo. La tabla completa, con el motivo de cada cambio, está en el Anexo A.1.
 
 ## 12. Uso de inteligencia artificial
 
@@ -520,3 +504,35 @@ el contenido final del documento.
 
 Repositorio, con el código, las configs, los resultados y la bitácora de decisiones y de accesos:
 https://github.com/trajano-carballo/enfermedades-foliares
+
+## Anexo A
+
+### A.1 Cambios respecto de la propuesta
+
+| Propuesta (Entregable 1) | Qué se hizo | Por qué |
+|---|---|---|
+| Intersección de clases en tomate y maíz | Tomate, papa y pimiento; maíz fuera; 12 clases | Intersección real con PlantDoc (decisión del equipo, 25/09 y 08/10) |
+| PlantDoc solo para evaluar | PlantDoc-dev elige geometría, temperatura y umbral; PlantDoc-test se mide una vez por modelo para la brecha, más una pasada de calibración (fila 5), con acceso registrado | Hacía falta un dev de campo para calibrar y elegir sin tocar el test |
+| Test de PlantDoc oficial, 8–12 imágenes por clase <!-- R5 --> | Partición propia 70/30 depurada, 16–41 por clase <!-- D17 --> | Duplicados contradictorios en la copia fijada; validado por el docente |
+| Duplicados solo entre PlantVillage y PlantDoc | También dentro de PlantDoc, con exclusión previa al split y revisión humana | Aparecieron grupos de fotos idénticas con etiquetas distintas |
+| Partición de PlantVillage sin especificar | Por hoja, mosaic por rangos con zona de descarte, tope por clase | Evitar que el test premie memorizar hojas |
+| Grad-CAM | CAM (cabezal GAP → Linear, mismo forward) | Devolución docente sobre el costo en deploy |
+| Calibración y umbral en validación | Temperatura en PD-dev; τ = 0,5 fijado de antemano | PV-val no representa el campo; τ fijo para no sobreajustar a dev |
+| "Cobertura útil": responder solo con precisión ≥ 0,80 <!-- R6 --> | No se buscó el umbral en la curva; se reporta cobertura y acierto con τ fijo | Elegir τ en la curva sobreajusta a PD-dev; además, en PD-dev ningún τ llega a 0,80: el máximo sin calibrar es 0,272, con τ = 0,98 y cobertura 0,328 (descriptivo) <!-- C28 --> |
+| Preproceso fijo a 224 × 224 | Geometría elegida en PD-dev entre tres, con regla fijada antes | Las fotos de campo no son cuadradas |
+| Ponderación de clases en la pérdida | Sin ponderar | El desbalance (5,73 <!-- M4 -->) era una alarma; macro-F1 ya pesa igual las clases |
+| Dos intervenciones, por separado y combinadas | Una variante (fine-tuning parcial + aumentación) | Plazo; la supresión de fondo y la combinación quedaron recortadas (sesión 13) |
+| Backbone alternativo como contingencia | No se probó | Plazo (defensa 20/11), aunque la condición de la propuesta se cumplió: la variante no mejoró el campo |
+| Macro-F1 en distribución | Con y sin mosaic | Mosaic se partió por rangos, sin grupos de hoja |
+
+### A.2 Latencia de la app por conjunto
+
+Medida de punta a punta en CPU (AMD Ryzen 5 5500U, 6 hilos), sin la red de Gradio; 50 imágenes de PV-val, 50 de PD-dev y 4 de
+Commons <!-- A1 A13 -->. Del total se cita solo el p50 (§8).
+
+| ms | p50 sin CAM | p95 sin CAM | p50 con CAM | p95 con CAM |
+|---|---|---|---|---|
+| PV-val | 14,1 | 16,4 | 19,8 | 22,7 <!-- A2 A3 --> |
+| PD-dev | 24,0 | 165,4 | 31,4 | 172,3 <!-- A4 A5 --> |
+| Commons | 23,7 | 33,6 | 32,3 | 39,9 <!-- A6 A7 --> |
+| Total (solo p50) | 15,7 | — | 22,0 | — <!-- A8 --> |
