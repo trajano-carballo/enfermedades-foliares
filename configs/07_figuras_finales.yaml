@@ -1,0 +1,21 @@
+# Figuras y tablas del documento final (sesión 14, etapa 7). No calcula nada nuevo: solo lee JSON versionados de results/.
+experimento: 07_figuras_finales
+figuras: docs/figuras_finales                    # relativo al repo
+
+fuentes:                                         # relativas al repo; todas en results/
+  tests_base: results/03_brecha/03_brecha_tests_20261105_081814/tests.json                    # filas 1 y 2
+  tests_variante: results/04_aumentacion/04_aumentacion_tests_20261106_210645/tests.json      # filas 3 y 4
+  comparacion: results/04_aumentacion/04_aumentacion_comparacion_20261106_211523/comparacion_base.json
+  ic_base: results/03_brecha/03_brecha_ic_20261105_085644/ic_por_clase.json
+  ic_variante: results/04_aumentacion/04_aumentacion_ic_20261106_211534/ic_por_clase.json
+  calibracion_dev: results/05_calibracion/05_calibracion_dev_20261107_095030/calibracion_dev.json
+  calibracion_test: results/05_calibracion/05_calibracion_test_20261107_095821/calibracion_test.json   # fila 5
+  pv_val_app: results/06_app/06_app_pv_val_20261110_093958/pv_val_informativo.json
+  latencia: results/06_app/06_app_latencia_20261110_150137/latencia.json
+
+# Las grillas de CAM no salen de results/ (necesitan el checkpoint y las imágenes): se copian tal cual se generaron.
+cam_ya_generadas:
+  docs/figuras_sesion9/cam_grilla_clases_1a6.png: cam_base_clases_1a6.png        # run 03_brecha_cam_20261105_090654
+  docs/figuras_sesion9/cam_grilla_clases_7a12.png: cam_base_clases_7a12.png
+  docs/figuras_sesion10/cam_variante_clases_1a6.png: cam_variante_clases_1a6.png  # run 04_aumentacion_cam_20261106_211557
+  docs/figuras_sesion10/cam_variante_clases_7a12.png: cam_variante_clases_7a12.png
